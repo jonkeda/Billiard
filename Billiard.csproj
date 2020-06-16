@@ -1,0 +1,140 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x64</Platforms>
+    <StartupObject>Billiard.App</StartupObject>
+    <Authors>Tobias Ganzhorn</Authors>
+    <Version>0.0.1</Version>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Renderer\Effects\Ball3DEffect.ps" />
+    <None Remove="Renderer\Effects\FakeBall.ps" />
+    <None Remove="Resources\Images\0.jpg" />
+    <None Remove="Resources\Images\1.jpg" />
+    <None Remove="Resources\Images\10.jpg" />
+    <None Remove="Resources\Images\11.jpg" />
+    <None Remove="Resources\Images\12.jpg" />
+    <None Remove="Resources\Images\13.jpg" />
+    <None Remove="Resources\Images\14.jpg" />
+    <None Remove="Resources\Images\15.jpg" />
+    <None Remove="Resources\Images\2.jpg" />
+    <None Remove="Resources\Images\3.jpg" />
+    <None Remove="Resources\Images\4.jpg" />
+    <None Remove="Resources\Images\5.jpg" />
+    <None Remove="Resources\Images\6.jpg" />
+    <None Remove="Resources\Images\7.jpg" />
+    <None Remove="Resources\Images\8.jpg" />
+    <None Remove="Resources\Images\9.jpg" />
+    <None Remove="Resources\Images\ball.png" />
+    <None Remove="Resources\Images\ball0_h.png" />
+    <None Remove="Resources\Images\ball10_h.png" />
+    <None Remove="Resources\Images\ball11_h.png" />
+    <None Remove="Resources\Images\ball12_h.png" />
+    <None Remove="Resources\Images\ball13_h.png" />
+    <None Remove="Resources\Images\ball14_h.png" />
+    <None Remove="Resources\Images\ball15_h.png" />
+    <None Remove="Resources\Images\ball1_h.png" />
+    <None Remove="Resources\Images\ball2_h.png" />
+    <None Remove="Resources\Images\ball3_h.png" />
+    <None Remove="Resources\Images\ball4_h.png" />
+    <None Remove="Resources\Images\ball5_h.png" />
+    <None Remove="Resources\Images\ball6_h.png" />
+    <None Remove="Resources\Images\ball7_h.png" />
+    <None Remove="Resources\Images\ball8_h.png" />
+    <None Remove="Resources\Images\ball9_h.png" />
+    <None Remove="Resources\Images\capsule.png" />
+    <None Remove="Resources\Images\cubemap.jpg" />
+    <None Remove="Resources\Images\logo.png" />
+    <None Remove="Resources\Images\queue.png" />
+    <None Remove="Resources\Images\splashscreen.png" />
+    <None Remove="Resources\Images\table.png" />
+    <None Remove="Resources\Images\table_mask.png" />
+    <None Remove="Resources\Sounds\ball_ball_hard_01.wav" />
+    <None Remove="Resources\Sounds\ball_ball_hard_02.wav" />
+    <None Remove="Resources\Sounds\ball_ball_soft_01.mp3" />
+    <None Remove="Resources\Sounds\ball_ball_soft_01.wav" />
+    <None Remove="Resources\Sounds\ball_ball_soft_02.mp3" />
+    <None Remove="Resources\Sounds\ball_ball_soft_02.wav" />
+    <None Remove="Resources\Sounds\ball_ball_soft_03.mp3" />
+    <None Remove="Resources\Sounds\ball_ball_soft_03.wav" />
+    <None Remove="Resources\Sounds\ball_wall_01.mp3" />
+    <None Remove="Resources\Sounds\ball_wall_01.wav" />
+    <None Remove="Resources\Sounds\ball_wall_01_soft.wav" />
+    <None Remove="Resources\Sounds\ball_wall_02.mp3" />
+    <None Remove="Resources\Sounds\ball_wall_02.wav" />
+    <None Remove="Resources\Sounds\ball_wall_02_soft.wav" />
+    <None Remove="Resources\Sounds\ball_wall_03.wav" />
+    <None Remove="Resources\Sounds\cue_ball_01.wav" />
+    <None Remove="Resources\Sounds\cue_ball_02.wav" />
+    <None Remove="Resources\Sounds\music.mp3" />
+    <None Remove="Resources\Sounds\music.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="irrKlang.NET4">
+      <HintPath>..\..\..\..\..\Desktop\irrKlang.NET4.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Renderer\Effects\Ball3DEffect.ps" />
+    <Resource Include="Resources\Images\0.jpg" />
+    <Resource Include="Resources\Images\1.jpg" />
+    <Resource Include="Resources\Images\10.jpg" />
+    <Resource Include="Resources\Images\11.jpg" />
+    <Resource Include="Resources\Images\12.jpg" />
+    <Resource Include="Resources\Images\13.jpg" />
+    <Resource Include="Resources\Images\14.jpg" />
+    <Resource Include="Resources\Images\15.jpg" />
+    <Resource Include="Resources\Images\2.jpg" />
+    <Resource Include="Resources\Images\3.jpg" />
+    <Resource Include="Resources\Images\4.jpg" />
+    <Resource Include="Resources\Images\5.jpg" />
+    <Resource Include="Resources\Images\6.jpg" />
+    <Resource Include="Resources\Images\7.jpg" />
+    <Resource Include="Resources\Images\8.jpg" />
+    <Resource Include="Resources\Images\9.jpg" />
+    <Resource Include="Resources\Images\capsule.png" />
+    <Resource Include="Resources\Images\cubemap.jpg" />
+    <Resource Include="Resources\Images\logo.png" />
+    <Resource Include="Resources\Images\queue.png" />
+    <Resource Include="Resources\Images\table.png" />
+    <Resource Include="Resources\Images\table_mask.png" />
+    <Resource Include="Resources\Sounds\ball_ball_hard_01.wav" />
+    <Resource Include="Resources\Sounds\ball_ball_hard_02.wav" />
+    <Resource Include="Resources\Sounds\ball_ball_soft_01.wav" />
+    <Resource Include="Resources\Sounds\ball_ball_soft_02.wav" />
+    <Resource Include="Resources\Sounds\ball_ball_soft_03.wav" />
+    <Resource Include="Resources\Sounds\ball_wall_01.wav" />
+    <Resource Include="Resources\Sounds\ball_wall_01_soft.wav" />
+    <Resource Include="Resources\Sounds\ball_wall_02.wav" />
+    <Resource Include="Resources\Sounds\ball_wall_02_soft.wav" />
+    <Resource Include="Resources\Sounds\ball_wall_03.wav" />
+    <Resource Include="Resources\Sounds\cue_ball_01.wav" />
+    <Resource Include="Resources\Sounds\cue_ball_02.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Images\splashscreen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="irrKlang\ikpFlac.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="irrKlang\ikpMP3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
