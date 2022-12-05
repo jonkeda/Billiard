@@ -92,11 +92,10 @@ namespace Billiard
 
         private PBall GetCueBall()
         {
-            return physicsEngine.balls.Find(b => b.index == 0);
-            
+            return physicsEngine.GetCueBall();
         }
 
-         private void UpdateRenderer()
+        private void UpdateRenderer()
         {
             renderer.Update();
 
@@ -149,6 +148,11 @@ namespace Billiard
         }
 
         private void HitBall(object sender, RoutedEventArgs e)
+        {
+            Shoot();
+        }
+
+        private void Shoot()
         {
             if (!physicsEngine.Resting)
             {
@@ -277,7 +281,7 @@ namespace Billiard
             physicsEngine.Trigger += Trigger;
             //physicsEngine.Collision += soundManager.CollisionSound;
 
-            renderer = new Renderer(Table, Half, Full, Queue, Overlay, physicsEngine.Length, physicsEngine.Width);
+            renderer = new Renderer(Table, Half, Full, Queue, Overlay, Solutions, physicsEngine.Length, physicsEngine.Width);
             renderer.ResetAll(physicsEngine.balls);
 
             DataContext = physicsEngine;
@@ -285,26 +289,27 @@ namespace Billiard
 
         private void UIElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var ball = CalculateForce(out var force);
-
+            CalculateSolutions();
+/*            var ball = CalculateForce(out var force);
+*/
             // physicsEngine.Calculate(force);
         }
 
 
         private void UIElement_OnKeyDown(object sender, KeyEventArgs e)
         {
-            double speed = 0.1;
+            double speed = 1;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                speed = 0.1;
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
                 speed = 0.01;
             }
-            else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.LeftCtrl))
-            {
-                speed = 0.001;
-            }
             else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftAlt))
             {
-                speed = 1;
+                speed = 10;
             }
             if (e.Key == Key.Up)
             {
@@ -324,7 +329,7 @@ namespace Billiard
             }
             else if (e.Key == Key.Space)
             {
-                HitBall(null, null);
+                Shoot();
             }
             else if (e.Key == Key.Enter)
             {
@@ -334,7 +339,10 @@ namespace Billiard
 
         private void CalculateSolutions()
         {
-            
+            Mouse.SetCursor(Cursors.Wait);
+            Solutions.Source = physicsEngine.CalculateSolutions();
+            Mouse.SetCursor(Cursors.Arrow);
+
         }
     }
 }

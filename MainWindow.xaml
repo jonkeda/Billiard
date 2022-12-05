@@ -56,6 +56,7 @@
                             </Canvas.OpacityMask>
                         </Canvas>
                         
+                        <Image x:Name="Solutions" Width="{Binding Length}" Height="{Binding Width}" Stretch="None" />
                         <Image x:Name="Overlay" Width="{Binding Length}" Height="{Binding Width}" Stretch="None" />
                     </Canvas>
                     

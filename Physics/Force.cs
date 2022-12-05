@@ -7,7 +7,7 @@ namespace Billiard.Physics
     {
         public double Direction { get; set; }
 
-        public double Power { get; set; } = 200;
+        public double Power { get; set; } = 150;
         public Vector2D Position { get; set; }
 
         public Vector2D Vector

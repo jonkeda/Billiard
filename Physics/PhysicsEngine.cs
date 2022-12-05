@@ -2,9 +2,15 @@
 using Physics.Triggers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using Billiard.Physics;
 using Utilities;
+using System.Windows.Forms;
+using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 
 namespace Physics
 {
@@ -126,7 +132,7 @@ namespace Physics
 
         #region Physic Simulation
 
-        public void Calculate(Vector2D force)
+        public bool Calculate(Vector2D force)
         {
             List<PBall> ballsClones = new List<PBall>();
             foreach (PBall ball in balls)
@@ -147,7 +153,22 @@ namespace Physics
                 DetectCollisions(table, ballsClones, true);
 
                 SaveBallPositions(ballsClones);
+
+                if (cueBall.Collisions.TwoDifferentBallsHit())
+                {
+                    if (cueBall.Collisions.Count(b => b.Ball != null) > 2)
+                    {
+                        return false;
+                    }
+                    if (GetYellowBall().Collisions.Count(b => b.Ball != null) > 1)
+                        return false;
+                    if (GetRedBall().Collisions.Count(b => b.Ball != null) > 1)
+                        return false;
+                    return true;
+                }
             }
+
+            return false;
         }
 
         public void Step(double dt)
@@ -385,5 +406,102 @@ namespace Physics
             Force.Position = ballPosition;
             return Force;
         }
+
+        public PBall GetCueBall()
+        {
+            return balls.Find(b => b.index == 0);
+        }
+
+        public PBall GetYellowBall()
+        {
+            return balls.Find(b => b.index == 9);
+        }
+
+        public PBall GetRedBall()
+        {
+            return balls.Find(b => b.index == 7);
+        }
+
+        public RenderTargetBitmap CalculateSolutions()
+        {
+            DrawingVisual visual = new DrawingVisual();
+
+            using (DrawingContext drawingContext = visual.RenderOpen())
+            {
+                drawingContext.PushClip(new RectangleGeometry(new Rect(new Point(0, 0), new Point(Length, Width))));
+                drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, new Rect(0, 0, Length, Width));
+
+                PBall cue = GetCueBall();
+                PBall yellow = GetYellowBall();
+                PBall red = GetRedBall();
+
+                SolutionCollection solutions = new();
+
+                CalculateSolutionsDirectOnBall(cue, red, drawingContext, Brushes.Orange, 1500);
+
+                CalculateSolutionsDirectOnBall(cue, yellow, drawingContext, Brushes.GreenYellow, 1500);
+
+/*                CalculateSolutionsDirectOnBall(cue, red, drawingContext, Brushes.Orange, 1250);
+
+                CalculateSolutionsDirectOnBall(cue, yellow, drawingContext, Brushes.GreenYellow, 1250);
+*/
+                drawingContext.Close();
+            }
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)Length, (int)Width, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(visual);
+            return bitmap;
+            //return new DrawingImage(visual.Drawing);  
+        }
+
+        private void CalculateSolutionsDirectOnBall(PBall cue, PBall other, DrawingContext drawingContext, Brush brush, double power)
+        {
+            Vector2D line = (cue.position - other.position).Normalize();
+
+            Vector2D posA = (line.PerpendicularA() * cue.r * 2) + other.position;
+            Vector2D posB = (line.PerpendicularB() * cue.r * 2) + other.position;
+
+            Pen forceColor = new Pen(brush, 2)
+            {
+                DashStyle = DashStyles.Dot
+            };
+
+/*            drawingContext.DrawLine(forceColor, cue.position, other.position);
+            drawingContext.DrawEllipse(null, forceColor, cue.position, cue.r, cue.r);
+            drawingContext.DrawEllipse(null, forceColor, other.position, cue.r, cue.r);
+
+            drawingContext.DrawEllipse(null, forceColor, posA, cue.r, cue.r);
+            drawingContext.DrawEllipse(null, forceColor, posB, cue.r, cue.r);
+
+            drawingContext.DrawLine(forceColor, cue.position, posA);
+            drawingContext.DrawLine(forceColor, cue.position, posB);
+*/
+            Vector2D from = (posA - cue.position).Normalize();
+
+            double fromAngle = from.GetAngle();
+
+            Vector2D to = (posB - cue.position ).Normalize();
+
+            double toAngle = to.GetAngle();
+
+            //double angleDif = toAngle - fromAngle;
+
+            for (double angle = fromAngle; angle < toAngle; angle += 0.04)
+            {
+                Vector2D n = MathV.GetVector(angle) * power;
+                if (Calculate(n))
+                {
+                    drawingContext.DrawGeometry(null, forceColor, cue.AsGeometry());
+                }
+            }
+        }
+    }
+
+    public class SolutionCollection : Collection<Solution>
+    {
+    }
+
+    public class Solution
+    {
+
     }
 }

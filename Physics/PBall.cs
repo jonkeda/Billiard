@@ -8,7 +8,27 @@ namespace Physics
 {
     class CollisionCollection : Collection<Collision>
     {
+        public bool TwoDifferentBallsHit()
+        {
+            int? index = null;
 
+            foreach (Collision collision in this)
+            {
+                if (collision.Ball != null)
+                {
+                    if (!index.HasValue)
+                    {
+                        index = collision.Ball.index;
+                    }
+                    else if (index.Value != collision.Ball.index)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
     class Collision
     {
@@ -119,11 +139,11 @@ namespace Physics
 
         public void SaveCollision(PBall pBall)
         {
-            if (!DrawTrajectory)
+/*            if (!DrawTrajectory)
             {
                 return;
             }
-            if (!position.Equals(lastCollision))
+*/            if (!position.Equals(lastCollision))
             {
                 Collisions.Add(new Collision(position, pBall));
                 lastCollision = position;

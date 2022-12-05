@@ -24,12 +24,12 @@ namespace Render
         private readonly Dictionary<PBall, Rectangle> fullBalls = new Dictionary<PBall, Rectangle>();
         private readonly Dictionary<PBall, Rectangle> tableBalls = new Dictionary<PBall, Rectangle>();
 
-        private readonly Image queue, overlay;
+        private readonly Image queue, overlay, solutions;
 
         private readonly double length;
         private readonly double width;
 
-        public Renderer(Canvas _tableCanvas, Canvas _fullCanvas, Canvas _halfCanvas, Image _queue, Image _overlay, double _length, double _width)
+        public Renderer(Canvas _tableCanvas, Canvas _fullCanvas, Canvas _halfCanvas, Image _queue, Image _overlay, Image _solutions, double _length, double _width)
         {
             tableCanvas = _tableCanvas;
             fullCanvas = _fullCanvas;
@@ -38,6 +38,7 @@ namespace Render
             overlay = _overlay;
             length = _length;
             width = _width;
+            solutions = _solutions;
         }
 
         #region Common
@@ -195,7 +196,7 @@ namespace Render
         {
             //Show(queue);
             Vector2D n = (ballPosition - p).Normalize();
-            double angle = MathV.GetAngleToX(n);
+            double angle = MathV.GetAngle(n);
 
             TransformGroup transform = new TransformGroup();
             transform.Children.Add(new RotateTransform(angle, 210, 40));

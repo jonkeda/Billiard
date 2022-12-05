@@ -15,6 +15,16 @@ namespace Utilities
             return Math.Min(Math.Max(x, minVal), maxVal);
         }
 
+        public static Vector2D PerpendicularA(this Vector2D v)
+        {
+            return new Vector2D(-v.y, v.x);
+        }
+
+        public static Vector2D PerpendicularB(this Vector2D v)
+        {
+            return new Vector2D(v.y, -v.x);
+        }
+
         public static Vector2D Abs(Vector2D v)
         {
             return new Vector2D(Math.Abs(v.x), Math.Abs(v.y));
@@ -58,10 +68,12 @@ namespace Utilities
 
         public static Vector2D GetVector(double angle)
         {
+            angle = angle / 180 * Math.PI;
+
             return new Vector2D(Math.Cos(angle), Math.Sin(angle));
         }
 
-        public static double GetAngleToX(Vector2D a)
+        public static double GetAngle(this Vector2D a)
         {
             if (a.y > 0)
             {
