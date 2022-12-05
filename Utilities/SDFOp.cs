@@ -28,7 +28,7 @@ namespace Utilities
         // Numerical normal generation
         public static Vector2D GetNormal(Vector2D p, Func<Vector2D, double, bool, double> distanceFunction)
         {
-            double h = 0.001f;
+            double h = 0.001;
 
             Vector2D n = new Vector2D(
                 distanceFunction(p + new Vector2D(h, 0), 0, true) - distanceFunction(p - new Vector2D(h, 0), 0, true),

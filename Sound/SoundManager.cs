@@ -1,4 +1,4 @@
-﻿using IrrKlang;
+﻿//using IrrKlang;
 using Physics.Collisions;
 using System;
 using System.IO;
@@ -7,7 +7,7 @@ using Utilities;
 
 namespace Sound
 {
-    class SoundManager
+/*    class SoundManager
     {
         public readonly ISoundEngine engine = new ISoundEngine();
         public int PlayBackSpeed { get; set; } = 1;
@@ -103,4 +103,5 @@ namespace Sound
             engine.AddSoundSourceFromIOStream(GetResourceStreamFromPath("pack://application:,,,/Resources/Sounds/ball_wall_02_soft.wav"), "ball_wall_02_soft.wav");
         }
     }
+*/
 }

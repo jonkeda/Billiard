@@ -18,7 +18,7 @@ namespace Billiard
     {
         private readonly PhysicsEngine physicsEngine;
         private readonly Renderer renderer;
-        private readonly SoundManager soundManager;
+        // private readonly SoundManager soundManager;
 
         private int miss = 0;
 
@@ -90,7 +90,13 @@ namespace Billiard
             t = DateTime.Now.Ticks / 10000;
         }
 
-        private void UpdateRenderer()
+        private PBall GetCueBall()
+        {
+            return physicsEngine.balls.Find(b => b.index == 0);
+            
+        }
+
+         private void UpdateRenderer()
         {
             renderer.Update();
 
@@ -98,10 +104,18 @@ namespace Billiard
             {
                 Vector2D p = Mouse.GetPosition(Table);
 
-                var (ballPosition, ballRadius) = physicsEngine.balls.Find(x => x.index == 0);
+                var (ballPosition, ballRadius) = GetCueBall();
 
                 renderer.DrawQueue(ballPosition, ballRadius, p);
-                renderer.DrawTrajectory(ballRadius, physicsEngine.CalculateTrajectory(ballPosition, (ballPosition - p).Normalize(), ballRadius));
+
+                CalculateForce(out var force);
+
+                physicsEngine.Calculate(force);
+
+                // (ballPosition - p).Normalize()
+                renderer.DrawTrajectory(ballRadius, 
+                    physicsEngine.CalculateTrajectory(ballPosition, physicsEngine.Force.VectorPower, ballRadius),
+                    physicsEngine.CalculateForce(ballPosition));
             }
         }
         #endregion
@@ -141,16 +155,22 @@ namespace Billiard
                 return;
             }
 
-            Vector2D p = Mouse.GetPosition(Table);
+            var ball = CalculateForce(out var force);
 
-            PBall ball = physicsEngine.balls.Last();
-
-            Vector2D n = (ball.position - p).Normalize();
-            Vector2D force = Math.Min((ball.position - p).Length, 200) * 10 * n;
-
-            soundManager.BreakSound(p, force.Length);
+            //soundManager.BreakSound(p, force.Length);
 
             physicsEngine.ApplyForce(ball, force);
+        }
+
+        private PBall CalculateForce(out Vector2D force)
+        {
+            PBall ball = GetCueBall();
+
+            Vector2D n = physicsEngine.Force.Vector;
+            force = Math.Min(physicsEngine.Force.Power, 200) * 10 * n;
+
+            
+            return ball;
         }
 
         private void Trigger(object sender, TriggerEvent e)
@@ -234,7 +254,7 @@ namespace Billiard
 
         private void ToggleSound(object sender, RoutedEventArgs e)
         {
-            if (soundManager.ToggleSound())
+/*            if (soundManager.ToggleSound())
             {
                 ToggleSoundIcon.Kind = MaterialDesignThemes.Wpf.PackIconKind.VolumeHigh;
             }
@@ -242,7 +262,7 @@ namespace Billiard
             {
                 ToggleSoundIcon.Kind = MaterialDesignThemes.Wpf.PackIconKind.VolumeOff;
             }
-        }
+*/        }
         #endregion
 
         public MainWindow()
@@ -251,14 +271,70 @@ namespace Billiard
             InitializeComponent();
             CompositionTarget.Rendering += Update;
 
-            soundManager = new SoundManager();
+            //soundManager = new SoundManager();
 
-            physicsEngine = new PhysicsEngine();
+            physicsEngine = new PhysicsEngine(GameType.Billiart);
             physicsEngine.Trigger += Trigger;
-            physicsEngine.Collision += soundManager.CollisionSound;
+            //physicsEngine.Collision += soundManager.CollisionSound;
 
-            renderer = new Renderer(Table, Half, Full, Queue, Overlay);
+            renderer = new Renderer(Table, Half, Full, Queue, Overlay, physicsEngine.Length, physicsEngine.Width);
             renderer.ResetAll(physicsEngine.balls);
+
+            DataContext = physicsEngine;
+        }
+
+        private void UIElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var ball = CalculateForce(out var force);
+
+            // physicsEngine.Calculate(force);
+        }
+
+
+        private void UIElement_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            double speed = 0.1;
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                speed = 0.01;
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                speed = 0.001;
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftAlt))
+            {
+                speed = 1;
+            }
+            if (e.Key == Key.Up)
+            {
+                physicsEngine.Force.PowerUp();
+            }
+            else if (e.Key == Key.Down)
+            {
+                physicsEngine.Force.PowerDown();
+            }
+            else if (e.Key == Key.Left)
+            {
+                physicsEngine.Force.ClockWise(speed);
+            }
+            else if (e.Key == Key.Right)
+            {
+                physicsEngine.Force.CounterClockWise(speed);
+            }
+            else if (e.Key == Key.Space)
+            {
+                HitBall(null, null);
+            }
+            else if (e.Key == Key.Enter)
+            {
+                CalculateSolutions();
+            }
+        }
+
+        private void CalculateSolutions()
+        {
+            
         }
     }
 }

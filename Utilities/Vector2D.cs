@@ -54,6 +54,11 @@ namespace Utilities
             get { return x == 0 && y == 0; }
         }
 
+        public bool Equals(Vector2D to)
+        {
+            return this.x == to.x && this.y == to.y;
+        }
+
         // +- Vector2D
         public static Vector2D operator +(Vector2D a) => a;
         public static Vector2D operator -(Vector2D a) => new Vector2D(-a.x, -a.y);

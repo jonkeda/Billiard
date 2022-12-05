@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Policy;
 
 namespace Utilities
 {
@@ -53,6 +54,11 @@ namespace Utilities
                 Math.Min(a.x, b.x),
                 Math.Min(a.y, b.y)
             );
+        }
+
+        public static Vector2D GetVector(double angle)
+        {
+            return new Vector2D(Math.Cos(angle), Math.Sin(angle));
         }
 
         public static double GetAngleToX(Vector2D a)

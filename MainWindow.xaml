@@ -6,11 +6,10 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Billiard"
         mc:Ignorable="d"
-        ResizeMode="NoResize"
-        WindowState="Normal"
+        WindowState="Maximized"
         WindowStyle="SingleBorderWindow"
-        SizeToContent="WidthAndHeight"
         Title="Solo Billard"
+        KeyDown="UIElement_OnKeyDown"
         >
     <Window.Resources>
         <Style x:Key="ImageButton" TargetType="{x:Type Button}">
@@ -18,7 +17,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Border
-                            Padding="0, 200, 0, 200" 
+                            Padding="0, 0, 0, 0" 
                             Background="Transparent">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
@@ -37,17 +36,18 @@
                     </RadialGradientBrush.GradientStops>
                 </RadialGradientBrush>
             </Grid.Background>
-            <Button Style="{StaticResource ImageButton}" Click="HitBall">
+            <Button Style="{StaticResource ImageButton}" Click="HitBall" MouseRightButtonDown="UIElement_OnMouseRightButtonDown">
                 <TabPanel>
-                    <Canvas Height="547" Width="200">
-                        <Image Source="pack://application:,,,/Resources/Images/capsule.png" Panel.ZIndex="2" Height="547" />
-                        <Canvas x:Name="Half" Width="200" Height="547" Panel.ZIndex="1" />
+                    <Canvas Visibility="Hidden" Height="{Binding Width}" Width="100">
+                        <Image Source="pack://application:,,,/Resources/Images/capsule.png" Panel.ZIndex="2" Height="{Binding Width}" />
+                        <Canvas x:Name="Half" Width="100" Height="{Binding Width}" Panel.ZIndex="1" />
                     </Canvas>
-                    <Canvas Width="970" Height="547">
+                    <Canvas Width="{Binding Length}" Height="{Binding Width}">
                         <Canvas.Background>
                             <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                         </Canvas.Background>
-                        <Canvas x:Name="Table" Width="970" Height="547" ClipToBounds="True">
+                        
+                        <Canvas x:Name="Table" Width="{Binding Length}" Height="{Binding Width}" ClipToBounds="True">
                             <Canvas.Background>
                                 <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                             </Canvas.Background>
@@ -55,17 +55,21 @@
                                 <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table_mask.png" />
                             </Canvas.OpacityMask>
                         </Canvas>
-                        <Image x:Name="Overlay" Width="970" Height="547" Stretch="None" />
+                        
+                        <Image x:Name="Overlay" Width="{Binding Length}" Height="{Binding Width}" Stretch="None" />
                     </Canvas>
-                    <Canvas Width="200" Height="547">
-                        <Image Height="547" Source="pack://application:,,,/Resources/Images/capsule.png" Panel.ZIndex="2" />
-                        <Canvas x:Name="Full" Width="200"  Height="547" Panel.ZIndex="1" />
+                    
+                    <Canvas Visibility="Hidden"  Width="100" Height="{Binding Width}">
+                        <Image Height="{Binding Width}" Source="pack://application:,,,/Resources/Images/capsule.png" Panel.ZIndex="2" />
+                        <Canvas x:Name="Full" Width="100"  Height="{Binding Width}" Panel.ZIndex="1" />
                     </Canvas>
+                    
                 </TabPanel>
             </Button>
-            <Image x:Name="Queue" Source="pack://application:,,,/Resources/Images/queue.png" Width="200" Height="200" IsHitTestVisible="False" />
+            <Image x:Name="Queue" Visibility="Hidden" Source="pack://application:,,,/Resources/Images/queue.png" Width="200" Height="200" IsHitTestVisible="False" />
         </Grid>
-        <materialDesign:Card Width="970" VerticalAlignment="Top" Margin="0, 16">
+
+        <materialDesign:Card Visibility="Hidden" Width="{Binding Length}" VerticalAlignment="Top" Margin="0, 16">
             <DockPanel>
                 <Button Style="{StaticResource MaterialDesignFlatButton}"  Click="RestartGame" Margin="8, 0, 8, 0">Neustart</Button>
                 <Button Click="OpenHighscore" Style="{StaticResource MaterialDesignFlatButton}">Highscores</Button>
@@ -116,10 +120,10 @@
                 <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" Margin="16" x:Name="HighScores" />
             </StackPanel>
         </materialDesign:Card>
-        <materialDesign:Card VerticalAlignment="Bottom" HorizontalAlignment="Center" IsHitTestVisible="False" Margin="0, 16">
+        <materialDesign:Card Visibility="Hidden" VerticalAlignment="Bottom" HorizontalAlignment="Center" IsHitTestVisible="False" Margin="0, 16">
             <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}" Foreground="{StaticResource PrimaryHueMidBrush}" Padding="16" FontSize="20" Width="200" TextAlignment="Center" Text="{Binding Path=Score, Mode=OneWay}" />
         </materialDesign:Card>
-        <materialDesign:Card VerticalAlignment="Top" HorizontalAlignment="Right" Margin="16" Width="60" Height="60">
+        <materialDesign:Card Visibility="Hidden" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="16" Width="60" Height="60">
             <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}" Foreground="{StaticResource PrimaryHueMidBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0, 0, 0, 4" Text="{Binding Path=FPS, Mode=OneWay}" />
         </materialDesign:Card>
     </Grid>
