@@ -46,17 +46,20 @@
                         <Canvas.Background>
                             <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                         </Canvas.Background>
-                        
+
+                        <Image x:Name="Solutions" Width="{Binding Length}" Height="{Binding Width}" Stretch="None" />
+
                         <Canvas x:Name="Table" Width="{Binding Length}" Height="{Binding Width}" ClipToBounds="True">
+                            <!--
                             <Canvas.Background>
                                 <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                             </Canvas.Background>
+                            -->
                             <Canvas.OpacityMask>
                                 <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table_mask.png" />
                             </Canvas.OpacityMask>
                         </Canvas>
                         
-                        <Image x:Name="Solutions" Width="{Binding Length}" Height="{Binding Width}" Stretch="None" />
                         <Image x:Name="Overlay" Width="{Binding Length}" Height="{Binding Width}" Stretch="None" />
                     </Canvas>
                     

@@ -462,7 +462,7 @@ namespace Physics
 
             Pen forceColor = new Pen(brush, 2)
             {
-                DashStyle = DashStyles.Dot
+                DashStyle = DashStyles.Solid
             };
 
 /*            drawingContext.DrawLine(forceColor, cue.position, other.position);

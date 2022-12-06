@@ -301,17 +301,17 @@ namespace Billiard
             double speed = 1;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
-                speed = 0.1;
+                speed = 10;
             }
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
                 speed = 0.01;
             }
-            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftAlt))
+/*            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftAlt))
             {
                 speed = 10;
             }
-            if (e.Key == Key.Up)
+*/            if (e.Key == Key.Up)
             {
                 physicsEngine.Force.PowerUp();
             }
