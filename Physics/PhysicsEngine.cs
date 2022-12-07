@@ -3,14 +3,14 @@ using Physics.Triggers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Billiard.Physics;
 using Utilities;
-using System.Windows.Forms;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
+using FlowDirection = System.Windows.FlowDirection;
 
 namespace Physics
 {
@@ -32,9 +32,6 @@ namespace Physics
         public readonly List<PBall> balls = new List<PBall>();
         public readonly PTrigger trigger;
 
-        public List<PBall> FullBalls { get; private set; } = new List<PBall>();
-        public List<PBall> HalfBalls { get; private set; } = new List<PBall>();
-
         public readonly PJar jar = new PJar();
 
         private const double ballRestitution = 0.98;
@@ -43,7 +40,14 @@ namespace Physics
 
         public PhysicsEngine(GameType gameType)
         {
-            this.table = new PTable(gameType);
+            if (gameType == GameType.Billiart)
+            {
+                table = new BilliartTable();
+            }
+            else
+            {
+                table = new PoolTable();
+            }
             trigger = new PTrigger(table.Length, table.Width);
             this.gameType = gameType;
             Init();
@@ -56,7 +60,7 @@ namespace Physics
         {
             ClearBallLists();
 
-            double r = 16;
+            double r = table.BallRadius;
             double x = 697;
             double y = Width / 2;
 
@@ -103,36 +107,24 @@ namespace Physics
         private void ClearBallLists()
         {
             balls.Clear();
-
-            HalfBalls.Clear();
-            FullBalls.Clear();
         }
 
         private PBall AddBall(int index, double r, double x, double y, Brush color )
         {
-            var ball = new PBall(index, r, new Vector2D(x, y), color: color);
+            var ball = new PBall(index, r, new Vector2D(x, y), new Vector2D(0,0), color: color);
             balls.Add(ball);
             return ball;
         }
 
-        public void TransferBall(PBall ball, PBallWithG newBall)
+        public void TransferBall(PBall ball)
         {
-            if (ball.index < 8)
-            {
-                FullBalls.Add(newBall);
-            }
-            else
-            {
-                HalfBalls.Add(newBall);
-            }
-
             balls.Remove(ball);
         }
         #endregion
 
         #region Physic Simulation
 
-        public bool Calculate(Vector2D force)
+        public bool Calculate(Vector2D force, bool animate)
         {
             List<PBall> ballsClones = new List<PBall>();
             foreach (PBall ball in balls)
@@ -148,11 +140,14 @@ namespace Physics
             bool isResting = false;
             while (!isResting)
             {
-                isResting = Simulate(0.008, ballsClones);
+                isResting = Simulate(0.008, ballsClones, animate);
 
                 DetectCollisions(table, ballsClones, true);
 
-                SaveBallPositions(ballsClones);
+                if (animate)
+                {
+                    SaveBallPositions(ballsClones);
+                }
 
                 if (cueBall.Collisions.TwoDifferentBallsHit())
                 {
@@ -164,24 +159,28 @@ namespace Physics
                         return false;
                     if (GetRedBall().Collisions.Count(b => b.Ball != null) > 1)
                         return false;
+                    SaveBallCollisions();
                     return true;
                 }
             }
+            SaveBallCollisions();
 
             return false;
         }
 
+        private void SaveBallCollisions()
+        {
+            foreach (PBall ball in balls)
+            {
+                ball.SaveCollision(null, CollisionType.End);
+            }
+        }
+
         public void Step(double dt)
         {
-            Simulate(dt, FullBalls);
-            Simulate(dt, HalfBalls);
-
-            DetectCollisions(jar, FullBalls, false);
-            DetectCollisions(jar, HalfBalls, false);
-
             if (Resting) return;
 
-            Resting = Simulate(dt, balls);
+            Resting = Simulate(dt, balls, true);
 
             DetectCollisions(table, balls, true);
 
@@ -196,12 +195,12 @@ namespace Physics
             }
         }
 
-        private bool Simulate(double dt, List<PBall> pBalls)
+        private bool Simulate(double dt, List<PBall> pBalls, bool animate)
         {
             bool isResting = true;
             foreach (PBall ball in pBalls)
             {
-                ball.Simulate(dt);
+                ball.Simulate(dt, animate);
                 if (!ball.Resting) isResting = false;
             }
 
@@ -224,15 +223,15 @@ namespace Physics
 
         private static void DetectCollisions(PStaticObject staticObject, List<PBall> pBalls, bool recordCollisions)
         {
-            for (int runs = 0; runs < 64; runs++)
-            {
-                bool collision = false;
+            //for (int runs = 0; runs < 64; runs++)
+            //{
+                //bool collision = false;
 
                 foreach (PBall ball in pBalls)
                 {
                     if (StaticCollisionDetection(staticObject, ball))
                     {
-                        collision = true;
+                        //collision = true;
                         StaticCollisionResolution(staticObject, ball, recordCollisions);
                     }
                 }
@@ -243,14 +242,14 @@ namespace Physics
                     {
                         if (DynamicCollisionDetection(pBalls[i], pBalls[j]))
                         {
-                            collision = true;
+                            //collision = true;
                             DynamicCollisionResolution(pBalls[i], pBalls[j], recordCollisions);
                         }
                     }
                 }
 
-                if (!collision) break;
-            }
+/*                if (!collision) break;
+            }*/
         }
 
         public static bool DynamicCollisionDetection(PBall ball1, PBall ball2)
@@ -286,15 +285,16 @@ namespace Physics
             ball1.position += normal * (penetrationDepth - ecs) * 0.5;
             ball2.position -= normal * (penetrationDepth - ecs) * 0.5;
 
-            ball1.SaveCollision(ball2);
-            ball2.SaveCollision(ball1);
+            ball1.SaveCollision(ball2, CollisionType.Ball);
+            ball2.SaveCollision(ball1, CollisionType.Ball);
 
             //if (recordCollisions) OnCollision(new CollisionEvent(ball1.position, Math.Max(normalVelocity1.Length, normalVelocity2.Length), 1));
         }
 
         public static bool StaticCollisionDetection(PStaticObject staticObject, PBall ball)
         {
-            return staticObject.MinDistance(ball.position, ball.r) - ball.r < 0;
+            return staticObject.Collides(ball.position, ball.r);
+            // return staticObject.MinDistance(ball.position, ball.r) - ball.r < 0;
         }
 
         private static void StaticCollisionResolution(PStaticObject staticObject, PBall ball, bool recordCollisions)
@@ -310,7 +310,7 @@ namespace Physics
 
             ball.position += normal * (penetrationDepth - ecs);
 
-            ball.SaveCollision(null);
+            ball.SaveCollision(null, CollisionType.Cushion);
 
             //if (recordCollisions) OnCollision(new CollisionEvent(ball.position, normalVelocity.Length, 0));
         }
@@ -319,7 +319,7 @@ namespace Physics
         #region Distance Helpers
         private double SceneSDF(Vector2D p, double r = 0, bool ignoreLodGroups = true)
         {
-            return SDFOp.Union(GetBallsMinDistance(p), table.MinDistance(p, r, ignoreLodGroups));
+            return Math.Min(GetBallsMinDistance(p), table.MinDistance(p, r, ignoreLodGroups));
         }
 
         private double GetBallsMinDistance(Vector2D p)
@@ -329,7 +329,7 @@ namespace Physics
             foreach(PBall ball in balls)
             {
                 if (ball.Equals(balls[^1])) continue;
-                distance = SDFOp.Union(distance, (p - ball.position).Length - ball.r);
+                distance = Math.Min(distance, (p - ball.position).Length - ball.r);
             }
 
             return distance;
@@ -424,6 +424,7 @@ namespace Physics
 
         public RenderTargetBitmap CalculateSolutions()
         {
+            DateTime now = DateTime.Now;
             DrawingVisual visual = new DrawingVisual();
 
             using (DrawingContext drawingContext = visual.RenderOpen())
@@ -435,16 +436,24 @@ namespace Physics
                 PBall yellow = GetYellowBall();
                 PBall red = GetRedBall();
 
-                SolutionCollection solutions = new();
-
                 CalculateSolutionsDirectOnBall(cue, red, drawingContext, Brushes.Orange, 1500);
 
                 CalculateSolutionsDirectOnBall(cue, yellow, drawingContext, Brushes.GreenYellow, 1500);
 
-/*                CalculateSolutionsDirectOnBall(cue, red, drawingContext, Brushes.Orange, 1250);
+                /*                CalculateSolutionsDirectOnBall(cue, red, drawingContext, Brushes.Orange, 1250);
 
-                CalculateSolutionsDirectOnBall(cue, yellow, drawingContext, Brushes.GreenYellow, 1250);
-*/
+                                CalculateSolutionsDirectOnBall(cue, yellow, drawingContext, Brushes.GreenYellow, 1250);
+                */
+                FormattedText formattedText = new (
+                    (DateTime.Now - now).TotalMilliseconds.ToString(),
+                    CultureInfo.CurrentUICulture,
+                    FlowDirection.LeftToRight,
+                    new Typeface("Verdana"),
+                    32,
+                    Brushes.AntiqueWhite, 1.25);
+
+                drawingContext.DrawText(formattedText, new Point(0,0));
+
                 drawingContext.Close();
             }
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)Length, (int)Width, 96, 96, PixelFormats.Pbgra32);
@@ -485,14 +494,22 @@ namespace Physics
 
             //double angleDif = toAngle - fromAngle;
 
-            for (double angle = fromAngle; angle < toAngle; angle += 0.04)
+            for (double angle = fromAngle; angle < toAngle; angle += 0.02)
             {
                 Vector2D n = MathV.GetVector(angle) * power;
-                if (Calculate(n))
+                if (Calculate(n, false))
                 {
-                    drawingContext.DrawGeometry(null, forceColor, cue.AsGeometry());
+                    if (AllowedSolution(cue))
+                    {
+                        drawingContext.DrawGeometry(null, forceColor, cue.AsGeometry());
+                    }
                 }
             }
+        }
+
+        private bool AllowedSolution(PBall cue)
+        {
+            return cue.Collisions.Count < 2 + 2 + 3;
         }
     }
 

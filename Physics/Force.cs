@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using Utilities;
+﻿using Utilities;
 
 namespace Billiard.Physics
 {

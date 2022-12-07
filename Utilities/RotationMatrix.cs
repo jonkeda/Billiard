@@ -18,16 +18,20 @@ namespace Utilities
 
         public void RotateAroundAxisWithAngle(Point3D axis, double angle)
         {
+            double sin = Sin(angle);
+            double cos = Cos(angle);
+            double ncos = 1 - cos;
+
             Double3x3 newRotation = new Double3x3(
-                axis.X * axis.X * (1 - Cos(angle)) + Cos(angle),
-                axis.X * axis.Y * (1 - Cos(angle)) - axis.Z * Sin(angle),
-                axis.X * axis.Z * (1 - Cos(angle)) + axis.Y * Sin(angle),
-                axis.Y * axis.X * (1 - Cos(angle)) + axis.Z * Sin(angle),
-                axis.Y * axis.Y * (1 - Cos(angle)) + Cos(angle),
-                axis.Y * axis.Z * (1 - Cos(angle)) - axis.X * Sin(angle),
-                axis.Z * axis.X * (1 - Cos(angle)) - axis.Y * Sin(angle),
-                axis.Z * axis.Y * (1 - Cos(angle)) + axis.X * Sin(angle),
-                axis.Z * axis.Z * (1 - Cos(angle)) + Cos(angle)
+                axis.X * axis.X * ncos + cos,
+                axis.X * axis.Y * ncos - axis.Z * sin,
+                axis.X * axis.Z * ncos + axis.Y * sin,
+                axis.Y * axis.X * ncos + axis.Z * sin,
+                axis.Y * axis.Y * ncos + cos,
+                axis.Y * axis.Z * ncos - axis.X * sin,
+                axis.Z * axis.X * ncos - axis.Y * sin,
+                axis.Z * axis.Y * ncos + axis.X * sin,
+                axis.Z * axis.Z * ncos + cos
             );
 
             rotation *= newRotation;

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
@@ -15,30 +15,17 @@ class Vector2DCollection : Collection<Vector2D>
             return null;
         }
 
-        PathFigure figure = null;
-        foreach (Vector2D v in this)
+        StreamGeometry geometry = new StreamGeometry();
+
+        using var ctx = geometry.Open();
+
+        Vector2D s = this[0];
+        ctx.BeginFigure(new Point(s.x, s.y), false, false);
+        foreach (Vector2D v in this.Skip(1))
         {
-            if (figure == null)
-            {
-                figure = new PathFigure
-                {
-                    IsClosed = false,
-                    IsFilled = false,
-                    StartPoint = new Point(v.x, v.y)
-                };
-            }
-            else
-            {
-                figure.Segments.Add(new LineSegment(new Point(v.x, v.y), true));
-            }
+            ctx.LineTo(new Point(v.x, v.y), true, false);
         }
 
-        List<PathFigure> figures = new List<PathFigure>
-        {
-            figure
-        };
-        
-        return new PathGeometry(figures);
-    
+        return geometry;
     }
 }

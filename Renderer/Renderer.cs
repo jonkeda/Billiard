@@ -2,7 +2,6 @@
 using Physics;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -17,11 +16,7 @@ namespace Render
     class Renderer
     {
         private readonly Canvas tableCanvas;
-        private readonly Canvas fullCanvas;
-        private readonly Canvas halfCanvas;
 
-        private readonly Dictionary<PBall, Rectangle> halfBalls = new Dictionary<PBall, Rectangle>();
-        private readonly Dictionary<PBall, Rectangle> fullBalls = new Dictionary<PBall, Rectangle>();
         private readonly Dictionary<PBall, Rectangle> tableBalls = new Dictionary<PBall, Rectangle>();
 
         private readonly Image queue, overlay, solutions;
@@ -29,11 +24,9 @@ namespace Render
         private readonly double length;
         private readonly double width;
 
-        public Renderer(Canvas _tableCanvas, Canvas _fullCanvas, Canvas _halfCanvas, Image _queue, Image _overlay, Image _solutions, double _length, double _width)
+        public Renderer(Canvas _tableCanvas, Image _queue, Image _overlay, Image _solutions, double _length, double _width)
         {
             tableCanvas = _tableCanvas;
-            fullCanvas = _fullCanvas;
-            halfCanvas = _halfCanvas;
             queue = _queue;
             overlay = _overlay;
             length = _length;
@@ -45,7 +38,6 @@ namespace Render
 
         public void Update()
         {
-            UpdateSideBalls();
             UpdateBalls();
 
             overlay.Source = null;
@@ -55,65 +47,10 @@ namespace Render
         public void ResetAll(List<PBall> balls)
         {
             InitBalls(balls);
-            ResetSideBalls();
         }
 
         #endregion
 
-        #region Sideballs
-
-        public void UpdateSideBalls()
-        {
-            foreach (KeyValuePair<PBall, Rectangle> pair in fullBalls)
-            {
-                UpdateSideBall(pair, true);
-            }
-
-            foreach (KeyValuePair<PBall, Rectangle> pair in halfBalls)
-            {
-                UpdateSideBall(pair, false);
-            }
-        }
-
-        private void UpdateSideBall(KeyValuePair<PBall, Rectangle> pair, bool full)
-        {
-            var (ball, rect) = pair;
-
-            rect.Effect.SetCurrentValue(Ball3DEffect.Rot0Property, ball.rotation.Column0);
-            rect.Effect.SetCurrentValue(Ball3DEffect.Rot1Property, ball.rotation.Column1);
-            rect.Effect.SetCurrentValue(Ball3DEffect.Rot2Property, ball.rotation.Column2);
-
-            rect.RenderTransform = new TranslateTransform(ball.position.x - ball.r * 4, ball.position.y - ball.r * 4);
-
-            rect.Effect.SetCurrentValue(Ball3DEffect.PositionProperty, new Point3D(ball.position.x + (full ? -1 : 1) * length, 0, ball.position.y));
-        }
-
-        public void AddSideBall(PBall ball)
-        {
-            Rectangle rect = GenerateRect(ball, 2000, 0, 50000000);
-            Panel.SetZIndex(rect, 1);
-
-            if (ball.index < 8)
-            {
-                fullBalls.Add(ball, rect);
-                fullCanvas.Children.Add(rect);
-            }
-            else
-            {
-                halfBalls.Add(ball, rect);
-                halfCanvas.Children.Add(rect);
-            }
-        }
-
-        public void ResetSideBalls()
-        {
-            halfCanvas.Children.Clear();
-            halfBalls.Clear();
-
-            fullCanvas.Children.Clear();
-            fullBalls.Clear();
-        }
-        #endregion
 
         #region Tableballs
         public void InitBalls(List<PBall> balls)
@@ -276,7 +213,7 @@ namespace Render
                 if (pair.Key.DrawTrajectory 
                     && pair.Key.Color != null)
                 {
-                    Geometry geometry = pair.Key.AsGeometry();
+                    Geometry geometry = pair.Key.PositionsAsGeometry();
                     if (geometry != null)
                     {
                         Pen pen = pair.Key.Pen;

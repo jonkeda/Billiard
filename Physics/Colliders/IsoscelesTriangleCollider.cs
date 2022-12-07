@@ -12,10 +12,10 @@ namespace Physics
                 size = _size;
             }
 
-            public override double MinDistance(Vector2D p)
+            public override double MinDistance(Vector2D ip)
             {
-                p -= center;
-                p.x = Math.Abs(p.x);
+                ip -= center;
+                Vector2D p = new Vector2D(Math.Abs(ip.x), ip.y);
 
                 Vector2D a = p - size * MathV.Clamp(MathV.Dot(p, size) / MathV.Dot(size, size), 0, 1);
                 Vector2D b = p - size * new Vector2D(MathV.Clamp(p.x / size.x, 0, 1), 1);

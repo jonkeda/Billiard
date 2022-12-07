@@ -4,9 +4,9 @@ using System.Windows.Media.Media3D;
 
 namespace Utilities
 {
-    class Vector2D
+    struct Vector2D
     {
-        public double x, y;
+        public readonly double x, y;
 
         public Vector2D(double _x, double _y)
         {
@@ -61,37 +61,37 @@ namespace Utilities
 
         // +- Vector2D
         public static Vector2D operator +(Vector2D a) => a;
-        public static Vector2D operator -(Vector2D a) => new Vector2D(-a.x, -a.y);
+        public static Vector2D operator -(Vector2D a) => new(-a.x, -a.y);
 
         // Vector2D +- Vector2D
-        public static Vector2D operator +(Vector2D a, Vector2D b) => new Vector2D(a.x + b.x, a.y + b.y);
-        public static Vector2D operator -(Vector2D a, Vector2D b) => a + (-b);
+        public static Vector2D operator +(Vector2D a, Vector2D b) => new(a.x + b.x, a.y + b.y);
+        public static Vector2D operator -(Vector2D a, Vector2D b) => new(a.x - b.x, a.y - b.y);
 
         // Vector2D */ Vector2D
-        public static Vector2D operator *(Vector2D a, Vector2D b) => new Vector2D(a.x * b.x, a.y * b.y);
-        public static Vector2D operator /(Vector2D a, Vector2D b) => new Vector2D(a.x / b.x, a.y / b.y);
+        public static Vector2D operator *(Vector2D a, Vector2D b) => new(a.x * b.x, a.y * b.y);
+        public static Vector2D operator /(Vector2D a, Vector2D b) => new(a.x / b.x, a.y / b.y);
 
         // Vector2D */ double
-        public static Vector2D operator *(Vector2D a, double s) => new Vector2D(a.x * s, a.y * s);
-        public static Vector2D operator /(Vector2D a, double s) => a * (1 / s);
+        public static Vector2D operator *(Vector2D a, double s) => new(a.x * s, a.y * s);
+        public static Vector2D operator /(Vector2D a, double s) => new(a.x / s, a.y / s); // a * (1 / s);
 
         // double */ Vector2D
-        public static Vector2D operator *(double s, Vector2D a) => a * s;
-        public static Vector2D operator /(double s, Vector2D a) => a / s;
+        public static Vector2D operator *(double s, Vector2D a) => new(a.x * s, a.y * s);
+        public static Vector2D operator /(double s, Vector2D a) => new(s / a.x, s / a.y); // a / s;
 
         // bool operators componentwise
         public static bool operator <(Vector2D a, Vector2D b) => a.x < b.x && a.y < b.y;
         public static bool operator >(Vector2D a, Vector2D b) => b < a;
 
         // cast Point to Vector2D vice versa
-        public static implicit operator Vector2D(Point p) => new Vector2D(p.X, p.Y);
+        public static implicit operator Vector2D(Point p) => new(p.X, p.Y);
 
-        public static implicit operator Point(Vector2D v) => new Point(v.x, v.y);
+        public static implicit operator Point(Vector2D v) => new(v.x, v.y);
 
         // cast Point3D to Vector2D vice versa
 
-        public static implicit operator Vector2D(Point3D p) => new Point3D(p.X, p.Y, 0);
+       // public static implicit operator Vector2D(Point3D p) => new Point3D(p.X, p.Y, 0);
 
-        public static implicit operator Point3D(Vector2D v) => new Point3D(v.x, v.y, 0);
+        public static implicit operator Point3D(Vector2D v) => new(v.x, v.y, 0);
     }
 }

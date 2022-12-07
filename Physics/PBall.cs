@@ -1,11 +1,24 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+
+using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Utilities;
+using Brush = System.Windows.Media.Brush;
+using Pen = System.Windows.Media.Pen;
 
 namespace Physics
 {
+    enum CollisionType
+    {
+        Start,
+        End,
+        Ball,
+        Cushion
+    }
+
     class CollisionCollection : Collection<Collision>
     {
         public bool TwoDifferentBallsHit()
@@ -29,21 +42,57 @@ namespace Physics
 
             return false;
         }
+
+        public Geometry AsGeometry()
+        {
+            if (this.Count <= 2)
+            {
+                return null;
+            }
+
+            StreamGeometry geometry = new StreamGeometry();
+
+            using var ctx = geometry.Open();
+
+            Collision s = this[0];
+            ctx.BeginFigure(new Point(s.Position.x, s.Position.y), false, false);
+            foreach (Collision v in this.Skip(1))
+            {
+                ctx.LineTo(new Point(v.Position.x, v.Position.y), true, false);
+            }
+
+            return geometry;
+        }
+
     }
+
     class Collision
     {
-        public Collision(Vector2D position, PBall ball)
+        public Collision(Vector2D position, PBall ball, CollisionType collisionType)
         {
+            this.collisionType = collisionType;
             Position = position;
             Ball = ball;
         }
 
         public Vector2D Position { get; }
         public PBall Ball { get; }
+        private readonly CollisionType collisionType;
     }
 
-    class PBall : PDynamicObject
+    class PBall 
     {
+        public Vector2D position;
+        public Vector2D velocity;
+        public bool Resting { get; set; } = false;
+
+        public PBall(Vector2D _position, Vector2D _velocity)
+        {
+            position = _position;
+            velocity = _velocity;
+        }
+
+
         public Vector2DCollection Positions { get; } = new();
         public CollisionCollection Collisions { get; } = new();
         private Vector2D lastPosition = new Vector2D();
@@ -60,10 +109,10 @@ namespace Physics
         public RotationMatrix rotation = new RotationMatrix();
 
         private readonly double cr, u0;
-        private readonly Vector2D rest_velocity = new Vector2D(0.7);
-        private readonly double g = 9.81;
+        private static readonly Vector2D rest_velocity = new Vector2D(0.7);
+        private const double g = 9.81;
 
-        public PBall(int _index, double _r, Vector2D _position = null, Vector2D _velocity = null, double _u0 = 0.2, double _cr = 0.02, Brush color = null) : base(_position, _velocity)
+        public PBall(int _index, double _r, Vector2D _position, Vector2D _velocity, double _u0 = 0.2, double _cr = 0.02, Brush color = null) : this(_position, _velocity)
         {
             u0 = _u0;
             cr = _cr;
@@ -80,7 +129,7 @@ namespace Physics
 
         }
 
-        public PBall(PBall clone) : base(clone.position, clone.velocity)
+        public PBall(PBall clone) : this(clone.position, clone.velocity)
         {
             u0 = clone.u0;
             cr = clone.cr;
@@ -100,7 +149,7 @@ namespace Physics
             _r = r;
         }
 
-        public override void Simulate(double dt)
+        public void Simulate(double dt, bool animate)
         {
             if (MathV.Abs(velocity) < rest_velocity)
             {
@@ -112,16 +161,21 @@ namespace Physics
 
             Vector2D normalizedVelocity = velocity.Normalize();
 
+            Vector2D lag = normalizedVelocity * (5.0 / 2.0 * r * g * (-cr - u0));
+
             // Leapfrog integration scheme
-            position += velocity * dt + normalizedVelocity * 5.0 / 2.0 * r * g * (-cr - u0) * dt * dt / 2.0;
-            velocity += dt * (normalizedVelocity * 5.0 / 2.0 * r * g * (-cr - u0));
+            position += velocity * dt + lag * (dt * dt / 2.0);
+            velocity += dt * lag;
 
+            if (animate)
+            {
             //Calculate new rotation matrix
-            Vector2D tangentVelocity = new Vector2D(-velocity.y, velocity.x).Normalize();
+                Vector2D tangentVelocity = new Vector2D(-velocity.y, velocity.x).Normalize();
 
-            phi = velocity * dt + normalizedVelocity * 5.0 / 2.0 * r * g * (-cr - u0) * dt * dt / 2.0 / r;
+                phi = velocity * dt + lag * dt * dt / 2.0 / r;
 
-            rotation.RotateAroundAxisWithAngle(tangentVelocity, phi.Length / r);
+                rotation.RotateAroundAxisWithAngle(tangentVelocity, phi.Length / r);
+            }
         }
 
         public void SavePosition()
@@ -137,15 +191,11 @@ namespace Physics
             }
         }
 
-        public void SaveCollision(PBall pBall)
+        public void SaveCollision(PBall pBall, CollisionType collisionType)
         {
-/*            if (!DrawTrajectory)
+            if (!position.Equals(lastCollision))
             {
-                return;
-            }
-*/            if (!position.Equals(lastCollision))
-            {
-                Collisions.Add(new Collision(position, pBall));
+                Collisions.Add(new Collision(position, pBall, collisionType));
                 lastCollision = position;
             }
         }
@@ -155,6 +205,8 @@ namespace Physics
             Collisions.Clear();
             Positions.Clear();
             geometry = null;
+            positionsGeometry = null;
+            Collisions.Add(new Collision(position, null, CollisionType.Start));
         }
 
         private Geometry geometry;
@@ -163,10 +215,23 @@ namespace Physics
         {
             if (geometry == null)
             {
-                geometry = Positions.AsGeometry();
+                geometry = Collisions.AsGeometry();
+                //geometry = Positions.AsGeometry();
             }
            
             return geometry;
         }
+
+        private Geometry positionsGeometry;
+        public Geometry PositionsAsGeometry()
+        {
+            if (positionsGeometry == null)
+            {
+                positionsGeometry = Positions.AsGeometry();
+            }
+
+            return positionsGeometry;
+        }
+
     }
 }

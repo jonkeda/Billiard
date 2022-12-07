@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Utilities;
 
 namespace Physics
@@ -23,7 +24,7 @@ namespace Physics
                     switch (collider.mode)
                     {
                         case ColliderMode.Union:
-                            d = SDFOp.Union(d, collider.MinDistance(p));
+                            d = Math.Min(d, collider.MinDistance(p));
                             break;
                         case ColliderMode.Subtract:
                             d = SDFOp.Subtraction(collider.MinDistance(p), d);
@@ -41,7 +42,7 @@ namespace Physics
                             d = SDFOp.SmoothIntersection(d, collider.MinDistance(p), collider.k);
                             break;
                         case ColliderMode.Negate:
-                            d = SDFOp.Union(d, SDFOp.Negate(collider.MinDistance(p)));
+                            d = Math.Min(d, -collider.MinDistance(p));
                             break;
                     }
                 }

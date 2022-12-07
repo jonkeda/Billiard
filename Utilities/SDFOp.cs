@@ -23,7 +23,6 @@ namespace Utilities
             return MathV.Mix(d2, d1, h) + k * h * (1.0 - h);
         }
 
-        public static double Negate(double d) => -d;
 
         // Numerical normal generation
         public static Vector2D GetNormal(Vector2D p, Func<Vector2D, double, bool, double> distanceFunction)

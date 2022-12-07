@@ -8,6 +8,11 @@ namespace Physics
     {
         public List<LodGroup> lodGroups = new List<LodGroup>();
 
+        public virtual bool Collides(Vector2D p, double r = 0, bool ignoreLodGroups = false)
+        {
+            return MinDistance(p, r, ignoreLodGroups) < r;
+        }
+
         public double MinDistance(Vector2D p, double r = 0, bool ignoreLodGroups = false) // Raymarching has to ignore the LodGroups to function properly
         {
             double distance = double.PositiveInfinity;
