@@ -9,6 +9,8 @@ using Utilities;
 using Brush = System.Windows.Media.Brush;
 using Pen = System.Windows.Media.Pen;
 
+
+
 namespace Physics
 {
     enum CollisionType
@@ -94,7 +96,7 @@ namespace Physics
 
 
         public Vector2DCollection Positions { get; } = new();
-        public CollisionCollection Collisions { get; } = new();
+        public CollisionCollection Collisions { get; private set; } = new();
         private Vector2D lastPosition = new Vector2D();
         private Vector2D lastCollision = new Vector2D();
 
@@ -138,8 +140,8 @@ namespace Physics
             texture = clone.texture;
             Color = clone.Color;
             Pen = clone.Pen;
-            Positions = clone.Positions;
-            Collisions = clone.Collisions;
+            // Positions = clone.Positions;
+            // Collisions = new Col;
             DrawTrajectory = clone.DrawTrajectory;
         }
 
@@ -202,7 +204,7 @@ namespace Physics
 
         public void ClearPositions()
         {
-            Collisions.Clear();
+            Collisions = new ();
             Positions.Clear();
             geometry = null;
             positionsGeometry = null;

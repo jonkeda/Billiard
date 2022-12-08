@@ -38,14 +38,14 @@ namespace Billiard
         private void UpdatePhysics()
         {
 
-            long nextT = DateTime.Now.Ticks / 10000;
+            long nextT = DateTime.Now.Ticks / 1000;
             for (long i = t; i < nextT; i += 8)
             {
-                physicsEngine.Step(0.008);
+                physicsEngine.Step();
                 if (nextT - i > 500) break;
             }
 
-            t = DateTime.Now.Ticks / 10000;
+            t = DateTime.Now.Ticks / 1000;
         }
 
         private PBall GetCueBall()
@@ -221,10 +221,15 @@ namespace Billiard
             CalculateSolutions();
         }
 
-        private bool calculating;
+        private volatile bool calculating;
 
         private void CalculateSolutions()
         {
+            if (calculating)
+            {
+                return;
+            }
+
             calculating = true;
 
             Mouse.SetCursor(Cursors.Wait);

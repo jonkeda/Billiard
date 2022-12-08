@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Billiard.Physics;
@@ -16,6 +17,8 @@ namespace Physics
 {
     class PhysicsEngine
     {
+        public const double stepSize = 0.001;
+
         public double Length
         {
             get { return table.Length; }
@@ -98,7 +101,7 @@ namespace Physics
                 AddBall(7, r, (Length / 4) * 3, y, Brushes.Red);
 
                 // yellow
-                AddBall(9, r, Length / 4, y + r * 4, Brushes.Yellow);
+                AddBall(9, r, Length / 4, y + r * 10, Brushes.Yellow);
 
                 ball.DrawTrajectory = true;
             }
@@ -116,15 +119,11 @@ namespace Physics
             return ball;
         }
 
-        public void TransferBall(PBall ball)
-        {
-            balls.Remove(ball);
-        }
         #endregion
 
         #region Physic Simulation
 
-        public bool Calculate(Vector2D force, bool animate)
+        public PBall Calculate(Vector2D force, bool animate)
         {
             List<PBall> ballsClones = new List<PBall>();
             foreach (PBall ball in balls)
@@ -140,7 +139,7 @@ namespace Physics
             bool isResting = false;
             while (!isResting)
             {
-                isResting = Simulate(0.008, ballsClones, animate);
+                isResting = Simulate(stepSize, ballsClones, animate);
 
                 DetectCollisions(table, ballsClones, true);
 
@@ -153,19 +152,19 @@ namespace Physics
                 {
                     if (cueBall.Collisions.Count(b => b.Ball != null) > 2)
                     {
-                        return false;
+                        return null;
                     }
                     if (GetYellowBall().Collisions.Count(b => b.Ball != null) > 1)
-                        return false;
+                        return null;
                     if (GetRedBall().Collisions.Count(b => b.Ball != null) > 1)
-                        return false;
+                        return null;
                     SaveBallCollisions();
-                    return true;
+                    return cueBall;
                 }
             }
             SaveBallCollisions();
 
-            return false;
+            return null;
         }
 
         private void SaveBallCollisions()
@@ -176,8 +175,10 @@ namespace Physics
             }
         }
 
-        public void Step(double dt)
+        public void Step()
         {
+            double dt = stepSize;
+
             if (Resting) return;
 
             Resting = Simulate(dt, balls, true);
@@ -261,7 +262,7 @@ namespace Physics
         {
             double penetrationDepth = (ball1.position - ball2.position).Length - ball1.r - ball2.r;
 
-/*            if (!ball1.velocity.Zero)
+            if (!ball1.velocity.Zero)
             {
                 ball1.position += (ball1.velocity.Normalize() * penetrationDepth);
             }
@@ -270,7 +271,7 @@ namespace Physics
             {
                 ball2.position += (ball2.velocity.Normalize() * penetrationDepth);
             }
-*/
+
             Vector2D normal = (ball2.position - ball1.position).Normalize();
 
             Vector2D normalVelocity1 = normal * MathV.Dot(normal, ball1.velocity);
@@ -436,14 +437,44 @@ namespace Physics
                 PBall yellow = GetYellowBall();
                 PBall red = GetRedBall();
 
-                CalculateSolutionsDirectOnBall(cue, red, drawingContext, Brushes.Orange, 1500);
+/*                SolutionCollection solutionsRed = CalculateSolutionsDirectOnBall(cue, red, Brushes.Orange, 1500);
 
-                CalculateSolutionsDirectOnBall(cue, yellow, drawingContext, Brushes.GreenYellow, 1500);
-
+                SolutionCollection solutionsYellow = CalculateSolutionsDirectOnBall(cue, yellow, Brushes.GreenYellow, 1500);
+*/
                 /*                CalculateSolutionsDirectOnBall(cue, red, drawingContext, Brushes.Orange, 1250);
 
                                 CalculateSolutionsDirectOnBall(cue, yellow, drawingContext, Brushes.GreenYellow, 1250);
                 */
+                ProblemCollection problems = new ProblemCollection
+                {
+                    new (cue, red, Brushes.Orange, 1500, this),
+                    new (cue, yellow, Brushes.GreenYellow, 1500, this)
+                };
+
+                foreach (Problem problem in problems)
+                {
+                    problem.Run();
+                }
+/*                Parallel.ForEach(problems, problem =>
+                {
+                    try
+                    {
+                        problem.Run();
+                    }
+                    catch (Exception e)
+                    {
+                        string a = e.Message;
+                    }
+                });
+*/
+                foreach (Problem problem in problems)
+                {
+                    foreach (Solution solution in problem.Solutions)
+                    {
+                        drawingContext.DrawGeometry(null, problem.Color, solution.Collections.AsGeometry());
+                    }
+                }
+
                 FormattedText formattedText = new (
                     (DateTime.Now - now).TotalMilliseconds.ToString(),
                     CultureInfo.CurrentUICulture,
@@ -462,17 +493,12 @@ namespace Physics
             //return new DrawingImage(visual.Drawing);  
         }
 
-        private void CalculateSolutionsDirectOnBall(PBall cue, PBall other, DrawingContext drawingContext, Brush brush, double power)
+        private SolutionCollection CalculateSolutionsDirectOnBall(PBall cue, PBall other, Brush brush, double power)
         {
             Vector2D line = (cue.position - other.position).Normalize();
 
             Vector2D posA = (line.PerpendicularA() * cue.r * 2) + other.position;
             Vector2D posB = (line.PerpendicularB() * cue.r * 2) + other.position;
-
-            Pen forceColor = new Pen(brush, 2)
-            {
-                DashStyle = DashStyles.Solid
-            };
 
 /*            drawingContext.DrawLine(forceColor, cue.position, other.position);
             drawingContext.DrawEllipse(null, forceColor, cue.position, cue.r, cue.r);
@@ -493,32 +519,77 @@ namespace Physics
             double toAngle = to.GetAngle();
 
             //double angleDif = toAngle - fromAngle;
-
+            SolutionCollection solutions = new SolutionCollection();
             for (double angle = fromAngle; angle < toAngle; angle += 0.02)
             {
                 Vector2D n = MathV.GetVector(angle) * power;
-                if (Calculate(n, false))
+                PBall cueClone = Calculate(n, false);
+                if (cueClone != null)
                 {
                     if (AllowedSolution(cue))
                     {
-                        drawingContext.DrawGeometry(null, forceColor, cue.AsGeometry());
+                        solutions.Add(new Solution(cueClone.Collisions));
                     }
                 }
             }
+
+            return solutions;
         }
 
         private bool AllowedSolution(PBall cue)
         {
             return cue.Collisions.Count < 2 + 2 + 3;
         }
+
+        public class ProblemCollection : Collection<Problem>
+        {
+
+        }
+
+        public class Problem
+        {
+            private readonly PBall cue;
+            private readonly PBall other;
+            private readonly Brush brush;
+            private readonly double power;
+            private readonly PhysicsEngine physicsEngine;
+            public  Pen Color { get; }
+            public SolutionCollection Solutions { get; private set; }
+
+
+            public Problem(PBall cue, PBall other, Brush brush, double power, PhysicsEngine physicsEngine)
+            {
+                this.cue = cue;
+                this.other = other;
+                this.brush = brush;
+                Color = new Pen(brush, 2)
+                {
+                    DashStyle = DashStyles.Solid
+                };
+
+                this.power = power;
+                this.physicsEngine = physicsEngine;
+            }
+
+            public void Run()
+            {
+                Solutions = physicsEngine.CalculateSolutionsDirectOnBall(cue, other, brush, power);
+
+            }
+        }
     }
 
-    public class SolutionCollection : Collection<Solution>
+    class SolutionCollection : Collection<Solution>
     {
     }
 
-    public class Solution
+    class Solution
     {
+        public CollisionCollection Collections { get; }
 
+        public Solution(CollisionCollection collections)
+        {
+            Collections = collections;
+        }
     }
 }
