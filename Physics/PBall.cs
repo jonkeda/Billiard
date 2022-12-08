@@ -140,8 +140,8 @@ namespace Physics
             texture = clone.texture;
             Color = clone.Color;
             Pen = clone.Pen;
-            // Positions = clone.Positions;
-            // Collisions = new Col;
+            Positions = clone.Positions;
+            Collisions = clone.Collisions;
             DrawTrajectory = clone.DrawTrajectory;
         }
 
