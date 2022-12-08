@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Utilities;
 
 namespace Physics
@@ -15,9 +16,9 @@ namespace Physics
                 colliders.Add(collider);
             }
 
-            public double MinDistance(Vector2D p)
+            public float MinDistance(Vector2 p)
             {
-                double d = double.PositiveInfinity;
+                float d = float.PositiveInfinity;
 
                 foreach (Collider collider in colliders)
                 {

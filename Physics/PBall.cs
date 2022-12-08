@@ -2,9 +2,11 @@
 using System.Collections.ObjectModel;
 
 using System.Linq;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Billiard.Utilities;
 using Utilities;
 using Brush = System.Windows.Media.Brush;
 using Pen = System.Windows.Media.Pen;
@@ -57,10 +59,10 @@ namespace Physics
             using var ctx = geometry.Open();
 
             Collision s = this[0];
-            ctx.BeginFigure(new Point(s.Position.x, s.Position.y), false, false);
+            ctx.BeginFigure(new Point(s.Position.X, s.Position.Y), false, false);
             foreach (Collision v in this.Skip(1))
             {
-                ctx.LineTo(new Point(v.Position.x, v.Position.y), true, false);
+                ctx.LineTo(new Point(v.Position.X, v.Position.Y), true, false);
             }
 
             return geometry;
@@ -70,51 +72,51 @@ namespace Physics
 
     class Collision
     {
-        public Collision(Vector2D position, PBall ball, CollisionType collisionType)
+        public Collision(Vector2 position, PBall ball, CollisionType collisionType)
         {
             this.collisionType = collisionType;
             Position = position;
             Ball = ball;
         }
 
-        public Vector2D Position { get; }
+        public Vector2 Position { get; }
         public PBall Ball { get; }
         private readonly CollisionType collisionType;
     }
 
     class PBall 
     {
-        public Vector2D position;
-        public Vector2D velocity;
-        public bool Resting { get; set; } = false;
+        public Vector2 position;
+        public Vector2 velocity;
+        //public bool Resting { get; set; } = false;
 
-        public PBall(Vector2D _position, Vector2D _velocity)
+        public PBall(Vector2 _position, Vector2 _velocity)
         {
             position = _position;
             velocity = _velocity;
         }
 
 
-        public Vector2DCollection Positions { get; } = new();
+        public Vector2Collection Positions { get; } = new();
         public CollisionCollection Collisions { get; private set; } = new();
-        private Vector2D lastPosition = new Vector2D();
-        private Vector2D lastCollision = new Vector2D();
+        private Vector2 lastPosition = new Vector2();
+        private Vector2 lastCollision = new Vector2();
 
         public Brush Color { get; }
         public Pen Pen { get; }
         public bool DrawTrajectory { get; set; }
 
-        public double r;
+        public float r;
         public BitmapImage texture;
         public int index;
-        public Vector2D phi = new Vector2D(0, 0);
+        public Vector2 phi = new Vector2(0, 0);
         public RotationMatrix rotation = new RotationMatrix();
 
-        private readonly double cr, u0;
-        private static readonly Vector2D rest_velocity = new Vector2D(0.7);
-        private const double g = 9.81;
+        private readonly float cr, u0;
+        private static readonly Vector2 rest_velocity = new Vector2(0.7f);
+        private const float g = 9.81f;
 
-        public PBall(int _index, double _r, Vector2D _position, Vector2D _velocity, double _u0 = 0.2, double _cr = 0.02, Brush color = null) : this(_position, _velocity)
+        public PBall(int _index, float _r, Vector2 _position, Vector2 _velocity, float _u0 = 0.2f, float _cr = 0.02f, Brush color = null) : this(_position, _velocity)
         {
             u0 = _u0;
             cr = _cr;
@@ -145,39 +147,38 @@ namespace Physics
             DrawTrajectory = clone.DrawTrajectory;
         }
 
-        public void Deconstruct(out Vector2D _position, out double _r)
+        public void Deconstruct(out Vector2 _position, out float _r)
         {
             _position = position;
             _r = r;
         }
 
-        public void Simulate(double dt, bool animate)
+        public bool Simulate(float dt, bool animate)
         {
-            if (MathV.Abs(velocity) < rest_velocity)
+            if (Vector2.Abs(velocity).SmallerThen(rest_velocity))
             {
-                Resting = true;
-                return;
+                return true;
             }
 
-            Resting = false;
+            Vector2 normalizedVelocity = Vector2.Normalize(velocity);
 
-            Vector2D normalizedVelocity = velocity.Normalize();
-
-            Vector2D lag = normalizedVelocity * (5.0 / 2.0 * r * g * (-cr - u0));
+            Vector2 lag = normalizedVelocity * (5.0f / 2.0f * r * g * (-cr - u0));
 
             // Leapfrog integration scheme
-            position += velocity * dt + lag * (dt * dt / 2.0);
+            position += velocity * dt + lag * (dt * dt / 2.0f);
             velocity += dt * lag;
 
             if (animate)
             {
             //Calculate new rotation matrix
-                Vector2D tangentVelocity = new Vector2D(-velocity.y, velocity.x).Normalize();
+                Vector2 tangentVelocity = Vector2.Normalize(new Vector2(-velocity.Y, velocity.X));
 
-                phi = velocity * dt + lag * dt * dt / 2.0 / r;
+                phi = velocity * dt + lag * dt * dt / 2.0f / r;
 
-                rotation.RotateAroundAxisWithAngle(tangentVelocity, phi.Length / r);
+                rotation.RotateAroundAxisWithAngle(tangentVelocity.AsPoint3D(), phi.Length() / r);
             }
+
+            return false;
         }
 
         public void SavePosition()

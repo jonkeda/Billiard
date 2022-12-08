@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Utilities;
 namespace Physics
 {
@@ -6,28 +7,28 @@ namespace Physics
     {
         class IsoscelesTriangleCollider : Collider
         {
-            public Vector2D size;
-            public IsoscelesTriangleCollider(Vector2D _center, Vector2D _size, ColliderMode _mode = ColliderMode.Union, double _k = 0.0) : base(_mode, _center, _k)
+            public Vector2 size;
+            public IsoscelesTriangleCollider(Vector2 _center, Vector2 _size, ColliderMode _mode = ColliderMode.Union, float _k = 0.0f) : base(_mode, _center, _k)
             {
                 size = _size;
             }
 
-            public override double MinDistance(Vector2D ip)
+            public override float MinDistance(Vector2 ip)
             {
                 ip -= center;
-                Vector2D p = new Vector2D(Math.Abs(ip.x), ip.y);
+                Vector2 p = new Vector2(Math.Abs(ip.X), ip.Y);
 
-                Vector2D a = p - size * MathV.Clamp(MathV.Dot(p, size) / MathV.Dot(size, size), 0, 1);
-                Vector2D b = p - size * new Vector2D(MathV.Clamp(p.x / size.x, 0, 1), 1);
+                Vector2 a = p - size * MathV.Clamp(Vector2.Dot(p, size) / Vector2.Dot(size, size), 0, 1);
+                Vector2 b = p - size * new Vector2(MathV.Clamp(p.X / size.X, 0, 1), 1);
 
-                double s = -Math.Sign(size.y);
+                float s = -Math.Sign(size.Y);
 
-                Vector2D d = MathV.Min(
-                    new Vector2D(MathV.Dot(a, a), s * (p.x * size.y - p.y * size.x)),
-                    new Vector2D(MathV.Dot(b, b), s * (p.y - size.y))
+                Vector2 d = Vector2.Min(
+                    new Vector2(Vector2.Dot(a, a), s * (p.X * size.Y - p.Y * size.X)),
+                    new Vector2(Vector2.Dot(b, b), s * (p.Y - size.Y))
                 );
 
-                return -Math.Sqrt(d.x) * Math.Sign(d.y);
+                return -(float)(Math.Sqrt(d.X) * Math.Sign(d.Y));
             }
         }
     }

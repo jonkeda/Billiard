@@ -1,4 +1,5 @@
-﻿using Utilities;
+﻿using System.Numerics;
+using Utilities;
 
 namespace Physics
 {
@@ -6,15 +7,15 @@ namespace Physics
     {
         class CollisionEvent
         {
-            public CollisionEvent(Vector2D _position, double _force, int _surface)
+            public CollisionEvent(Vector2 _position, float _force, int _surface)
             {
                 position = _position;
                 force = _force;
                 surface = _surface;
             }
 
-            public Vector2D position;
-            public double force;
+            public Vector2 position;
+            public float force;
             public int surface;
         }
     }

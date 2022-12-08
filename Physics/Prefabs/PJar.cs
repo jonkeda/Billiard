@@ -1,4 +1,5 @@
-﻿using Physics.Colliders;
+﻿using System.Numerics;
+using Physics.Colliders;
 using Utilities;
 
 namespace Physics
@@ -11,7 +12,7 @@ namespace Physics
             {
                 LodGroup Lod0 = new LodGroup();
 
-                Lod0.AddCollider(new StadiumCollider(new Vector2D(100, 50), new Vector2D(0, 445), 23, ColliderMode.Negate, 20));
+                Lod0.AddCollider(new StadiumCollider(new Vector2(100, 50), new Vector2(0, 445), 23, ColliderMode.Negate, 20));
 
                 AddLodGroup(Lod0);
             }

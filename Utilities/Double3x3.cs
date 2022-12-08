@@ -1,10 +1,10 @@
 ﻿namespace Utilities
 {
-    class Double3x3
+    class float3x3
     {
-        public double[,] Matrix { get; } = new double[3, 3];
+        public float[,] Matrix { get; } = new float[3, 3];
 
-        public Double3x3(params double[] list)
+        public float3x3(params float[] list)
         {
             for (int i = 0; i < 9; i++)
             {
@@ -12,17 +12,17 @@
             }
         }
 
-        public Double3x3() : this(1, 0, 0, 0, 1, 0, 0, 0, 1) { }
+        public float3x3() : this(1, 0, 0, 0, 1, 0, 0, 0, 1) { }
 
-        public static Double3x3 operator *(Double3x3 a, Double3x3 b)
+        public static float3x3 operator *(float3x3 a, float3x3 b)
         {
-            double[] temp = new double[9];
+            float[] temp = new float[9];
 
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    double sum = 0;
+                    float sum = 0;
 
                     for (int k = 0; k < 3; k++)
                     {
@@ -33,7 +33,7 @@
                 }
             }
 
-            return new Double3x3(temp);
+            return new float3x3(temp);
         }
     }
 }

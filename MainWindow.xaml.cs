@@ -2,6 +2,7 @@
 using Physics.Triggers;
 using Render;
 using System;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -74,19 +75,21 @@ namespace Billiard
                     CalculateSolutions();
                     shot = false;
                 }
-                Vector2D p = Mouse.GetPosition(Table);
+                //var pp = Mouse.GetPosition(Table);
+
+                //Vector2 p = new Vector2((float)pp.X, (float)pp.Y);
 
                 var (ballPosition, ballRadius) = GetCueBall();
 
-                renderer.DrawQueue(ballPosition, ballRadius, p);
+                // renderer.DrawQueue(ballPosition, ballRadius, p);
 
                 CalculateForce(out var force);
 
-                physicsEngine.Calculate(force, true);
+                PBall ball = physicsEngine.Calculate(force, true, false);
 
                 // (ballPosition - p).Normalize()
-                renderer.DrawTrajectory(ballRadius, 
-                    physicsEngine.CalculateTrajectory(ballPosition, physicsEngine.Force.VectorPower, ballRadius),
+                renderer.DrawTrajectory(ball.AsGeometry(),
+                    //physicsEngine.CalculateTrajectory(ballPosition, physicsEngine.Force.VectorPower, ballRadius),
                     physicsEngine.CalculateForce(ballPosition));
             }
         }
@@ -108,29 +111,21 @@ namespace Billiard
 
             var ball = CalculateForce(out var force);
 
-            //soundManager.BreakSound(p, force.Length);
-
             physicsEngine.ApplyForce(ball, force);
 
             shot = true;
         }
 
-        private PBall CalculateForce(out Vector2D force)
+        private PBall CalculateForce(out Vector2 force)
         {
             PBall ball = GetCueBall();
 
-            Vector2D n = physicsEngine.Force.Vector;
+            Vector2 n = physicsEngine.Force.Vector;
             force = Math.Min(physicsEngine.Force.Power, 200) * 10 * n;
-
             
             return ball;
         }
 
-/*        private void Trigger(object sender, TriggerEvent e)
-        {
-            physicsEngine.TransferBall(e.ball);
-            renderer.RemoveBall(e.ball);
-        }*/
         #endregion
 
 
@@ -140,13 +135,9 @@ namespace Billiard
             InitializeComponent();
             CompositionTarget.Rendering += Update;
 
-            //soundManager = new SoundManager();
-
             physicsEngine = new PhysicsEngine(GameType.Billiart);
-            //physicsEngine.Trigger += Trigger;
-            //physicsEngine.Collision += soundManager.CollisionSound;
 
-            renderer = new Renderer(Table, Queue, Overlay, Solutions, physicsEngine.Length, physicsEngine.Width);
+            renderer = new Renderer(Table, Overlay, Solutions, physicsEngine.Length, physicsEngine.Width);
             renderer.ResetAll(physicsEngine.balls);
 
             DataContext = physicsEngine;
@@ -155,22 +146,19 @@ namespace Billiard
         private void UIElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             CalculateSolutions();
-/*            var ball = CalculateForce(out var force);
-*/
-            // physicsEngine.Calculate(force);
         }
 
 
         private void UIElement_OnKeyDown(object sender, KeyEventArgs e)
         {
-            double speed = 1;
+            float speed = 1;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
                 speed = 10;
             }
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
-                speed = 0.01;
+                speed = 0.01f;
             }
 /*            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftAlt))
             {
@@ -217,7 +205,9 @@ namespace Billiard
 
         private void MoveBallPosition(PBall ball)
         {
-            ball.position = Mouse.GetPosition(Table);
+            var pp = Mouse.GetPosition(Table);
+
+            ball.position = new Vector2((float)pp.X, (float)pp.Y);
             CalculateSolutions();
         }
 

@@ -1,36 +1,37 @@
-﻿using Utilities;
+﻿using System.Numerics;
+using Utilities;
 
 namespace Billiard.Physics
 {
     class Force
     {
-        public double Direction { get; set; }
+        public float Direction { get; set; }
 
-        public double Power { get; set; } = 150;
-        public Vector2D Position { get; set; }
+        public float Power { get; set; } = 150;
+        public Vector2 Position { get; set; }
 
-        public Vector2D Vector
+        public Vector2 Vector
         {
             get
             {
-                return MathV.GetVector(Direction).Normalize();
+                return Vector2.Normalize(MathV.GetVector(Direction));
             }
         }
 
-        public Vector2D VectorPower
+        public Vector2 VectorPower
         {
             get
             {
-                return MathV.GetVector(Direction).Normalize() * Power;
+                return Vector2.Normalize(MathV.GetVector(Direction)) * Power;
             }
         }
 
-        public void ClockWise(double speed)
+        public void ClockWise(float speed)
         {
             Direction += speed;
         }
 
-        public void CounterClockWise(double speed)
+        public void CounterClockWise(float speed)
         {
             Direction -= speed;
         }

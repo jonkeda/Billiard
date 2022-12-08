@@ -42,10 +42,10 @@ namespace Sound
 
         private string SelectRandomSound(string[] array)
         {
-            return array[(int)Math.Round(random.NextDouble() * (array.Length - 1))];
+            return array[(int)Math.Round(random.Nextfloat() * (array.Length - 1))];
         }
 
-        public void BreakSound(Vector2D p, double force)
+        public void BreakSound(Vector2 p, float force)
         {
             engine.Play3D("cue_ball_01.wav", (float)((p.x - 970 / 2) / (400 - Math.Max(100, force))), 0, (float)((p.x - 970 / 2) / (400 - Math.Max(100, force))));
         }

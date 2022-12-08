@@ -1,17 +1,17 @@
-﻿using Utilities;
+﻿using System.Numerics;
 namespace Physics
 {
     struct Trajectory
     {
-        public Trajectory(Vector2D origin, Vector2D hit, Vector2D normal)
+        public Trajectory(Vector2 origin, Vector2 hit, Vector2 normal)
         {
             Origin = origin;
             Hit = hit;
             Normal = normal;
         }
 
-        public Vector2D Origin { get; }
-        public Vector2D Hit { get; }
-        public Vector2D Normal { get; }
+        public Vector2 Origin { get; }
+        public Vector2 Hit { get; }
+        public Vector2 Normal { get; }
     }
 }

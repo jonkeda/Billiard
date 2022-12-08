@@ -1,87 +1,54 @@
 ﻿using System;
+using System.Numerics;
 
 namespace Utilities
 {
     static class MathV
     {
-        public static double Mix(double x, double y, double a)
+        public static float Max(float x, float y, float a)
         {
-            return x * (1.0 - a) + y * a;
+            return x * (1.0f - a) + y * a;
         }
 
-        public static double Clamp(double x, double minVal, double maxVal)
+        public static float Clamp(float x, float minVal, float maXVal)
         {
-            return Math.Min(Math.Max(x, minVal), maxVal);
+            return Math.Min(Math.Max(x, minVal), maXVal);
         }
 
-        public static Vector2D PerpendicularA(this Vector2D v)
+        public static Vector2 PerpendicularA(this Vector2 v)
         {
-            return new Vector2D(-v.y, v.x);
+            return new Vector2(-v.Y, v.X);
         }
 
-        public static Vector2D PerpendicularB(this Vector2D v)
+        public static Vector2 PerpendicularB(this Vector2 v)
         {
-            return new Vector2D(v.y, -v.x);
+            return new Vector2(v.Y, -v.X);
         }
 
-        public static Vector2D Abs(Vector2D v)
+        public static Vector2 Max(Vector2 v, float d)
         {
-            return new Vector2D(Math.Abs(v.x), Math.Abs(v.y));
+            return new Vector2(Math.Max(v.X, d), Math.Max(v.Y, d));
         }
 
-        public static double Dot(Vector2D a, Vector2D b)
+        public static Vector2 Max(Vector2 a, Vector2 b)
         {
-            return a.x * b.x + a.y * b.y;
+            return Vector2.Max(a, b);
+        }
+        
+        public static Vector2 GetVector(float angle)
+        {
+            angle = angle / 180f * (float)Math.PI;
+
+            return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
         }
 
-        public static double NDot(Vector2D a, Vector2D b)
+        public static float GetAngle(this Vector2 a)
         {
-            return a.x * b.x - a.y * b.y;
-        }
-
-        public static Vector2D Max(Vector2D v, double d)
-        {
-            return new Vector2D(Math.Max(v.x, d), Math.Max(v.y, d));
-        }
-
-        public static Vector2D Min(Vector2D v, float d)
-        {
-            return new Vector2D(Math.Min(v.x, d), Math.Min(v.y, d));
-        }
-
-        public static Vector2D Max(Vector2D a, Vector2D b)
-        {
-            return new Vector2D(
-                Math.Max(a.x, b.x),
-                Math.Max(a.y, b.y)
-            );
-        }
-
-        public static Vector2D Min(Vector2D a, Vector2D b)
-        {
-            return new Vector2D(
-                Math.Min(a.x, b.x),
-                Math.Min(a.y, b.y)
-            );
-        }
-
-        public static Vector2D GetVector(double angle)
-        {
-            angle = angle / 180 * Math.PI;
-
-            return new Vector2D(Math.Cos(angle), Math.Sin(angle));
-        }
-
-        public static double GetAngle(this Vector2D a)
-        {
-            if (a.y > 0)
+            if (a.Y > 0)
             {
-                return Math.Acos(MathV.Dot(a, new Vector2D(1, 0))) * 180 / Math.PI;
+                return (float)Math.Acos(Vector2.Dot(a, new Vector2(1f, 0f))) * 180f / (float)Math.PI;
             }
-            else
-            {
-                return -Math.Acos(MathV.Dot(a, new Vector2D(1, 0))) * 180 / Math.PI;
-            }
+            return -(float)Math.Acos(Vector2.Dot(a, new Vector2(1f, 0f))) * 180f / (float)Math.PI;
         }
     }
 }

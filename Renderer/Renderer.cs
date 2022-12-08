@@ -1,7 +1,7 @@
 ﻿using Effects;
 using Physics;
-using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using Billiard.Physics;
-using Utilities;
+using Billiard.Utilities;
 
 namespace Render
 {
@@ -17,17 +17,16 @@ namespace Render
     {
         private readonly Canvas tableCanvas;
 
-        private readonly Dictionary<PBall, Rectangle> tableBalls = new Dictionary<PBall, Rectangle>();
+        private readonly Dictionary<PBall, Rectangle> tableBalls = new();
 
-        private readonly Image queue, overlay, solutions;
+        private readonly Image overlay, solutions;
 
-        private readonly double length;
-        private readonly double width;
+        private readonly float length;
+        private readonly float width;
 
-        public Renderer(Canvas _tableCanvas, Image _queue, Image _overlay, Image _solutions, double _length, double _width)
+        public Renderer(Canvas _tableCanvas, Image _overlay, Image _solutions, float _length, float _width)
         {
             tableCanvas = _tableCanvas;
-            queue = _queue;
             overlay = _overlay;
             length = _length;
             width = _width;
@@ -41,7 +40,6 @@ namespace Render
             UpdateBalls();
 
             overlay.Source = null;
-            Hide(queue);
         }
 
         public void ResetAll(List<PBall> balls)
@@ -53,6 +51,7 @@ namespace Render
 
 
         #region Tableballs
+
         public void InitBalls(List<PBall> balls)
         {
             tableBalls.Clear();
@@ -68,24 +67,18 @@ namespace Render
             };
         }
 
-        public void RemoveBall(PBall ball)
-        {
-            tableCanvas.Children.Remove(tableBalls[ball]);
-            tableBalls.Remove(ball);
-        }
-
         public void UpdateBalls()
         {
             foreach (KeyValuePair<PBall, Rectangle> pair in tableBalls)
             {
                 var (ball, rect) = pair;
 
-                Panel.SetZIndex(rect, (int)((ball.position - new Vector2D(length / 2, width / 2)).Length * 1000));
+                Panel.SetZIndex(rect, (int)((ball.position - new Vector2(length / 2f, width / 2f)).Length() * 1000f));
                 rect.Effect.SetValue(Ball3DEffect.Rot0Property, ball.rotation.Column0);
                 rect.Effect.SetValue(Ball3DEffect.Rot1Property, ball.rotation.Column1);
                 rect.Effect.SetValue(Ball3DEffect.Rot2Property, ball.rotation.Column2);
-                rect.Effect.SetValue(Ball3DEffect.PositionProperty, new Point3D(ball.position.x, 0, ball.position.y));
-                rect.RenderTransform = new TranslateTransform(ball.position.x - ball.r * 4, ball.position.y - ball.r * 4);
+                rect.Effect.SetValue(Ball3DEffect.PositionProperty, new Point3D(ball.position.X, 0, ball.position.Y));
+                rect.RenderTransform = new TranslateTransform(ball.position.X - ball.r * 4, ball.position.Y - ball.r * 4);
             }
         }
 
@@ -93,7 +86,9 @@ namespace Render
 
         #region Trajectory
 
-        public void DrawTrajectory(double ballRadius, Trajectory trajectory, Force force)
+        public void DrawTrajectory(
+            //float ballRadius, 
+            Geometry geometry, Force force)
         {
             DrawingVisual visual = new DrawingVisual();
 
@@ -106,20 +101,22 @@ namespace Render
                 {
                     DashStyle = DashStyles.Dash
                 };
-
-                drawingContext.DrawLine(dotted, trajectory.Origin + (trajectory.Hit - trajectory.Origin).Normalize() * ballRadius, trajectory.Hit);
-                drawingContext.DrawEllipse(null, dotted, trajectory.Hit, ballRadius, ballRadius);
-                drawingContext.DrawLine(new Pen(Brushes.White, 2), trajectory.Hit, trajectory.Hit + trajectory.Normal * 40);
+/*
+                drawingContext.DrawLine(dotted, (trajectory.Origin + (trajectory.Hit - trajectory.Origin).Normalize() * ballRadius).AsPoint(), trajectory.Hit.AsPoint());
+                drawingContext.DrawEllipse(null, dotted, trajectory.Hit.AsPoint(), ballRadius, ballRadius);
+                drawingContext.DrawLine(new Pen(Brushes.White, 2), trajectory.Hit.AsPoint(), (trajectory.Hit + trajectory.Normal * 40f).AsPoint());
 
                 DrawBallTrajectories(drawingContext);
-
+*/
+                drawingContext.DrawGeometry(null, dotted, geometry);
+                
                 Pen forceColor = new Pen(Brushes.GreenYellow, 2)
                 {
                     DashStyle = DashStyles.Dot
                 };
 
-                drawingContext.DrawLine(forceColor, force.Position, force.Position - force.VectorPower);
-                drawingContext.DrawEllipse(null, forceColor, force.Position, 50, 50);
+                drawingContext.DrawLine(forceColor, force.Position.AsPoint(), (force.Position - force.VectorPower).AsPoint());
+                drawingContext.DrawEllipse(null, forceColor, force.Position.AsPoint(), 50, 50);
 
                 drawingContext.Close();
             }
@@ -129,11 +126,11 @@ namespace Render
         #endregion
 
         #region Queue
-        public void DrawQueue(Vector2D ballPosition, double ballRadius, Vector2D p)
+/*        public void DrawQueue(Vector2 ballPosition, float ballRadius, Vector2 p)
         {
             //Show(queue);
-            Vector2D n = (ballPosition - p).Normalize();
-            double angle = MathV.GetAngle(n);
+            Vector2 n = (ballPosition - p).Normalize();
+            float angle = MathV.GetAngle(n);
 
             TransformGroup transform = new TransformGroup();
             transform.Children.Add(new RotateTransform(angle, 210, 40));
@@ -144,6 +141,7 @@ namespace Render
 
             queue.RenderTransform = transform;
         }
+*/        
         #endregion
 
         #region Helpers
@@ -161,7 +159,7 @@ namespace Render
             return brush;
         }
 
-        private Rectangle GenerateRect(PBall ball, double lightZ, double showPlane, double intensity)
+        private Rectangle GenerateRect(PBall ball, float lightZ, float showPlane, float intensity)
         {
             Rectangle rect = new Rectangle()
             {
@@ -175,7 +173,7 @@ namespace Render
                     Radius = ball.r,
                     LightPosition = new Point3D(length / 2, lightZ, width / 2),
                     ShowPlane = showPlane,
-                    Hardness = 2.2,
+                    Hardness = 2.2f,
                     Intensity = intensity,
                 },
             };
@@ -187,26 +185,16 @@ namespace Render
             return rect;
         }
 
-        public void Hide(FrameworkElement element, bool hitTest = false)
+/*        public void Hide(FrameworkElement element, bool hitTest = false)
         {
             element.Visibility = Visibility.Hidden;
             if (hitTest) element.IsHitTestVisible = false;
         }
+*/
 
-        public void Show(FrameworkElement element, bool hitTest = false)
-        {
-            element.Visibility = Visibility.Visible;
-            if (hitTest) element.IsHitTestVisible = true;
-        }
-
-        public void ToggleVisibility(FrameworkElement element, bool hitTest = false)
-        {
-            element.Visibility = element.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
-            if (hitTest) element.IsHitTestVisible = element.Visibility != Visibility.Visible;
-        }
         #endregion
 
-        private void DrawBallTrajectories(DrawingContext drawingContext)
+/*        private void DrawBallTrajectories(DrawingContext drawingContext)
         {
             foreach (KeyValuePair<PBall, Rectangle> pair in tableBalls)
             {
@@ -226,11 +214,11 @@ namespace Render
                             {
                                 collidedPen = pen;
                             }
-                            drawingContext.DrawEllipse(null, collidedPen, collision.Position, pair.Key.r, pair.Key.r);
+                            drawingContext.DrawEllipse(null, collidedPen, collision.Position.AsPoint(), pair.Key.r, pair.Key.r);
                         }
                     }
                 }
             }
         }
-    }
+*/    }
 }

@@ -1,4 +1,5 @@
-﻿using Physics.Colliders;
+﻿using System.Numerics;
+using Physics.Colliders;
 using Utilities;
 
 namespace Physics.Prefabs
@@ -12,34 +13,34 @@ namespace Physics.Prefabs
 
             LodGroup Lod0 = new LodGroup();
 
-            Lod0.AddCollider(new BoxCollider(new Vector2D(Length / 2, Width / 2),
-                new Vector2D((Length - 132) / 2, (Width - 123) / 2), ColliderMode.Negate));
+            Lod0.AddCollider(new BoxCollider(new Vector2(Length / 2, Width / 2),
+                new Vector2((Length - 132) / 2, (Width - 123) / 2), ColliderMode.Negate));
             AddLodGroup(Lod0);
 
             LodGroup Lod1 = new LodGroup();
 
-            Lod1.AddCollider(new BoxCollider(new Vector2D(Length / 2, Width / 2),
-                new Vector2D((Length - 132) / 2, (Width - 123) / 2), ColliderMode.Negate));
+            Lod1.AddCollider(new BoxCollider(new Vector2(Length / 2, Width / 2),
+                new Vector2((Length - 132) / 2, (Width - 123) / 2), ColliderMode.Negate));
 
-            Lod1.AddCollider(new StadiumCollider(new Vector2D(44, 44), new Vector2D(80, 80), 17,
+            Lod1.AddCollider(new StadiumCollider(new Vector2(44, 44), new Vector2(80, 80), 17,
                 ColliderMode.Subtract));
-            Lod1.AddCollider(new StadiumCollider(new Vector2D(44, Width - 44), new Vector2D(80, -80), 17,
-                ColliderMode.Subtract));
-
-            Lod1.AddCollider(new StadiumCollider(new Vector2D(Length / 2, 44), new Vector2D(0, 80), 17,
-                ColliderMode.Subtract));
-            Lod1.AddCollider(new IsoscelesTriangleCollider(new Vector2D(Length / 2, 33), new Vector2D(70, 70),
+            Lod1.AddCollider(new StadiumCollider(new Vector2(44, Width - 44), new Vector2(80, -80), 17,
                 ColliderMode.Subtract));
 
-            Lod1.AddCollider(new StadiumCollider(new Vector2D(Length / 2, Width - 44), new Vector2D(0, -80), 17,
+            Lod1.AddCollider(new StadiumCollider(new Vector2(Length / 2, 44), new Vector2(0, 80), 17,
                 ColliderMode.Subtract));
-            Lod1.AddCollider(new IsoscelesTriangleCollider(new Vector2D(Length / 2, Width - 33),
-                new Vector2D(70, -70),
+            Lod1.AddCollider(new IsoscelesTriangleCollider(new Vector2(Length / 2, 33), new Vector2(70, 70),
                 ColliderMode.Subtract));
 
-            Lod1.AddCollider(new StadiumCollider(new Vector2D(Length - 44, 44), new Vector2D(-80, 80), 17,
+            Lod1.AddCollider(new StadiumCollider(new Vector2(Length / 2, Width - 44), new Vector2(0, -80), 17,
                 ColliderMode.Subtract));
-            Lod1.AddCollider(new StadiumCollider(new Vector2D(Length - 44, Width - 44), new Vector2D(-80, -80), 17,
+            Lod1.AddCollider(new IsoscelesTriangleCollider(new Vector2(Length / 2, Width - 33),
+                new Vector2(70, -70),
+                ColliderMode.Subtract));
+
+            Lod1.AddCollider(new StadiumCollider(new Vector2(Length - 44, 44), new Vector2(-80, 80), 17,
+                ColliderMode.Subtract));
+            Lod1.AddCollider(new StadiumCollider(new Vector2(Length - 44, Width - 44), new Vector2(-80, -80), 17,
                 ColliderMode.Subtract));
             AddLodGroup(Lod1);
         }
@@ -47,10 +48,10 @@ namespace Physics.Prefabs
 
     class BilliartTable : PTable
     {
-        public double top;
-        public double bottom;
-        public double left;
-        public double right;
+        public float top;
+        public float bottom;
+        public float left;
+        public float right;
 
 
         public BilliartTable()
@@ -60,8 +61,8 @@ namespace Physics.Prefabs
 
             LodGroup Lod0 = new LodGroup();
 
-            Lod0.AddCollider(new BoxCollider(new Vector2D(Length / 2, Width / 2),
-                new Vector2D(Length / 2 - BallRadius, Width / 2 - BallRadius), ColliderMode.Negate));
+            Lod0.AddCollider(new BoxCollider(new Vector2(Length / 2, Width / 2),
+                new Vector2(Length / 2 - BallRadius, Width / 2 - BallRadius), ColliderMode.Negate));
             AddLodGroup(Lod0);
 
             top = BallRadius * 2;
@@ -70,10 +71,10 @@ namespace Physics.Prefabs
             bottom = Width - BallRadius * 2;
         }
 
-        public override bool Collides(Vector2D p, double r = 0, bool ignoreLodGroups = false)
+        public override bool Collides(Vector2 p, float r = 0, bool ignoreLodGroups = false)
         {
-            double x = p.x;
-            double y = p.y;
+            float x = p.X;
+            float y = p.Y;
             return x < left || x > right || y < top || y > bottom;
 //            return MinDistance(p, r, true) < r;
         }
@@ -82,8 +83,10 @@ namespace Physics.Prefabs
 
     class PTable : PStaticObject
     {
-        public double Length { get; } = 1800; // 1200;
-        public double Width { get; } = 1000;
-        public double BallRadius { get; } = 16;
+        public float Length { get; } = 1800; // 1200;
+        public float Width { get; } = 1000;
+        public float BallRadius { get; } = BallRadiusConst;
+
+        public const float BallRadiusConst = 16;
     }
 }

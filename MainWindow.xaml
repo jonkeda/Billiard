@@ -39,15 +39,15 @@
             <Button Style="{StaticResource ImageButton}" Click="HitBall" MouseRightButtonDown="UIElement_OnMouseRightButtonDown">
                 <TabPanel>
 
-                    <Canvas Width="{Binding Length}" Height="{Binding Width}" Background="Green">
+                    <Canvas Width="{Binding LengthD}" Height="{Binding WidthD}" Background="Green">
                         <!--
                         <Canvas.Background>
                             <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                         </Canvas.Background>
                         -->
-                        <Image x:Name="Solutions" Width="{Binding Length}" Height="{Binding Width}" Stretch="None" />
+                        <Image x:Name="Solutions" Width="{Binding LengthD}" Height="{Binding WidthD}" Stretch="None" />
 
-                        <Canvas x:Name="Table" Width="{Binding Length}" Height="{Binding Width}" ClipToBounds="True">
+                        <Canvas x:Name="Table" Width="{Binding LengthD}" Height="{Binding WidthD}" ClipToBounds="True">
                             <!--
                             <Canvas.Background>
                                 <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
@@ -58,14 +58,13 @@
                             </Canvas.OpacityMask>
                             -->
                         </Canvas>
-                        
-                        <Image x:Name="Overlay" Width="{Binding Length}" Height="{Binding Width}" Stretch="None" />
+
+                        <Image x:Name="Overlay" Width="{Binding LengthD}" Height="{Binding WidthD}" Stretch="None" />
                     </Canvas>
                     
                    
                 </TabPanel>
             </Button>
-            <Image x:Name="Queue" Visibility="Hidden" Source="pack://application:,,,/Resources/Images/queue.png" Width="200" Height="200" IsHitTestVisible="False" />
         </Grid>
 
 

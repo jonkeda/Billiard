@@ -1,6 +1,6 @@
 ﻿using Physics.Colliders;
 using System.Collections.Generic;
-using Utilities;
+using System.Numerics;
 
 namespace Physics
 {
@@ -8,14 +8,14 @@ namespace Physics
     {
         public List<LodGroup> lodGroups = new List<LodGroup>();
 
-        public virtual bool Collides(Vector2D p, double r = 0, bool ignoreLodGroups = false)
+        public virtual bool Collides(Vector2 p, float r = 0, bool ignoreLodGroups = false)
         {
             return MinDistance(p, r, ignoreLodGroups) < r;
         }
 
-        public double MinDistance(Vector2D p, double r = 0, bool ignoreLodGroups = false) // Raymarching has to ignore the LodGroups to function properly
+        public float MinDistance(Vector2 p, float r = 0, bool ignoreLodGroups = false) // Raymarching has to ignore the LodGroups to function properly
         {
-            double distance = double.PositiveInfinity;
+            float distance = float.PositiveInfinity;
 
             if (ignoreLodGroups)
             {

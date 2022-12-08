@@ -1,4 +1,5 @@
-﻿using Utilities;
+﻿using System.Numerics;
+using Utilities;
 namespace Physics
 {
     namespace Colliders
@@ -6,15 +7,15 @@ namespace Physics
         abstract class Collider
         {
             public ColliderMode mode;
-            public double k;
-            public Vector2D center;
-            public Collider(ColliderMode _mode, Vector2D _center, double _k = 0.0f)
+            public float k;
+            public Vector2 center;
+            public Collider(ColliderMode _mode, Vector2 _center, float _k = 0.0f)
             {
                 mode = _mode;
                 center = _center;
                 k = _k;
             }
-            public abstract double MinDistance(Vector2D p);
+            public abstract float MinDistance(Vector2 p);
         }
     }
 }
