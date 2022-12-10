@@ -13,12 +13,12 @@ namespace Effects
         public static readonly DependencyProperty Rot1Property = DependencyProperty.Register("Rot1", typeof(Point3D), typeof(Ball3DEffect), new UIPropertyMetadata(new Point3D(0d, 0d, 0d), PixelShaderConstantCallback(1)));
         public static readonly DependencyProperty Rot2Property = DependencyProperty.Register("Rot2", typeof(Point3D), typeof(Ball3DEffect), new UIPropertyMetadata(new Point3D(0d, 0d, 0d), PixelShaderConstantCallback(2)));
         public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(Point), typeof(Ball3DEffect), new UIPropertyMetadata(new Point(0d, 0d), PixelShaderConstantCallback(3)));
-        public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register("Radius", typeof(double), typeof(Ball3DEffect), new UIPropertyMetadata(0d, PixelShaderConstantCallback(4)));
+        public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register("Radius", typeof(float), typeof(Ball3DEffect), new UIPropertyMetadata(0f, PixelShaderConstantCallback(4)));
         public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(Point3D), typeof(Ball3DEffect), new UIPropertyMetadata(new Point3D(0d, 0d, 0d), PixelShaderConstantCallback(5)));
         public static readonly DependencyProperty LightPositionProperty = DependencyProperty.Register("LightPosition", typeof(Point3D), typeof(Ball3DEffect), new UIPropertyMetadata(new Point3D(0d, 0d, 0d), PixelShaderConstantCallback(6)));
-        public static readonly DependencyProperty ShowPlaneProperty = DependencyProperty.Register("ShowPlane", typeof(double), typeof(Ball3DEffect), new UIPropertyMetadata(1d, PixelShaderConstantCallback(7)));
-        public static readonly DependencyProperty HardnessProperty = DependencyProperty.Register("Hardness", typeof(double), typeof(Ball3DEffect), new UIPropertyMetadata(2d, PixelShaderConstantCallback(8)));
-        public static readonly DependencyProperty IntensityProperty = DependencyProperty.Register("Intensity", typeof(double), typeof(Ball3DEffect), new UIPropertyMetadata(1250000d, PixelShaderConstantCallback(9)));
+        public static readonly DependencyProperty ShowPlaneProperty = DependencyProperty.Register("ShowPlane", typeof(float), typeof(Ball3DEffect), new UIPropertyMetadata(1f, PixelShaderConstantCallback(7)));
+        public static readonly DependencyProperty HardnessProperty = DependencyProperty.Register("Hardness", typeof(float), typeof(Ball3DEffect), new UIPropertyMetadata(2f, PixelShaderConstantCallback(8)));
+        public static readonly DependencyProperty IntensityProperty = DependencyProperty.Register("Intensity", typeof(float), typeof(Ball3DEffect), new UIPropertyMetadata(1250000f, PixelShaderConstantCallback(9)));
 
 
         private readonly PixelShader pixelShader = new PixelShader()
@@ -101,11 +101,11 @@ namespace Effects
             }
         }
 
-        public double Radius
+        public float Radius
         {
             get
             {
-                return (double)GetValue(RadiusProperty);
+                return (float)GetValue(RadiusProperty);
             }
             set
             {
@@ -137,22 +137,22 @@ namespace Effects
             }
         }
 
-        public double ShowPlane
+        public float ShowPlane
         {
             get
             {
-                return (double)GetValue(ShowPlaneProperty);
+                return (float)GetValue(ShowPlaneProperty);
             }
             set
             {
                 SetValue(ShowPlaneProperty, value);
             }
         }
-        public double Hardness
+        public float Hardness
         {
             get
             {
-                return (double)GetValue(HardnessProperty);
+                return (float)GetValue(HardnessProperty);
             }
             set
             {
@@ -160,11 +160,11 @@ namespace Effects
             }
         }
 
-        public double Intensity
+        public float Intensity
         {
             get
             {
-                return (double)GetValue(IntensityProperty);
+                return (float)GetValue(IntensityProperty);
             }
             set
             {

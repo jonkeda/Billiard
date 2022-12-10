@@ -135,8 +135,8 @@ namespace Render
             TransformGroup transform = new TransformGroup();
             transform.Children.Add(new RotateTransform(angle, 210, 40));
             transform.Children.Add(new TranslateTransform(
-                ballPosition.x - 100 - ballRadius - length / 2 - Math.Min((ballPosition - p).Length, 200) * n.x,
-                ballPosition.y - width / 2 - Math.Min((ballPosition - p).Length, 200) * n.y)
+                ballPosition.X - 100 - ballRadius - length / 2 - Math.Min((ballPosition - p).Length, 200) * n.X,
+                ballPosition.Y - width / 2 - Math.Min((ballPosition - p).Length, 200) * n.Y)
             );
 
             queue.RenderTransform = transform;

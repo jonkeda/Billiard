@@ -6,11 +6,14 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Emgu.CV;
+using Emgu.CV.CvEnum;
+using Emgu.CV.Structure;
 using Utilities;
 
 namespace Billiard
 {
-    public partial class MainWindow 
+    public partial class MainWindow
     {
         private readonly PhysicsEngine physicsEngine;
         private readonly Renderer renderer;
@@ -122,7 +125,7 @@ namespace Billiard
 
             Vector2 n = physicsEngine.Force.Vector;
             force = Math.Min(physicsEngine.Force.Power, 200) * 10 * n;
-            
+
             return ball;
         }
 
@@ -160,11 +163,12 @@ namespace Billiard
             {
                 speed = 0.01f;
             }
-/*            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftAlt))
-            {
-                speed = 10;
-            }
-*/            if (e.Key == Key.Up)
+            /*            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftAlt))
+                        {
+                            speed = 10;
+                        }
+            */
+            if (e.Key == Key.Up)
             {
                 physicsEngine.Force.PowerUp();
             }
@@ -229,5 +233,43 @@ namespace Billiard
             calculating = false;
 
         }
+
+        #region Video
+
+        private void Video_OnClick(object sender, RoutedEventArgs e)
+        {
+            Image<Bgr, Byte> img1 = new Image<Bgr, Byte>("C:\\Temp\\billiard.jpg");
+
+/*            Video.Source = img1.ToBitmapSource();
+
+            Video.Source = Camera.Camera.capture();
+*/
+            VideoCapture capture = new VideoCapture();
+            using (var frame = img1)
+            {
+                Mat _gray = new Mat();
+                Mat _cannyEdges = new Mat();
+
+                //Convert the image to grayscale and filter out the noise
+                CvInvoke.CvtColor(frame, _gray, ColorConversion.Bgr2Gray);
+
+                //Remove noise
+                CvInvoke.GaussianBlur(_gray, _gray, new System.Drawing.Size(3, 3), 1);
+                float cannyThreshold = 180.0f;
+                float cannyThresholdLinking = 120.0f;
+                CvInvoke.Canny(_gray, _cannyEdges, cannyThreshold, cannyThresholdLinking);
+
+
+                Video.Source = _cannyEdges.ToBitmapSource();
+
+                float circleAccumulatorThreshold = 120;
+                CircleF[] circles = CvInvoke.HoughCircles(_gray, HoughModes.Gradient, 2.0, 20.0, cannyThreshold,
+                    circleAccumulatorThreshold, 5);
+
+            }
+
+        }
+
+        #endregion
     }
 }

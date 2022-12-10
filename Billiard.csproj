@@ -78,6 +78,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.6.0.5131" />
+    <PackageReference Include="Emgu.CV.UI" Version="4.6.0.5131" />
+    <PackageReference Include="Emgu.CV.Wpf" Version="4.6.0.5131" />
     <PackageReference Include="MaterialDesignThemes" Version="3.1.0" />
   </ItemGroup>
 

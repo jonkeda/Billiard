@@ -3,6 +3,7 @@ using Physics.Triggers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -12,7 +13,12 @@ using Billiard.Physics;
 using Utilities;
 using System.Windows.Media.Imaging;
 using Billiard.Utilities;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
 using FlowDirection = System.Windows.FlowDirection;
+using Pen = System.Windows.Media.Pen;
+using Point = System.Windows.Point;
 
 namespace Physics
 {
@@ -25,13 +31,13 @@ namespace Physics
             get { return table.Length; }
         }
 
-        public double LengthD
+        public float LengthD
         {
             get { return table.Length; }
         }
 
         public float Width { get { return table.Width; } }
-        public double WidthD { get { return table.Width; } }
+        public float WidthD { get { return table.Width; } }
 
 
         public readonly GameType gameType;
@@ -102,13 +108,13 @@ namespace Physics
             else
             {
                 // white
-                PBall ball = AddBall(0, r, Length / 4, y, Brushes.White);
+                PBall ball = AddBall(0, r, Length / 4, y + r * 10, Brushes.White);
 
                 // red
                 AddBall(7, r, (Length / 4) * 3, y, Brushes.Red);
 
                 // yellow
-                AddBall(9, r, Length / 4, y + r * 10, Brushes.Yellow);
+                AddBall(9, r, Length / 4, y, Brushes.Yellow);
 
                 ball.DrawTrajectory = true;
             }
@@ -479,7 +485,7 @@ namespace Physics
 
             //float angleDif = toAngle - fromAngle;
             SolutionCollection solutions = new SolutionCollection();
-            for (float angle = fromAngle; angle < toAngle; angle += 0.02f)
+            for (float angle = fromAngle; angle < toAngle; angle += 0.04f)
             {
                 Vector2 n = MathV.GetVector(angle) * power;
                 PBall cueClone = Calculate(n, false, true);

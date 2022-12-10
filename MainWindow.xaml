@@ -26,29 +26,31 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid>
-        <Grid ClipToBounds="True" Width="Auto" Height="Auto">
-            <Grid.Background>
-                <RadialGradientBrush GradientOrigin="0.5, 0.5" Center="0.5, 0.5" RadiusX="0.5" RadiusY="0.5">
-                    <RadialGradientBrush.GradientStops>
-                        <GradientStop Color="LightSlateGray" Offset="0"/>
-                        <GradientStop Color="DarkSlateGray" Offset="1" />
-                    </RadialGradientBrush.GradientStops>
-                </RadialGradientBrush>
-            </Grid.Background>
-            <Button Style="{StaticResource ImageButton}" Click="HitBall" MouseRightButtonDown="UIElement_OnMouseRightButtonDown">
-                <TabPanel>
+    <TabControl>
+        <TabItem Header="Table">
+            <Grid>
+                <Grid ClipToBounds="True" Width="Auto" Height="Auto">
+                    <Grid.Background>
+                        <RadialGradientBrush GradientOrigin="0.5, 0.5" Center="0.5, 0.5" RadiusX="0.5" RadiusY="0.5">
+                            <RadialGradientBrush.GradientStops>
+                                <GradientStop Color="LightSlateGray" Offset="0"/>
+                                <GradientStop Color="DarkSlateGray" Offset="1" />
+                            </RadialGradientBrush.GradientStops>
+                        </RadialGradientBrush>
+                    </Grid.Background>
+                    <Button Style="{StaticResource ImageButton}" Click="HitBall" MouseRightButtonDown="UIElement_OnMouseRightButtonDown">
+                        <TabPanel>
 
-                    <Canvas Width="{Binding LengthD}" Height="{Binding WidthD}" Background="Green">
-                        <!--
+                            <Canvas Width="{Binding LengthD}" Height="{Binding WidthD}" Background="Green">
+                                <!--
                         <Canvas.Background>
                             <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                         </Canvas.Background>
                         -->
-                        <Image x:Name="Solutions" Width="{Binding LengthD}" Height="{Binding WidthD}" Stretch="None" />
+                                <Image x:Name="Solutions" Width="{Binding LengthD}" Height="{Binding WidthD}" Stretch="None" />
 
-                        <Canvas x:Name="Table" Width="{Binding LengthD}" Height="{Binding WidthD}" ClipToBounds="True">
-                            <!--
+                                <Canvas x:Name="Table" Width="{Binding LengthD}" Height="{Binding WidthD}" ClipToBounds="True">
+                                    <!--
                             <Canvas.Background>
                                 <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                             </Canvas.Background>
@@ -57,16 +59,31 @@
                                 <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table_mask.png" />
                             </Canvas.OpacityMask>
                             -->
-                        </Canvas>
+                                </Canvas>
 
-                        <Image x:Name="Overlay" Width="{Binding LengthD}" Height="{Binding WidthD}" Stretch="None" />
-                    </Canvas>
-                    
-                   
-                </TabPanel>
-            </Button>
-        </Grid>
+                                <Image x:Name="Overlay" Width="{Binding LengthD}" Height="{Binding WidthD}" Stretch="None" />
+                            </Canvas>
 
 
-    </Grid>
+                        </TabPanel>
+                    </Button>
+                </Grid>
+
+
+            </Grid>
+        </TabItem>
+        <TabItem Header="Video">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <Button Click="Video_OnClick"></Button>
+                </StackPanel>
+                <Image Grid.Row="1" x:Name="Video" />
+            </Grid>
+
+        </TabItem>
+    </TabControl>
 </Window>

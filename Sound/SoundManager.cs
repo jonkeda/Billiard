@@ -47,7 +47,7 @@ namespace Sound
 
         public void BreakSound(Vector2 p, float force)
         {
-            engine.Play3D("cue_ball_01.wav", (float)((p.x - 970 / 2) / (400 - Math.Max(100, force))), 0, (float)((p.x - 970 / 2) / (400 - Math.Max(100, force))));
+            engine.Play3D("cue_ball_01.wav", (float)((p.X - 970 / 2) / (400 - Math.Max(100, force))), 0, (float)((p.X - 970 / 2) / (400 - Math.Max(100, force))));
         }
 
         public void CollisionSound(object _, CollisionEvent collision)
@@ -63,7 +63,7 @@ namespace Sound
                 soundName = collision.force < 100 ? SelectRandomSound(ball2ballSoft) : SelectRandomSound(ball2ballHard);
             }
 
-            ISound sound = engine.Play3D(soundName, (float)(collision.position.x - 970 / 2) / 400.0f, 0, (float)(collision.position.x - 970 / 2) / 100.0f, false, false, StreamMode.NoStreaming, true);
+            ISound sound = engine.Play3D(soundName, (float)(collision.position.X - 970 / 2) / 400.0f, 0, (float)(collision.position.X - 970 / 2) / 100.0f, false, false, StreamMode.NoStreaming, true);
 
             sound.PlaybackSpeed = 1.0f / PlayBackSpeed;
         }

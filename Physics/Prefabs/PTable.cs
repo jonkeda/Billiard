@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using Physics.Colliders;
-using Utilities;
 
 namespace Physics.Prefabs
 {
@@ -83,10 +82,10 @@ namespace Physics.Prefabs
 
     class PTable : PStaticObject
     {
-        public float Length { get; } = 1800; // 1200;
-        public float Width { get; } = 1000;
+        public float Length { get; } = 2100 * 0.9f; // 1800; // 1200;
+        public float Width { get; } = 1050 * 0.9f; // 900;
         public float BallRadius { get; } = BallRadiusConst;
 
-        public const float BallRadiusConst = 16;
+        public const float BallRadiusConst = 30 * 0.9f;
     }
 }
