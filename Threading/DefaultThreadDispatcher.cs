@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VouwwandImages.Threading
+namespace Billiard.Threading
 {
     public class DefaultThreadDispatcher : IThreadDispatcher
     {

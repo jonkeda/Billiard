@@ -4,13 +4,14 @@ using Billiard.Camera.vision.algorithms;
 using Billiard.Camera.vision.Geometries;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
+using Emgu.CV.Structure;
 using Emgu.CV.Util;
 
 namespace Billiard.Camera.vision;
 
-public class BilliardVisionEngine
+internal class BilliardVisionEngine
 {
-    private BilliardVisionEngineState engineState; //= new BilliardVisionEngineState(this);
+    internal BilliardVisionEngineState engineState; //= new BilliardVisionEngineState(this);
 
     private Size VIDEO_IMAGE_SIZE;
 
@@ -32,31 +33,36 @@ public class BilliardVisionEngine
         )
     {
 
-        this.VIDEO_IMAGE_SIZE = new Size(1200, 600);
+        VIDEO_IMAGE_SIZE = new Size(1200, 600);
 
-        this.CORNER_DETECTION_IMAGE_SIZE = new Size(400, 200);
+        CORNER_DETECTION_IMAGE_SIZE = new Size(400, 200);
 
-        this.TABLE_DETECTION_IMAGE_SIZE = new Size(400, 200);
+        TABLE_DETECTION_IMAGE_SIZE = new Size(400, 200);
 
         engineState = new BilliardVisionEngineState(this);
 
     }
 
 
-    public void processFrame()
+    public void processFrame(Mat image)
     {
         //startFrameTiming();
 
-        CvInvoke.Resize(engineState.cameraMat, engineState.processMat, VIDEO_IMAGE_SIZE);
+        // CvInvoke.Resize(engineState.cameraMat, engineState.processMat, VIDEO_IMAGE_SIZE);
+
+        
+
+        CvInvoke.Resize(image, engineState.processMat, image.Size);
+        //CvInvoke.Resize(image, engineState.processMat, VIDEO_IMAGE_SIZE);
 
         findCorners();
 
         warpTablePerspective();
 
-        detectBalls(engineState);
-
-        engineState.table.inferBalls(engineState.detectedBallsInFrame);
-
+        detectBalls2();
+        /*
+                engineState.table.inferBalls(engineState.detectedBallsInFrame);
+        */
         //stopFrameTiming();
 
     }
@@ -65,79 +71,119 @@ public class BilliardVisionEngine
     {
         if (engineState.frameCounter % 25 == 0)
         {
-            CvInvoke.Resize(engineState.processMat, engineState.smallMat, CORNER_DETECTION_IMAGE_SIZE);
 
-            PointF pointOnTable = VisionAlgorithms.findSimilarPointOnCenterSpiral(engineState.smallMat);
+            CvInvoke.Resize(engineState.processMat, engineState.floodfillMat, engineState.processMat.Size);
+
+            PointF pointOnTable = VisionAlgorithms.findSimilarPointOnCenterSpiral(engineState.floodfillMat);
 
             Mat mask = new Mat();
 
-            Scalar newColor = Color.WHITE;
+            MCvScalar newColor = Color.WHITE.AsMCvScalar();
 
-            Scalar diff = new Scalar(engineState.floodFillDiff, engineState.floodFillDiff, engineState.floodFillDiff);
+            MCvScalar diff = new MCvScalar(engineState.floodFillDiff, engineState.floodFillDiff, engineState.floodFillDiff);
 
-            System.Drawing.Rectangle boundingRect = new Rectangle();
-            //Rect boundingRect = new Rect();
-
-            CvInvoke.FloodFill(engineState.smallMat, mask, pointOnTable.AsPoint(), newColor.AsMCvScalar(),
-                out boundingRect, diff.AsMCvScalar(), diff.AsMCvScalar(), Connectivity.EightConnected
+            Rectangle boundingRect;
+            CvInvoke.FloodFill(engineState.floodfillMat, mask, pointOnTable.AsWindowsPoint(), newColor,
+                out boundingRect, diff, diff, Connectivity.EightConnected
                     /* 8 | (255 << 8)*/ );
 
 
-            PointF leftCornerSmall = VisionAlgorithms.findColorOnLine(engineState.smallMat, Color.WHITE, boundingRect.Height,
+            PointF leftCornerSmall = VisionAlgorithms.findColorOnLine(engineState.floodfillMat, newColor, boundingRect.Height,
                 boundingRect.X, boundingRect.Y, 0, 1);
 
-            PointF rightCornerSmall = VisionAlgorithms.findColorOnLine(engineState.smallMat, Color.WHITE, boundingRect.Height,
+            PointF rightCornerSmall = VisionAlgorithms.findColorOnLine(engineState.floodfillMat, newColor, boundingRect.Height,
                 boundingRect.X + boundingRect.Width - 1, boundingRect.Y, 0, 1);
 
-            PointF topCornerSmall = VisionAlgorithms.findColorOnLine(engineState.smallMat, Color.WHITE, boundingRect.Width,
+            PointF topCornerSmall = VisionAlgorithms.findColorOnLine(engineState.floodfillMat, newColor, boundingRect.Width,
                 boundingRect.X, boundingRect.Y, 1, 0);
 
-            PointF bottomCornerSmall = VisionAlgorithms.findColorOnLine(engineState.smallMat, Color.WHITE, boundingRect.Width,
+            PointF bottomCornerSmall = VisionAlgorithms.findColorOnLine(engineState.floodfillMat, newColor, boundingRect.Width,
                 boundingRect.X, boundingRect.Y + boundingRect.Height - 1, 1, 0);
 
 
             if (!engineState.isForcedCorners)
             {
                 engineState.table.backLeftCornerPoint.recordPoint(transformCoordinate(bottomCornerSmall,
-                    engineState.smallMat, engineState.processMat));
+                    engineState.floodfillMat, engineState.processMat));
 
                 engineState.table.backRightCornerPoint.recordPoint(transformCoordinate(rightCornerSmall,
-                    engineState.smallMat, engineState.processMat));
+                    engineState.floodfillMat, engineState.processMat));
 
                 engineState.table.frontLeftCornerPoint.recordPoint(transformCoordinate(leftCornerSmall,
-                    engineState.smallMat, engineState.processMat));
+                    engineState.floodfillMat, engineState.processMat));
 
                 engineState.table.frontRightCornerPoint.recordPoint(transformCoordinate(topCornerSmall,
-                    engineState.smallMat, engineState.processMat));
+                    engineState.floodfillMat, engineState.processMat));
 
             }
         }
     }
 
-    void detectBalls(BilliardVisionEngineState state)
+    void detectBalls2()
+    {
+        CvInvoke.CvtColor(engineState.tableMat, engineState.grayTableMat, ColorConversion.Bgr2Gray);
+
+        float cannyThreshold = 180.0f;
+        float cannyThresholdLinking = 120.0f;
+        CvInvoke.GaussianBlur(engineState.grayTableMat, engineState.grayTableMat, new System.Drawing.Size(3, 3), 1);
+        CvInvoke.Canny(engineState.grayTableMat, engineState.binaryTableMat, cannyThreshold, cannyThresholdLinking);
+
+        CvInvoke.CvtColor(engineState.tableMat, engineState.hsvTableMat, ColorConversion.Bgr2Hsv);
+        CvInvoke.ExtractChannel(engineState.hsvTableMat, engineState.hTableMat, 0);
+        CvInvoke.ExtractChannel(engineState.hsvTableMat, engineState.sTableMat, 1);
+        CvInvoke.ExtractChannel(engineState.hsvTableMat, engineState.vTableMat, 2);
+
+        CircleF[] circles = detectCircles(engineState.binaryTableMat);
+    }
+
+    CircleF[] detectCircles(Mat gray)
+    {
+        float cannyThreshold = 180.0f;
+        /*
+            Mat cannyEdges = new Mat();
+            float cannyThresholdLinking = 120.0f;
+            CvInvoke.GaussianBlur(gray, gray, new System.Drawing.Size(3, 3), 1);
+            CvInvoke.Canny(gray, cannyEdges, cannyThreshold, cannyThresholdLinking);
+        */
+        // Mat gray = new Mat();
+        float circleAccumulatorThreshold = 1;
+        CircleF[] circles = CvInvoke.HoughCircles(gray, HoughModes.GradientAlt, 2.0, 20.0, cannyThreshold,
+            circleAccumulatorThreshold, 0);
+
+        Mat hierarchy = null; // new Mat();
+
+        VectorOfVectorOfPoint immutableContours = new VectorOfVectorOfPoint();
+        CvInvoke.FindContours(engineState.binaryTableMat, immutableContours, hierarchy, RetrType.External, ChainApproxMethod.ChainApproxNone);
+
+        return circles;
+    }
+
+
+    void detectBalls()
     {
         CvInvoke.CvtColor(engineState.tableMat, engineState.binaryTableMat, ColorConversion.Bgr2Gray);
 
         CvInvoke.Canny(engineState.binaryTableMat, engineState.binaryTableMat, 50.0, 150.0, 3, true);
 
 
-        Mat hierarchy = new Mat();
+        Mat hierarchy = null; // new Mat();
 
-        VectorOfVectorOfPointF immutableContours = new VectorOfVectorOfPointF();
+        VectorOfVectorOfPoint immutableContours = new VectorOfVectorOfPoint();
 
 
         CvInvoke.FindContours(engineState.binaryTableMat, immutableContours, hierarchy, RetrType.External, ChainApproxMethod.ChainApproxNone);
 
-        List<VectorOfPointF> contours = new List<VectorOfPointF>();
-        for (int i = 0; i < contours.Count; i++)
+        List<VectorOfPoint> contours = new List<VectorOfPoint>();
+        for (int i = 0; i < immutableContours.Size; i++)
         {
-            contours.Add(immutableContours[i]);
+            if (immutableContours[i] != null)
+                contours.Add(immutableContours[i]);
         }
-        engineState.detectedBallsInFrame = new List<PointF>();
+        engineState.detectedBallsInFrame = new List<Point>();
 
         bool continueWithSameObject = false;
 
-        VectorOfPointF contour = null;
+        VectorOfPoint contour = null;
 
         while (contours.Count > 0)
         {
@@ -151,7 +197,7 @@ public class BilliardVisionEngine
             //if (VisionAlgorithms.getRadiusOptimizedWithMaxValue(contour, engineState.ballMaxRadius) >= engineState.ballMaxRadius) continue
             for (int contourIndex = 0; contourIndex < contours.Count; contourIndex++)
             {
-                VectorOfPointF comparsionContour = contours.ToArray()[contourIndex];
+                VectorOfPoint comparsionContour = contours.ToArray()[contourIndex];
                 // Optimization: if this contour is already too big ditch it 
                 //if (VisionAlgorithms.getRadiusOptimizedWithMaxValue(contour, engineState.ballMaxRadius) >= engineState.ballMaxRadius) continue
                 if (VisionAlgorithms.isContoursOfSameObject(contour.AsList(), comparsionContour.AsList(), engineState.maxContourDistanceWithSameObject))
@@ -193,37 +239,36 @@ public class BilliardVisionEngine
 
     void warpTablePerspective()
     {
-
         Table table = engineState.table;
-
         bool needSideReverse = table.tableNeedSideReverse();
-
-
-        MatOfPoint src = new MatOfPoint(
-            table.frontRightCornerPoint.AsPoint(), 
-            table.backRightCornerPoint.AsPoint(),
-            table.backLeftCornerPoint.AsPoint(), 
-            table.frontLeftCornerPoint.AsPoint()
-        );
-
-
-        MatOfPoint dest = needSideReverse
-            ? new MatOfPoint(
-                new PointF(0, 0), new PointF(TABLE_DETECTION_IMAGE_SIZE.Width, 0),
-                new PointF(TABLE_DETECTION_IMAGE_SIZE.Width, TABLE_DETECTION_IMAGE_SIZE.Height),
-                new PointF(0, TABLE_DETECTION_IMAGE_SIZE.Height)
-            )
-            : new MatOfPoint(
-                new PointF(TABLE_DETECTION_IMAGE_SIZE.Width, TABLE_DETECTION_IMAGE_SIZE.Height),
-                new PointF(TABLE_DETECTION_IMAGE_SIZE.Width, 0),
-                new PointF(0, 0), new PointF(0, TABLE_DETECTION_IMAGE_SIZE.Height)
-            );
-
-
+        VectorOfPointF
+            src = new VectorOfPointF(new[]
+                {
+                    table.frontRightCornerPoint.AsPoint(),
+                    table.backRightCornerPoint.AsPoint(),
+                    table.backLeftCornerPoint.AsPoint(),
+                    table.frontLeftCornerPoint.AsPoint()
+                });
+        VectorOfPointF dest = needSideReverse
+                ? new VectorOfPointF(new[]
+                    {
+                        new PointF(0, 0),
+                        new PointF(TABLE_DETECTION_IMAGE_SIZE.Width, 0),
+                        new PointF(TABLE_DETECTION_IMAGE_SIZE.Width, TABLE_DETECTION_IMAGE_SIZE.Height),
+                        new PointF(0, TABLE_DETECTION_IMAGE_SIZE.Height)
+                    }
+                )
+                : new VectorOfPointF(
+                    new[]
+                    {
+                        new PointF(TABLE_DETECTION_IMAGE_SIZE.Width, TABLE_DETECTION_IMAGE_SIZE.Height),
+                        new PointF(TABLE_DETECTION_IMAGE_SIZE.Width, 0),
+                        new PointF(0, 0),
+                        new PointF(0, TABLE_DETECTION_IMAGE_SIZE.Height)
+                    }
+                );
         Mat warpingMat = CvInvoke.GetPerspectiveTransform(src, dest);
-
         CvInvoke.WarpPerspective(engineState.processMat, engineState.tableMat, warpingMat, TABLE_DETECTION_IMAGE_SIZE);
-
     }
 
 

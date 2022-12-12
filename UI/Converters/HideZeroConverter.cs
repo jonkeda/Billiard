@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace VouwwandImages.UI.Converters
+namespace Billiard.UI.Converters
 {
     public class HideZeroConverter : IValueConverter
     {

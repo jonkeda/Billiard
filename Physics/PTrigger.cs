@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
-using Physics.Colliders;
+using Billiard.Physics.Colliders.Colliders;
 
-namespace Physics.Triggers
+namespace Billiard.Physics
 {
     class PTrigger : PStaticObject
     {

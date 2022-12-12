@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace VouwwandImages.UI
+namespace Billiard.UI
 {
     public delegate Task<bool> CommandTaskCanExecuteDelegate<in T>(T parameter);
 

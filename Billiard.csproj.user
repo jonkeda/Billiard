@@ -9,7 +9,21 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="views\CaptureView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\TableView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\BallView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\CaptureView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Data;
 
-namespace VouwwandImages.UI.Converters
+namespace Billiard.UI.Converters
 {
     public static class Cv
     {

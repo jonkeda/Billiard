@@ -1,22 +1,19 @@
-﻿using Physics;
-using Physics.Triggers;
-using Render;
-using System;
+﻿using System;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Billiard.Physics;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-using Utilities;
 
 namespace Billiard
 {
     public partial class MainWindow
     {
         private readonly PhysicsEngine physicsEngine;
-        private readonly Renderer renderer;
+        private readonly Renderer.Renderer renderer;
 
         private long t = DateTime.Now.Ticks / 10000;
         private bool shot;
@@ -140,7 +137,7 @@ namespace Billiard
 
             physicsEngine = new PhysicsEngine(GameType.Billiart);
 
-            renderer = new Renderer(Table, Overlay, Solutions, physicsEngine.Length, physicsEngine.Width);
+            renderer = new Renderer.Renderer(Table, Overlay, Solutions, physicsEngine.Length, physicsEngine.Width);
             renderer.ResetAll(physicsEngine.balls);
 
             DataContext = physicsEngine;
@@ -234,42 +231,6 @@ namespace Billiard
 
         }
 
-        #region Video
 
-        private void Video_OnClick(object sender, RoutedEventArgs e)
-        {
-            Image<Bgr, Byte> img1 = new Image<Bgr, Byte>("C:\\Temp\\billiard.jpg");
-
-/*            Video.Source = img1.ToBitmapSource();
-
-            Video.Source = Camera.Camera.capture();
-*/
-            VideoCapture capture = new VideoCapture();
-            using (var frame = img1)
-            {
-                Mat _gray = new Mat();
-                Mat _cannyEdges = new Mat();
-
-                //Convert the image to grayscale and filter out the noise
-                CvInvoke.CvtColor(frame, _gray, ColorConversion.Bgr2Gray);
-
-                //Remove noise
-                CvInvoke.GaussianBlur(_gray, _gray, new System.Drawing.Size(3, 3), 1);
-                float cannyThreshold = 180.0f;
-                float cannyThresholdLinking = 120.0f;
-                CvInvoke.Canny(_gray, _cannyEdges, cannyThreshold, cannyThresholdLinking);
-
-
-                Video.Source = _cannyEdges.ToBitmapSource();
-
-                float circleAccumulatorThreshold = 120;
-                CircleF[] circles = CvInvoke.HoughCircles(_gray, HoughModes.Gradient, 2.0, 20.0, cannyThreshold,
-                    circleAccumulatorThreshold, 5);
-
-            }
-
-        }
-
-        #endregion
     }
 }

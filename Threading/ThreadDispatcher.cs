@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Threading;
 
-namespace VouwwandImages.Threading
+namespace Billiard.Threading
 {
     public static class ThreadDispatcher
     {

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace VouwwandImages.UI.Converters
+namespace Billiard.UI.Converters
 {
     /// <summary>
     /// Convert Level to left margin

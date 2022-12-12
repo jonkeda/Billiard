@@ -23,17 +23,22 @@ namespace Billiard.Camera.vision
         public float ballMinRadius = 10;
         public float ballMaxRadius = 40;
 
-        public float maxContourDistanceWithSameObject = 5;
+        public int maxContourDistanceWithSameObject = 5;
         public Mat cameraMat = new Mat();
         public Mat processMat = new Mat();
-        public Mat smallMat = new Mat();
+        public Mat floodfillMat = new Mat();
         public Mat tableMat = new Mat();
+        public Mat grayTableMat = new Mat();
         public Mat binaryTableMat = new Mat();
-        
+        public Mat hsvTableMat = new Mat();
+        public Mat hTableMat = new Mat();
+        public Mat sTableMat = new Mat();
+        public Mat vTableMat = new Mat();
+
         public bool isForcedCorners = false;	// TODO: when detection works (near) perfectly, we do not need this anymore
 
         public Table table = new Table();
-        public List<PointF> detectedBallsInFrame = new List<PointF>();
+        public List<Point> detectedBallsInFrame = new List<Point>();
 
         public int frameCounter = 0;
         public int frameProcessingTimeInMillis;

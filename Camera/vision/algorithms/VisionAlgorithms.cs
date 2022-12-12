@@ -2,8 +2,10 @@
 using Emgu.CV;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Billiard.Camera.vision.Geometries;
+using Emgu.CV.Structure;
 using Math = Billiard.Camera.vision.Geometries.Math;
 
 namespace Billiard.Camera.vision.algorithms
@@ -23,44 +25,35 @@ namespace Billiard.Camera.vision.algorithms
          * @param yAdd			Y increment, f.e. 0
          * @return				average center point of found matching points
          */
-        public static PointF findColorOnLine(Mat image, Scalar targetColor, int lineLength, int x, int y, int xAdd, int yAdd)
+        public static PointF findColorOnLine(Mat image, MCvScalar targetColor, int lineLength, int x, int y, int xAdd, int yAdd)
         {
             List<float> foundX = new List<float>();
-
-
             List<float> foundY = new List<float>();
-
-            // TODO
-            return PointF.Empty;
-/*            lineLength.times {
-                Scalar color = new Scalar(image.Get(y, x));
-
-                if (color == targetColor)
+            for (int i = 0; i < lineLength; i++)
+            {
+                var rawData = image.GetRawData(y, x);
+                MCvScalar color = new MCvScalar(rawData[0], rawData[1], rawData[2]);
+                if (color.Equals(targetColor))
                 {
-                    foundX.Add << x;
-
-                    foundY << y;
-
+                    foundX.Add( x);
+                    foundY.Add(y);
                 }
-
                 x += xAdd;
-
                 y += yAdd;
-
             }
-            return foundX
-                ? new PointF(foundX.sum() / foundX.size() as int, foundY.sum() / foundY.size() as int)
-                : new PointF(0, 0);*/
+            return foundX.Any()
+                ? new PointF(foundX.Sum() / foundX.size(), foundY.Sum() / foundY.size())
+                : new PointF(0, 0);
         }
 
-        public static bool isContoursOfSameObject(List<PointF> contour1, List<PointF> contour2, float maxDistance)
+        public static bool isContoursOfSameObject(List<Point> contour1, List<Point> contour2, int maxDistance)
         {
-            RectangleF boundingRectangle1 = getBoundingRectangle(contour1, maxDistance);
-            RectangleF boundingRectangle2 = getBoundingRectangle(contour2, maxDistance);
-            List<PointF> restrictedContour1 = contour1.FindAll(it => boundingRectangle2.Contains(it));
-            List<PointF> restrictedContour2 = contour2.FindAll(it => boundingRectangle1.Contains(it));
-            foreach (PointF p1 in restrictedContour1)
-                foreach (PointF p2 in restrictedContour2)
+            Rectangle boundingRectangle1 = getBoundingRectangle(contour1, maxDistance);
+            Rectangle boundingRectangle2 = getBoundingRectangle(contour2, maxDistance);
+            List<Point> restrictedContour1 = contour1.FindAll(it => boundingRectangle2.Contains(it));
+            List<Point> restrictedContour2 = contour2.FindAll(it => boundingRectangle1.Contains(it));
+            foreach (Point p1 in restrictedContour1)
+                foreach (Point p2 in restrictedContour2)
                     if (GeometricMath.rectilinearDistance(p1, p2) <= maxDistance)
                         return true;
             return false;
@@ -121,22 +114,22 @@ namespace Billiard.Camera.vision.algorithms
                 : new Scalar(0, 0, 0);
         }
 
-        static RectangleF getBoundingRectangle(List<PointF> points, float padding = 0)
+        static Rectangle getBoundingRectangle(List<Point> points, int padding = 0)
         {
-            float minX = 0, maxX = 0, minY = 0, maxY = 0;
+            int minX = 0, maxX = 0, minY = 0, maxY = 0;
             if (points.size() > 0)
             {
                 minX = maxX = points[0].X;
                 minY = maxY = points[0].Y;
             }
-            foreach (PointF point in points)
+            foreach (Point point in points)
             {
                 if (point.X < minX) minX = point.X;
                 if (point.X > maxX) maxX = point.X;
                 if (point.Y < minY) minY = point.Y;
                 if (point.Y > maxY) maxY = point.Y;
             }
-            return new RectangleF(new PointF(minX - padding, minY - padding), new SizeF(maxX + padding, maxY + padding));
+            return new Rectangle(new Point(minX - padding, minY - padding), new Size(maxX + padding, maxY + padding));
         }
     }
 }

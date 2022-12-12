@@ -1,4 +1,4 @@
-﻿namespace VouwwandImages.Extensions
+﻿namespace Billiard.Extensions
 {
     public static class StringArrayExtension
     {

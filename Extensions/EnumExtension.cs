@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace VouwwandImages.Extensions
+namespace Billiard.Extensions
 {
     public static class EnumExtension
     {

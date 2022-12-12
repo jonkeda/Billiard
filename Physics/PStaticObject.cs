@@ -1,8 +1,8 @@
-﻿using Physics.Colliders;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
+using Billiard.Physics.Colliders.Colliders;
 
-namespace Physics
+namespace Billiard.Physics
 {
     class PStaticObject
     {

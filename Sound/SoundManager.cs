@@ -1,6 +1,6 @@
 ﻿//using IrrKlang;
 
-namespace Sound
+namespace Billiard.Sound
 {
 /*    class SoundManager
     {

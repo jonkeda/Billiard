@@ -141,4 +141,17 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="views\TableView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="views\BallView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

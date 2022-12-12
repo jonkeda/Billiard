@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using VouwwandImages.Threading;
+using Billiard.Threading;
 
-namespace VouwwandImages.UI
+namespace Billiard.UI
 {
 
     public class SyncedObservableCollection<T> : ObservableCollection<T>

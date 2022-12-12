@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace VouwwandImages.UI
+namespace Billiard.UI
 {
     public abstract class ObservableViewModelCollection<TVm, TM> : ObservableCollection<TVm>
         where TVm : ModelViewModel<TM>

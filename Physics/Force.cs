@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using Utilities;
+using Billiard.Utilities;
 
 namespace Billiard.Physics
 {

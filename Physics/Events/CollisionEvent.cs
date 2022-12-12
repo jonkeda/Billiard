@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
-using Utilities;
 
-namespace Physics
+namespace Billiard.Physics.Events
 {
     namespace Collisions
     {

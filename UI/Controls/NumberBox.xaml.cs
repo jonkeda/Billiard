@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace VouwwandImages.UI.Controls
+namespace Billiard.UI.Controls
 {
     public enum CtrlFlag : byte
     {

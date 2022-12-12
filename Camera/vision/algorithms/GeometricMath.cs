@@ -45,18 +45,18 @@ namespace Billiard.Camera.vision.algorithms
             return maxDistance;
         }
 
-        public static float getRadiusOptimizedWithMaxValue(VectorOfPointF points, float maxRadius)
+        public static float getRadiusOptimizedWithMaxValue(VectorOfPoint points, float maxRadius)
         {
             float maxDistance = 0;
-            PointF[] p = points.ToArray();
+            Point[] p = points.ToArray();
             IEnumerator pointIterator1 = p.GetEnumerator();
             while (pointIterator1.MoveNext())
             {
-                PointF p1 = (PointF)pointIterator1.Current;
+                Point p1 = (Point)pointIterator1.Current;
                 IEnumerator pointIterator2 = pointIterator1;
                 while (pointIterator2.MoveNext())
                 {
-                    PointF p2 = (PointF)pointIterator2.Current;
+                    Point p2 = (Point)pointIterator2.Current;
                     maxDistance = Math.max(distance(p1, p2), maxDistance);
                     if (maxDistance > maxRadius)
                         return maxDistance;
@@ -69,6 +69,11 @@ namespace Billiard.Camera.vision.algorithms
         public static PointF getGeometricAverage(List<PointF> points)
         {
             return new PointF(points.Sum(p => p.X) / points.size(), points.Sum(p => p.Y) / points.size());
+        }
+
+        public static Point getGeometricAverage(List<Point> points)
+        {
+            return new Point(points.Sum(p => p.X) / points.size(), points.Sum(p => p.Y) / points.size());
         }
 
         public static PointF getGeometricMedian(List<PointF> points)

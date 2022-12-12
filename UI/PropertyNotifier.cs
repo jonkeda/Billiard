@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
-using VouwwandImages.Threading;
+using Billiard.Threading;
 
-namespace VouwwandImages.UI
+namespace Billiard.UI
 {
     public abstract class TreeViewItemModel : PropertyNotifier, ITreeViewItem
     {

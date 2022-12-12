@@ -1,4 +1,4 @@
-﻿namespace VouwwandImages.Exceptions
+﻿namespace Billiard.Exceptions
 {
     public delegate bool WaitCondition();
 }

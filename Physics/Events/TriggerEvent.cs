@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Physics
+namespace Billiard.Physics.Events
 {
     namespace Triggers
     {

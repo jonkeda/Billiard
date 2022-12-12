@@ -4,7 +4,7 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Utilities;
+namespace Billiard.Utilities;
 
 class Vector2Collection : Collection<Vector2>
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace VouwwandImages.Exceptions
+namespace Billiard.Exceptions
 {
     public static class Do
     {

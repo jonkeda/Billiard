@@ -1,17 +1,15 @@
-﻿using Physics.Prefabs;
-using Physics.Triggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
-using Billiard.Physics;
-using Utilities;
 using System.Windows.Media.Imaging;
+using Billiard.Physics.Events.Triggers;
+using Billiard.Physics.Prefabs;
+using Billiard.Physics.Prefabs.Prefabs;
 using Billiard.Utilities;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
@@ -20,7 +18,7 @@ using FlowDirection = System.Windows.FlowDirection;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
 
-namespace Physics
+namespace Billiard.Physics
 {
     class PhysicsEngine
     {

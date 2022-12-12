@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:local="clr-namespace:Billiard"
+        xmlns:local="clr-namespace:Billiard" 
+        xmlns:views="clr-namespace:Billiard.views"
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStyle="SingleBorderWindow"
@@ -72,18 +73,13 @@
 
             </Grid>
         </TabItem>
-        <TabItem Header="Video">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0">
-                    <Button Click="Video_OnClick"></Button>
-                </StackPanel>
-                <Image Grid.Row="1" x:Name="Video" />
-            </Grid>
-
+        <TabItem Header="Table Detector">
+            <views:TableView />
         </TabItem>
+
+        <TabItem Header="Ball Detector">
+            <views:BallView />
+        </TabItem>
+
     </TabControl>
 </Window>

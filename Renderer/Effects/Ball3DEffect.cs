@@ -4,7 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Media3D;
 
-namespace Effects
+namespace Billiard.Renderer.Effects
 {
     public class Ball3DEffect : ShaderEffect
     {

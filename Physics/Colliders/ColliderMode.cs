@@ -1,4 +1,4 @@
-﻿namespace Physics
+﻿namespace Billiard.Physics.Colliders
 {
     namespace Colliders
     {

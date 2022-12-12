@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace VouwwandImages.Extensions
+namespace Billiard.Extensions
 {
     public static class DecimalExtension
     {

@@ -1,23 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
 
 namespace Billiard.Camera.Devices
 {
+    public class VideoDeviceCollection : Collection<VideoDevice>
+    {
+    }
+
+    public class VideoDevice
+    {
+        public VideoDevice(int index, string name)
+        {
+            Index = index;
+            Name = name;
+        }
+
+        public int Index { get; }
+
+        public string Name { get; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+    }
+
     /// <summary>
     /// A system device enumerator.
     /// </summary>
-    public class SystemDeviceEnumerator : IDisposable
+    public class SystemDevices : IDisposable
     {
         private bool disposed;
         private ICreateDevEnum _systemDeviceEnumerator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SystemDeviceEnumerator"/> class.
+        /// Initializes a new instance of the <see cref="SystemDevices"/> class.
         /// </summary>
-        public SystemDeviceEnumerator()
+        public SystemDevices()
         {
             var comType = Type.GetTypeFromCLSID(new Guid("62BE5D10-60EB-11D0-BD3B-00A0C911CE86"));
             _systemDeviceEnumerator = (ICreateDevEnum)Activator.CreateInstance(comType);
@@ -27,7 +50,7 @@ namespace Billiard.Camera.Devices
         /// Lists the video input devices connected to the system.
         /// </summary>
         /// <returns>A dictionary with the id and name of the device.</returns>
-        public IReadOnlyDictionary<int, string> ListVideoInputDevice()
+        public IReadOnlyList<VideoDevice> VideoDevices()
         {
             var videoInputDeviceClass = new Guid("{860BB310-5D01-11D0-BD3B-00A0C911CE86}");
 
@@ -38,7 +61,7 @@ namespace Billiard.Camera.Devices
             }
 
             var moniker = new IMoniker[1];
-            var list = new Dictionary<int, string>();
+            var list = new VideoDeviceCollection();
 
             while (true)
             {
@@ -49,14 +72,14 @@ namespace Billiard.Camera.Devices
                 }
 
                 var device = new VideoInputDevice(moniker[0]);
-                list.Add(list.Count, device.Name);
+                list.Add(new VideoDevice(list.Count, device.Name));
 
                 // Release COM object
                 Marshal.ReleaseComObject(moniker[0]);
                 moniker[0] = null;
             }
 
-            return list;
+            return list.AsReadOnly();
         }
 
         /// <summary>

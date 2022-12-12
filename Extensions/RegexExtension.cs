@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace VouwwandImages.Extensions
+namespace Billiard.Extensions
 {
     public static class RegexExtension
     {

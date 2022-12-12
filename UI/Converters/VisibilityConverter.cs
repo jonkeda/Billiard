@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace VouwwandImages.UI.Converters
+namespace Billiard.UI.Converters
 {
     public class PassFailConverter : BaseConverter, IValueConverter
     {

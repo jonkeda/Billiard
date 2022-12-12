@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-
 using System.Linq;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Billiard.Utilities;
-using Utilities;
 using Brush = System.Windows.Media.Brush;
 using Pen = System.Windows.Media.Pen;
 
 
 
-namespace Physics
+namespace Billiard.Physics
 {
     enum CollisionType
     {

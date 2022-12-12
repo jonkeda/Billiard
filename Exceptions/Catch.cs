@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VouwwandImages.Exceptions
+namespace Billiard.Exceptions
 {
     public static class Catch
     {

@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
-using Utilities;
-namespace Physics
+using Billiard.Utilities;
+
+namespace Billiard.Physics.Colliders
 {
     namespace Colliders
     {

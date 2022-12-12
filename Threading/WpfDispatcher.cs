@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace VouwwandImages.Threading
+namespace Billiard.Threading
 {
     public class WpfDispatcher
         : IThreadDispatcher

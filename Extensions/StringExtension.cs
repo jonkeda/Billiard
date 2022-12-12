@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace VouwwandImages.Extensions
+namespace Billiard.Extensions
 {
     public static class StringExtension
     {

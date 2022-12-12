@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace VouwwandImages.Extensions
+namespace Billiard.Extensions
 {
     public class ProcessEx
     {

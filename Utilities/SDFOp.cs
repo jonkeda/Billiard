@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Utilities
+namespace Billiard.Utilities
 {
     static class SDFOp
     {

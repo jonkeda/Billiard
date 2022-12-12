@@ -1,4 +1,4 @@
-﻿namespace Utilities
+﻿namespace Billiard.Utilities
 {
     class float3x3
     {

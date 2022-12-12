@@ -1,8 +1,7 @@
 ﻿using System.Numerics;
-using Physics.Colliders;
-using Utilities;
+using Billiard.Physics.Colliders.Colliders;
 
-namespace Physics
+namespace Billiard.Physics.Prefabs
 {
     namespace Prefabs
     {

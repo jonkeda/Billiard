@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace VouwwandImages.Threading
+namespace Billiard.Threading
 {
     public class SerialTaskQueue
     {

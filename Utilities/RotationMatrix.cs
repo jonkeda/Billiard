@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media.Media3D;
 using static System.Math;
 
-namespace Utilities
+namespace Billiard.Utilities
 {
     class RotationMatrix
     {

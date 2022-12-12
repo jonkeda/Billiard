@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Input;
-using VouwwandImages.Exceptions;
-using VouwwandImages.Extensions;
+using Billiard.Exceptions;
+using Billiard.Extensions;
 
-namespace VouwwandImages.UI
+namespace Billiard.UI
 {
     public class TargetCommand<T> : ICommand
     {

@@ -1,6 +1,4 @@
-﻿using Effects;
-using Physics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,9 +7,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using Billiard.Physics;
+using Billiard.Renderer.Effects;
 using Billiard.Utilities;
 
-namespace Render
+namespace Billiard.Renderer
 {
     class Renderer
     {

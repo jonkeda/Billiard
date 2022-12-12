@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using Utilities;
+using Billiard.Utilities;
 
-namespace Physics
+namespace Billiard.Physics.Colliders
 {
     namespace Colliders
     {

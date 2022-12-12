@@ -1,4 +1,4 @@
-﻿namespace VouwwandImages.UI
+﻿namespace Billiard.UI
 {
     public interface IWindow
     {

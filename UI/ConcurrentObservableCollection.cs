@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace VouwwandImages.UI
+namespace Billiard.UI
 {
     public class ConcurrentObservableCollection<T> : ObservableCollection<T>
     {
