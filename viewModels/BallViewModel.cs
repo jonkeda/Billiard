@@ -5,11 +5,9 @@ using Billiard.UI;
 using Emgu.CV;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using Billiard.Camera.vision;
 using Billiard.Camera.vision.Geometries;
-using System.Windows;
-using Brushes = System.Windows.Media.Brushes;
-using Pen = System.Windows.Media.Pen;
 
 namespace Billiard.viewModels
 {
@@ -26,12 +24,16 @@ namespace Billiard.viewModels
         private ImageSource vTableImage;
         private ImageSource inRangeImage;
         private ImageSource foundTableImage;
+        private ImageSource foundBallsImage;
 
         private VideoDevice selectedVideoDevice;
         private VideoCapture capturer;
 
         public TableDetector tableDetector = new();
         public BallDetector ballDetector = new();
+        private ImageSource whiteBallImage;
+        private ImageSource yellowBallImage;
+        private ImageSource redBallImage;
 
         public ICommand CaptureCommand
         {
@@ -98,10 +100,34 @@ namespace Billiard.viewModels
             set { SetProperty(ref vTableImage, value); }
         }
 
+        public ImageSource FoundBallsImage
+        {
+            get { return foundBallsImage; }
+            set { SetProperty(ref foundBallsImage, value); }
+        }
+
         public ImageSource FoundTableImage
         {
             get { return foundTableImage; }
             set { SetProperty(ref foundTableImage, value); }
+        }
+
+        public ImageSource WhiteBallImage
+        {
+            get { return whiteBallImage; }
+            set { SetProperty(ref whiteBallImage, value); }
+        }
+
+        public ImageSource YellowBallImage
+        {
+            get { return yellowBallImage; }
+            set { SetProperty(ref yellowBallImage, value); }
+        }
+
+        public ImageSource RedBallImage
+        {
+            get { return redBallImage; }
+            set { SetProperty(ref redBallImage, value); }
         }
 
         public IReadOnlyList<VideoDevice> VideoDevices
@@ -152,15 +178,12 @@ namespace Billiard.viewModels
             }
 
             tableDetector.Detect(image);
-            ballDetector.Detect(tableDetector.tableMat);
-
+            TableImage = tableDetector.originMat?.ToImageSource();
             OriginalImage = tableDetector.tableMat.ToImageSource();
+            FloodFillImage = tableDetector.floodFillMat?.ToImageSource();
+            InRangeImage = tableDetector.inRangeMat?.ToImageSource();
 
-            //FloodFillImage = tableDetector.floodFillMat?.ToImageSource();
-            //InRangeImage = tableDetector.inRangeMat?.ToImageSource();
-
-            TableImage = ballDetector.tableMat?.ToImageSource();
-
+            ballDetector.Detect(tableDetector.tableMat);
             GrayTableImage = ballDetector.grayTableMat?.ToImageSource();
             CannyTableImage = ballDetector.cannyTableMat?.ToImageSource();
 
@@ -169,30 +192,48 @@ namespace Billiard.viewModels
             STableImage = ballDetector.sTableMat?.ToImageSource();
             VTableImage = ballDetector.vTableMat?.ToImageSource();
 
+            WhiteBallImage = ballDetector.whiteBallMat?.ToImageSource();
+            YellowBallImage = ballDetector.yellowBallMat?.ToImageSource();
+            RedBallImage = ballDetector.redBallMat?.ToImageSource();
 
-  /*          DrawingVisual visual = new DrawingVisual();
+            foundBallsImage = DrawBalls();
+            FoundTableImage = TableViewModel.DrawFoundTable(InRangeImage, tableDetector);
+        }
+
+        private DrawingImage DrawBalls()
+        {
+            DrawingVisual visual = new DrawingVisual();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
                 drawingContext.PushClip(new RectangleGeometry(
-                    new Rect(new System.Windows.Point(0, 0), 
-                    new System.Windows.Point(InRangeImage.Width, InRangeImage.Height))));
-                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null, new Rect(0, 0, 
-                    InRangeImage.Width, InRangeImage.Height));
+                    new Rect(new System.Windows.Point(0, 0),
+                        new System.Windows.Point(OriginalImage.Width, OriginalImage.Height))));
+                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
+                    new Rect(0, 0, OriginalImage.Width, OriginalImage.Height));
 
-                
-                Pen forceColor = new Pen(Brushes.GreenYellow, 5)
+                Pen whiteColor = new Pen(Brushes.Black, 5)
                 {
                     DashStyle = DashStyles.Solid
                 };
-                foreach (System.Drawing.PointF point in tableDetector.points)
+                drawingContext.DrawEllipse(Brushes.Wheat, whiteColor, ballDetector.whiteBallPoint, 10, 10);
+
+                Pen yellowColor = new Pen(Brushes.Black, 5)
                 {
-                    drawingContext.DrawEllipse(null, forceColor, point.AsPoint(), 5, 5);
-                }
+                    DashStyle = DashStyles.Solid
+                };
+                drawingContext.DrawEllipse(Brushes.Yellow, yellowColor, ballDetector.yellowBallPoint, 10, 10);
+
+                Pen redColor = new Pen(Brushes.Black, 5)
+                {
+                    DashStyle = DashStyles.Solid
+                };
+                drawingContext.DrawEllipse(Brushes.Red, redColor, ballDetector.redBallPoint, 10, 10);
+
+
                 drawingContext.Close();
             }
 
-            FoundTableImage = new DrawingImage(visual.Drawing);
-*/
+            return new DrawingImage(visual.Drawing);
         }
     }
 }

@@ -33,18 +33,28 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Image Grid.Row="0" Grid.Column="0" Source="{Binding OriginalImage}" />
+
+            <Image Grid.Row="0" Grid.Column="0" Source="{Binding TableImage}" />
             <Image Grid.Row="0" Grid.Column="1" Source="{Binding FloodFillImage}" />
             <Image Grid.Row="0" Grid.Column="2" Source="{Binding InRangeImage}" />
             <Image Grid.Row="0" Grid.Column="2" Source="{Binding FoundTableImage}" />
 
+            <Image Grid.Row="1" Grid.Column="0" Source="{Binding OriginalImage}" />
+            <Image Grid.Row="1" Grid.Column="0" Source="{Binding FoundBallsImage}" />
+
+<!--
             <Image Grid.Row="1" Grid.Column="0" Source="{Binding GrayTableImage}" />
             <Image Grid.Row="1" Grid.Column="1" Source="{Binding CannyTableImage}" />
             <Image Grid.Row="1" Grid.Column="2" Source="{Binding TableImage}" />
-
+-->
+<!--
             <Image Grid.Row="2" Grid.Column="0" Source="{Binding HTableImage}" />
             <Image Grid.Row="2" Grid.Column="1" Source="{Binding STableImage}" />
             <Image Grid.Row="2" Grid.Column="2" Source="{Binding VTableImage}" />
+-->
+            <Image Grid.Row="2" Grid.Column="0" Source="{Binding WhiteBallImage}" />
+            <Image Grid.Row="2" Grid.Column="1" Source="{Binding YellowBallImage}" />
+            <Image Grid.Row="2" Grid.Column="2" Source="{Binding RedBallImage}" />
 
             <TextBlock Grid.Row="1" Grid.Column="0">1</TextBlock>
         </Grid>

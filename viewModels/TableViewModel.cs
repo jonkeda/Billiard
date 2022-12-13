@@ -171,17 +171,23 @@ namespace Billiard.viewModels
             STableImage = tableDetector.sTableMat?.ToImageSource();
             VTableImage = tableDetector.vTableMat?.ToImageSource();
 
+            FoundTableImage = DrawFoundTable(InRangeImage, tableDetector);
 
+        }
+
+        public static DrawingImage DrawFoundTable(ImageSource InRangeImage, TableDetector tableDetector)
+        {
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
                 drawingContext.PushClip(new RectangleGeometry(
-                    new Rect(new System.Windows.Point(0, 0), 
-                    new System.Windows.Point(InRangeImage.Width, InRangeImage.Height))));
-                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null, new Rect(0, 0, 
-                    InRangeImage.Width, InRangeImage.Height));
+                    new Rect(new System.Windows.Point(0, 0),
+                        new System.Windows.Point(InRangeImage.Width, InRangeImage.Height))));
+                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
+                    new Rect(0, 0,
+                        InRangeImage.Width, InRangeImage.Height));
 
-                
+
                 Pen forceColor = new Pen(Brushes.GreenYellow, 5)
                 {
                     DashStyle = DashStyles.Solid
@@ -190,11 +196,11 @@ namespace Billiard.viewModels
                 {
                     drawingContext.DrawEllipse(null, forceColor, point.AsPoint(), 5, 5);
                 }
+
                 drawingContext.Close();
             }
 
-            FoundTableImage = new DrawingImage(visual.Drawing);
-
+            return new DrawingImage(visual.Drawing);
         }
     }
 }

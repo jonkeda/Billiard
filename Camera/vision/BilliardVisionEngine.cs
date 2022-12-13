@@ -50,8 +50,6 @@ internal class BilliardVisionEngine
 
         // CvInvoke.Resize(engineState.cameraMat, engineState.processMat, VIDEO_IMAGE_SIZE);
 
-        
-
         CvInvoke.Resize(image, engineState.processMat, image.Size);
         //CvInvoke.Resize(image, engineState.processMat, VIDEO_IMAGE_SIZE);
 
