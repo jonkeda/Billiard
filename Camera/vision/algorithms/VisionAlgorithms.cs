@@ -3,14 +3,13 @@ using Emgu.CV;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Billiard.Camera.vision.Geometries;
 using Emgu.CV.Structure;
 using Math = Billiard.Camera.vision.Geometries.Math;
 
 namespace Billiard.Camera.vision.algorithms
 {
-    internal class VisionAlgorithms
+    public class VisionAlgorithms
     {
 
         /**

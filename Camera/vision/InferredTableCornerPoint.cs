@@ -5,7 +5,7 @@ using Billiard.Camera.vision.Geometries;
 
 namespace Billiard.Camera.vision
 {
-    internal class InferredTableCornerPoint 
+    public class InferredTableCornerPoint 
     {
 
         public float Y { get; set; }
@@ -26,29 +26,29 @@ namespace Billiard.Camera.vision
         public InferredTableCornerPoint(int shortTimePointsSize, int longTimePointsSize)
         {
             this.shortTimePointsSize = shortTimePointsSize;
-            this.shortTimePoints = new CappedQueue<PointF>(shortTimePointsSize);
-            this.longTimePoints = new CappedQueue<PointF>(longTimePointsSize);
+            shortTimePoints = new CappedQueue<PointF>(shortTimePointsSize);
+            longTimePoints = new CappedQueue<PointF>(longTimePointsSize);
         }
 
         public void recordPoint(PointF newPoint)
         {
-            this.shortTimePoints.push(newPoint);
+            shortTimePoints.push(newPoint);
             PointF meanPoint = getMeanPoint();
             if (counter++ % shortTimePointsSize == 0)
-                this.longTimePoints.push(meanPoint);
+                longTimePoints.push(meanPoint);
 
-            PointF geometricMedianPoint = GeometricMath.getGeometricMedian(this.longTimePoints.elements);
-            this.X = geometricMedianPoint.X;
-            this.Y = geometricMedianPoint.Y;
+            PointF geometricMedianPoint = GeometricMath.getGeometricMedian(longTimePoints.elements);
+            X = geometricMedianPoint.X;
+            Y = geometricMedianPoint.Y;
         }
 
         public PointF getMeanPoint()
         {
-            float size = this.shortTimePoints.elements.size();
+            float size = shortTimePoints.elements.size();
             if (size == 0)
                 return new PointF(0, 0);
-            float meanX = this.shortTimePoints.elements.Sum(e => e.X) / size;
-            float meanY = this.shortTimePoints.elements.Sum(e => e.Y) / size;
+            float meanX = shortTimePoints.elements.Sum(e => e.X) / size;
+            float meanY = shortTimePoints.elements.Sum(e => e.Y) / size;
             return new PointF(meanX, meanY);
         }
 

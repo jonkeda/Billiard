@@ -13,7 +13,7 @@ using Pen = System.Windows.Media.Pen;
 
 namespace Billiard.Physics
 {
-    enum CollisionType
+    public enum CollisionType
     {
         Start,
         End,
@@ -21,7 +21,7 @@ namespace Billiard.Physics
         Cushion
     }
 
-    class CollisionCollection : Collection<Collision>
+    public class CollisionCollection : Collection<Collision>
     {
         public bool TwoDifferentBallsHit()
         {
@@ -47,7 +47,7 @@ namespace Billiard.Physics
 
         public Geometry AsGeometry()
         {
-            if (this.Count <= 2)
+            if (Count <= 2)
             {
                 return null;
             }
@@ -68,7 +68,7 @@ namespace Billiard.Physics
 
     }
 
-    class Collision
+    public class Collision
     {
         public Collision(Vector2 position, PBall ball, CollisionType collisionType)
         {
@@ -82,7 +82,7 @@ namespace Billiard.Physics
         private readonly CollisionType collisionType;
     }
 
-    class PBall 
+    public class PBall 
     {
         public Vector2 position;
         public Vector2 velocity;

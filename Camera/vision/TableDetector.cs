@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using Billiard.Camera.vision.algorithms;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
@@ -12,7 +11,7 @@ using Emgu.CV.Util;
 
 namespace Billiard.Camera.vision
 {
-    internal class TableDetector
+    public class TableDetector
     {
         public Mat originMat = new();
         public Mat floodFillMat = new();
@@ -314,7 +313,7 @@ namespace Billiard.Camera.vision
 
             float cannyThreshold = 180.0f;
             float cannyThresholdLinking = 120.0f;
-            CvInvoke.GaussianBlur(grayTableMat, grayTableMat, new System.Drawing.Size(3, 3), 1);
+            CvInvoke.GaussianBlur(grayTableMat, grayTableMat, new Size(3, 3), 1);
             CvInvoke.Canny(grayTableMat, cannyTableMat, cannyThreshold, cannyThresholdLinking);
 
         }

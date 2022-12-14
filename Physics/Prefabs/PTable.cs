@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
-using Billiard.Physics.Colliders.Colliders;
+using Billiard.Physics.Colliders;
 
 namespace Billiard.Physics.Prefabs
 {
-    class PoolTable : PTable
+    public class PoolTable : PTable
     {
         public PoolTable()
         {
@@ -45,7 +45,7 @@ namespace Billiard.Physics.Prefabs
         }
     }
 
-    class BilliartTable : PTable
+    public class BilliartTable : PTable
     {
         public float top;
         public float bottom;
@@ -80,7 +80,7 @@ namespace Billiard.Physics.Prefabs
 
     }
 
-    class PTable : PStaticObject
+    public class PTable : PStaticObject
     {
         public float Length { get; } = 2100 * 0.9f; // 1800; // 1200;
         public float Width { get; } = 1050 * 0.9f; // 900;

@@ -16,37 +16,13 @@
         </Grid.RowDefinitions>
         
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Command="{Binding CaptureCommand}">Capture</Button>
+            <Button Command="{Binding StartCommand}">Start</Button>
+            <Button Command="{Binding StopCommand}">Stop</Button>
         </StackPanel>
 
-        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevices}" SelectedItem="{Binding SelectedVideoDevice}"></ComboBox>
+        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevice.VideoDevices}" SelectedItem="{Binding VideoDevice.SelectedVideoDevice}"></ComboBox>
 
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <Image Grid.Row="0" Grid.Column="0" Source="{Binding OriginalImage}" />
-            <Image Grid.Row="0" Grid.Column="1" Source="{Binding FloodFillImage}" />
-            <Image Grid.Row="0" Grid.Column="2" Source="{Binding TableImage}" />
-
-            <Image Grid.Row="1" Grid.Column="0" Source="{Binding GrayTableImage}" />
-            <Image Grid.Row="1" Grid.Column="1" Source="{Binding BinaryTableImage}" />
-            <Image Grid.Row="1" Grid.Column="2" Source="{Binding HsvTableImage}" />
-
-            <Image Grid.Row="2" Grid.Column="0" Source="{Binding HTableImage}" />
-            <Image Grid.Row="2" Grid.Column="1" Source="{Binding STableImage}" />
-            <Image Grid.Row="2" Grid.Column="2" Source="{Binding VTableImage}" />
-
-            <TextBlock Grid.Row="1" Grid.Column="0">1</TextBlock>
-        </Grid>
+        <Image Grid.Row="2"  Source="{Binding Output}" />
 
 </Grid>
 

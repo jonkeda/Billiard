@@ -79,7 +79,7 @@ namespace Billiard.Extensions
         {
             int? nullable = new int?();
             int result = 0;
-            if (int.TryParse(val, NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands, (IFormatProvider)IntExtensions.Culture.NumberFormat, out result))
+            if (int.TryParse(val, NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands, (IFormatProvider)Culture.NumberFormat, out result))
                 nullable = new int?(result);
             return nullable;
         }
@@ -87,14 +87,14 @@ namespace Billiard.Extensions
         public static int TryParse(string val)
         {
             int result = 0;
-            int.TryParse(val, NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands, (IFormatProvider)IntExtensions.Culture.NumberFormat, out result);
+            int.TryParse(val, NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands, (IFormatProvider)Culture.NumberFormat, out result);
             return result;
         }
 
         public static string ToString(this int? value, string format)
         {
             if (value.HasValue)
-                return value.Value.ToString("N0", (IFormatProvider)IntExtensions.Culture);
+                return value.Value.ToString("N0", (IFormatProvider)Culture);
             return (string)null;
         }
     }

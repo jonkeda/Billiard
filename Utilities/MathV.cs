@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Billiard.Utilities
 {
-    static class MathV
+    public static class MathV
     {
         public static float Max(float x, float y, float a)
         {
@@ -12,7 +12,7 @@ namespace Billiard.Utilities
 
         public static float Clamp(float x, float minVal, float maXVal)
         {
-            return Math.Min(Math.Max(x, minVal), maXVal);
+            return MathF.Min(MathF.Max(x, minVal), maXVal);
         }
 
         public static Vector2 PerpendicularA(this Vector2 v)
@@ -27,7 +27,7 @@ namespace Billiard.Utilities
 
         public static Vector2 Max(Vector2 v, float d)
         {
-            return new Vector2(Math.Max(v.X, d), Math.Max(v.Y, d));
+            return new Vector2(MathF.Max(v.X, d), MathF.Max(v.Y, d));
         }
 
         public static Vector2 Max(Vector2 a, Vector2 b)
@@ -37,18 +37,18 @@ namespace Billiard.Utilities
         
         public static Vector2 GetVector(float angle)
         {
-            angle = angle / 180f * (float)Math.PI;
+            angle = angle / 180f * (float)MathF.PI;
 
-            return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+            return new Vector2((float)MathF.Cos(angle), (float)MathF.Sin(angle));
         }
 
         public static float GetAngle(this Vector2 a)
         {
             if (a.Y > 0)
             {
-                return (float)Math.Acos(Vector2.Dot(a, new Vector2(1f, 0f))) * 180f / (float)Math.PI;
+                return (float)MathF.Acos(Vector2.Dot(a, new Vector2(1f, 0f))) * 180f / (float)MathF.PI;
             }
-            return -(float)Math.Acos(Vector2.Dot(a, new Vector2(1f, 0f))) * 180f / (float)Math.PI;
+            return -(float)MathF.Acos(Vector2.Dot(a, new Vector2(1f, 0f))) * 180f / (float)MathF.PI;
         }
     }
 }

@@ -4,14 +4,14 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Billiard.Physics;
-using Emgu.CV;
-using Emgu.CV.CvEnum;
-using Emgu.CV.Structure;
+using Billiard.viewModels;
 
 namespace Billiard
 {
     public partial class MainWindow
     {
+        private readonly MainViewModel mainViewModel;
+
         private readonly PhysicsEngine physicsEngine;
         private readonly Renderer.Renderer renderer;
 
@@ -129,18 +129,21 @@ namespace Billiard
         #endregion
 
 
-        public MainWindow()
+        public MainWindow(MainViewModel mainViewModel)
         {
-            DataContext = this;
+            this.mainViewModel = mainViewModel;
+
+            DataContext = mainViewModel;
             InitializeComponent();
             CompositionTarget.Rendering += Update;
 
             physicsEngine = new PhysicsEngine(GameType.Billiart);
+            mainViewModel.PhysicsEngine = physicsEngine;
 
             renderer = new Renderer.Renderer(Table, Overlay, Solutions, physicsEngine.Length, physicsEngine.Width);
             renderer.ResetAll(physicsEngine.balls);
 
-            DataContext = physicsEngine;
+            //DataContext = physicsEngine;
         }
 
         private void UIElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)

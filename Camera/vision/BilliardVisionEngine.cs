@@ -9,7 +9,7 @@ using Emgu.CV.Util;
 
 namespace Billiard.Camera.vision;
 
-internal class BilliardVisionEngine
+public class BilliardVisionEngine
 {
     internal BilliardVisionEngineState engineState; //= new BilliardVisionEngineState(this);
 
@@ -123,7 +123,7 @@ internal class BilliardVisionEngine
 
         float cannyThreshold = 180.0f;
         float cannyThresholdLinking = 120.0f;
-        CvInvoke.GaussianBlur(engineState.grayTableMat, engineState.grayTableMat, new System.Drawing.Size(3, 3), 1);
+        CvInvoke.GaussianBlur(engineState.grayTableMat, engineState.grayTableMat, new Size(3, 3), 1);
         CvInvoke.Canny(engineState.grayTableMat, engineState.binaryTableMat, cannyThreshold, cannyThresholdLinking);
 
         CvInvoke.CvtColor(engineState.tableMat, engineState.hsvTableMat, ColorConversion.Bgr2Hsv);

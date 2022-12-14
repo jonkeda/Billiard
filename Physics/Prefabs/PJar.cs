@@ -1,20 +1,17 @@
 ﻿using System.Numerics;
-using Billiard.Physics.Colliders.Colliders;
+using Billiard.Physics.Colliders;
 
 namespace Billiard.Physics.Prefabs
 {
-    namespace Prefabs
+    public class PJar : PStaticObject
     {
-        class PJar : PStaticObject
+        public PJar()
         {
-            public PJar()
-            {
-                LodGroup Lod0 = new LodGroup();
+            LodGroup Lod0 = new LodGroup();
 
-                Lod0.AddCollider(new StadiumCollider(new Vector2(100, 50), new Vector2(0, 445), 23, ColliderMode.Negate, 20));
+            Lod0.AddCollider(new StadiumCollider(new Vector2(100, 50), new Vector2(0, 445), 23, ColliderMode.Negate, 20));
 
-                AddLodGroup(Lod0);
-            }
+            AddLodGroup(Lod0);
         }
     }
 }

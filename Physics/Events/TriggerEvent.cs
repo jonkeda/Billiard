@@ -2,11 +2,9 @@
 
 namespace Billiard.Physics.Events
 {
-    namespace Triggers
+
+    public class TriggerEvent : EventArgs
     {
-        class TriggerEvent : EventArgs
-        {
-            public PBall ball;
-        }
+        public PBall ball;
     }
 }

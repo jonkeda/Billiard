@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using Billiard.Camera.vision.Geometries;
 using Emgu.CV;
 
 namespace Billiard.Camera.vision
 {
-    internal class BilliardVisionEngineState
+    public class BilliardVisionEngineState
     {
         public BilliardVisionEngineState(BilliardVisionEngine billiardVisionEngine)
         {

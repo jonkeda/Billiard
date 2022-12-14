@@ -2,7 +2,7 @@
 
 namespace Billiard.Camera.vision
 {
-    internal class CappedQueue<T>
+    public class CappedQueue<T>
     {
         public List<T> elements = new List<T>();
         private int capSize;
@@ -24,7 +24,7 @@ namespace Billiard.Camera.vision
 
         public CappedQueue<T> leftShift(T newElement)
         {
-            return this.push(newElement);
+            return push(newElement);
         }
 
         public int size()

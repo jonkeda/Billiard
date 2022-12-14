@@ -1,23 +1,24 @@
 ﻿using System.Windows.Input;
 using System.Windows.Media;
-using Billiard.Camera.Devices;
 using Billiard.UI;
 using Emgu.CV;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using Billiard.Camera.vision;
 using Billiard.Camera.vision.Geometries;
-using Billiard.Physics;
 using System.Windows;
 using Brushes = System.Windows.Media.Brushes;
 using Pen = System.Windows.Media.Pen;
-using System.Windows.Forms;
 
 namespace Billiard.viewModels
 {
-    internal class TableViewModel : ViewModel
+    public class TableViewModel : ViewModel
     {
+        public VideoDeviceViewModel VideoDevice { get; }
+
+        public TableViewModel(VideoDeviceViewModel videoDevice)
+        {
+            VideoDevice = videoDevice;
+        }
+
         private ImageSource originalImage;
         private ImageSource grayTableImage;
 
@@ -28,8 +29,6 @@ namespace Billiard.viewModels
         private ImageSource hTableImage;
         private ImageSource sTableImage;
         private ImageSource vTableImage;
-        private VideoDevice selectedVideoDevice;
-        private VideoCapture capturer;
 
         public TableDetector tableDetector = new();
 
@@ -107,48 +106,15 @@ namespace Billiard.viewModels
             set { SetProperty(ref foundTableImage, value); }
         }
 
-        public IReadOnlyList<VideoDevice> VideoDevices
-        {
-            get
-            {
-                using SystemDevices systemDevice = new SystemDevices();
-                IReadOnlyList<VideoDevice> devices = systemDevice.VideoDevices();
-                SelectedVideoDevice = devices.LastOrDefault();
-                return devices;
-            }
-        }
-
-        public VideoDevice SelectedVideoDevice
-        {
-            get { return selectedVideoDevice; }
-            set
-            {
-                if (SetProperty(ref selectedVideoDevice, value))
-                {
-                    capturer = null;
-                }
-            }
-        }
-
         private void Captures()
         {
-            if (selectedVideoDevice == null)
+            if (VideoDevice.Capturer == null
+                || !VideoDevice.Capturer.Grab())
             {
                 return;
             }
 
-            if (capturer == null)
-            {
-                capturer = new VideoCapture(SelectedVideoDevice.Index);
-            }
-
-            if (capturer == null
-                || !capturer.Grab())
-            {
-                return;
-            }
-
-            Mat image = capturer.QueryFrame();
+            Mat image = VideoDevice.Capturer.QueryFrame();
             if (image == null)
             {
                 return;
@@ -181,8 +147,8 @@ namespace Billiard.viewModels
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
                 drawingContext.PushClip(new RectangleGeometry(
-                    new Rect(new System.Windows.Point(0, 0),
-                        new System.Windows.Point(InRangeImage.Width, InRangeImage.Height))));
+                    new Rect(new Point(0, 0),
+                        new Point(InRangeImage.Width, InRangeImage.Height))));
                 drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
                     new Rect(0, 0,
                         InRangeImage.Width, InRangeImage.Height));

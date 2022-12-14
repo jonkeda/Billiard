@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using Billiard.Physics.Colliders.Colliders;
+using Billiard.Physics.Colliders;
 
 namespace Billiard.Physics
 {
-    class PStaticObject
+    public class PStaticObject
     {
         public List<LodGroup> lodGroups = new List<LodGroup>();
 

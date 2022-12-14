@@ -4,7 +4,7 @@ using Emgu.CV;
 
 namespace Billiard.Camera
 {
-    internal class Camera
+    public class Camera
     {
         public static BitmapSource capture()
         {

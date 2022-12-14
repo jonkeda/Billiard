@@ -5,7 +5,7 @@ using Billiard.Camera.vision.algorithms;
 
 namespace Billiard.Camera.vision
 {
-    internal class Table
+    public class Table
     {
         public InferredTableCornerPoint backRightCornerPoint = new();
 

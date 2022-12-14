@@ -3,7 +3,7 @@ using Billiard.Utilities;
 
 namespace Billiard.Physics
 {
-    class Force
+    public class Force
     {
         public float Direction { get; set; }
 

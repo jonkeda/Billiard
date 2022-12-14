@@ -81,7 +81,7 @@ namespace Billiard.UI.Controls
             {
                 FrameworkPropertyMetadata BorderThicknessMetaData = new FrameworkPropertyMetadata();
                 BorderThicknessMetaData.CoerceValueCallback = new CoerceValueCallback(CoerceBorderThickness);
-                UserControl.BorderThicknessProperty.OverrideMetadata(typeof(NumberBox), BorderThicknessMetaData);
+                BorderThicknessProperty.OverrideMetadata(typeof(NumberBox), BorderThicknessMetaData);
 
                 // For Background, do not do in XAML part something like:
                 // Background="{Binding Background, ElementName=Root}" in FramePlaceHolder settings.
@@ -94,7 +94,7 @@ namespace Billiard.UI.Controls
 
                 FrameworkPropertyMetadata BackgroundMetaData = new FrameworkPropertyMetadata();
                 BackgroundMetaData.CoerceValueCallback = new CoerceValueCallback(CoerceBackground);
-                UserControl.BackgroundProperty.OverrideMetadata(typeof(NumberBox), BackgroundMetaData);
+                BackgroundProperty.OverrideMetadata(typeof(NumberBox), BackgroundMetaData);
             }
             catch (Exception)
             {

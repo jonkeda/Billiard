@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Billiard" 
-        xmlns:views="clr-namespace:Billiard.views"
+        xmlns:views="clr-namespace:Billiard.views" 
+        xmlns:viewModel="clr-namespace:Billiard.viewModels"
+        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=false, Type={x:Type viewModel:MainViewModel}}"
+
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStyle="SingleBorderWindow"
@@ -29,7 +32,7 @@
     </Window.Resources>
     <TabControl>
         <TabItem Header="Table">
-            <Grid>
+            <Grid DataContext="{Binding PhysicsEngine}">
                 <Grid ClipToBounds="True" Width="Auto" Height="Auto">
                     <Grid.Background>
                         <RadialGradientBrush GradientOrigin="0.5, 0.5" Center="0.5, 0.5" RadiusX="0.5" RadiusY="0.5">
@@ -74,11 +77,15 @@
             </Grid>
         </TabItem>
         <TabItem Header="Table Detector">
-            <views:TableView />
+            <views:TableView DataContext="{Binding TableViewModel}" />
         </TabItem>
 
         <TabItem Header="Ball Detector">
-            <views:BallView />
+            <views:BallView DataContext="{Binding BallViewModel}" />
+        </TabItem>
+
+        <TabItem Header="Video">
+            <views:CaptureView DataContext="{Binding CaptureViewModel}" />
         </TabItem>
 
     </TabControl>

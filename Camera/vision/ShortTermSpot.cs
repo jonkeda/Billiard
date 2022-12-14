@@ -2,7 +2,7 @@
 
 namespace Billiard.Camera.vision
 {
-    internal class ShortTermSpot
+    public class ShortTermSpot
     {
         private const int DEFAULT_LIVE_TIME = 500;
         private PointF tablePoint;

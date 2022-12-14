@@ -6,7 +6,13 @@
              xmlns:local="clr-namespace:Billiard.views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+    <StackPanel>
+
+        <Image Name="feedImage" Grid.Row="0" Grid.Column="0" Stretch="Fill" />
+        <Image Name="Image1" Grid.Row="0" Grid.Column="0" Stretch="Fill" Visibility="Collapsed" />
+
+        <TextBlock Name="TextBlock1" Grid.Row="1" Grid.Column="0" Foreground="White" Margin="10, 20, 10, 0" HorizontalAlignment="Center" TextAlignment="Center" FontWeight="Bold" FontSize="12" />
+        <TextBlock Name="TextBlock2" Grid.Row="1" Grid.Column="0" Foreground="White" Margin="10, 5, 10, 10" HorizontalAlignment="Center" TextAlignment="Center" FontSize="10" />
+
+    </StackPanel>
 </UserControl>

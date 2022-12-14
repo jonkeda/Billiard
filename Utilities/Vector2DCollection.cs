@@ -6,7 +6,7 @@ using System.Windows.Media;
 
 namespace Billiard.Utilities;
 
-class Vector2Collection : Collection<Vector2>
+public class Vector2Collection : Collection<Vector2>
 {
 
     public Geometry AsGeometry()

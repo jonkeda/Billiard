@@ -19,7 +19,8 @@
             <Button Command="{Binding CaptureCommand}">Capture</Button>
         </StackPanel>
 
-        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevices}" SelectedItem="{Binding SelectedVideoDevice}"></ComboBox>
+        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevice.VideoDevices}" 
+                  SelectedItem="{Binding VideoDevice.SelectedVideoDevice}"></ComboBox>
 
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
@@ -55,8 +56,6 @@
             <Image Grid.Row="2" Grid.Column="0" Source="{Binding WhiteBallImage}" />
             <Image Grid.Row="2" Grid.Column="1" Source="{Binding YellowBallImage}" />
             <Image Grid.Row="2" Grid.Column="2" Source="{Binding RedBallImage}" />
-
-            <TextBlock Grid.Row="1" Grid.Column="0">1</TextBlock>
         </Grid>
 
 </Grid>

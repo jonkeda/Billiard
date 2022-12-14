@@ -1,6 +1,6 @@
 ﻿namespace Billiard.Utilities
 {
-    class float3x3
+    public class float3x3
     {
         public float[,] Matrix { get; } = new float[3, 3];
 

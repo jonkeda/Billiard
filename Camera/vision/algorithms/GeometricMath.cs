@@ -9,7 +9,7 @@ using Math = Billiard.Camera.vision.Geometries.Math;
 
 namespace Billiard.Camera.vision.algorithms
 {
-    internal class GeometricMath
+    public class GeometricMath
     {
 
         public static float distance(PointF p1, PointF p2)

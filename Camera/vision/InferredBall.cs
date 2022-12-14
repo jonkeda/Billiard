@@ -1,17 +1,12 @@
-﻿using Emgu.CV.CvEnum;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
 using Billiard.Camera.vision.algorithms;
 using Billiard.Camera.vision.Geometries;
 
 namespace Billiard.Camera.vision
 {
-    internal class InferredBall
+    public class InferredBall
     {
 
         private const int SAMPLE_FRAME_RATE = 3 * 25;
@@ -26,7 +21,7 @@ namespace Billiard.Camera.vision
         private const float FRAME_CONFIRMATION_PERCENTAGE = 0.25f;
 
 
-        public CappedQueue<PointF> lastPoints = new CappedQueue<PointF>(InferredBall.SAMPLE_FRAME_RATE);
+        public CappedQueue<PointF> lastPoints = new CappedQueue<PointF>(SAMPLE_FRAME_RATE);
 
 
         public bool isStillInPreviousFrame = false;
@@ -66,7 +61,7 @@ namespace Billiard.Camera.vision
 
         public bool isNewPointPossible(PointF newPoint)
         {
-            return GeometricMath.distance(newPoint, getLastValidPoint()) < InferredBall.MOVEMENT_MAX_DISTANCE;
+            return GeometricMath.distance(newPoint, getLastValidPoint()) < MOVEMENT_MAX_DISTANCE;
 
         }
 

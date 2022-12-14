@@ -4,7 +4,7 @@ using System.Windows.Media.Media3D;
 
 namespace Billiard.Utilities
 {
-    static class Vector2Extension
+    public static class Vector2Extension
     {
         public static bool Zero(this Vector2 vector)
         {

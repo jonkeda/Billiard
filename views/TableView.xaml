@@ -19,7 +19,8 @@
             <Button Command="{Binding CaptureCommand}">Capture</Button>
         </StackPanel>
 
-        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevices}" SelectedItem="{Binding SelectedVideoDevice}"></ComboBox>
+        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevice.VideoDevices}" 
+                  SelectedItem="{Binding VideoDevice.SelectedVideoDevice}"></ComboBox>
 
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>

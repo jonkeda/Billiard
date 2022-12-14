@@ -3,7 +3,7 @@ using static System.Math;
 
 namespace Billiard.Utilities
 {
-    class RotationMatrix
+    public class RotationMatrix
     {
         private float3x3 rotation;
 

@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
-using Billiard.Physics.Colliders.Colliders;
+using Billiard.Physics.Colliders;
 
 namespace Billiard.Physics
 {
-    class PTrigger : PStaticObject
+    public class PTrigger : PStaticObject
     {
         public PTrigger(float length, float width)
         {

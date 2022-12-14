@@ -7,9 +7,8 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Billiard.Physics.Events.Triggers;
+using Billiard.Physics.Events;
 using Billiard.Physics.Prefabs;
-using Billiard.Physics.Prefabs.Prefabs;
 using Billiard.Utilities;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
@@ -20,7 +19,7 @@ using Point = System.Windows.Point;
 
 namespace Billiard.Physics
 {
-    class PhysicsEngine
+    public class PhysicsEngine
     {
         public const float stepSize = 0.001f;
 
@@ -542,11 +541,11 @@ namespace Billiard.Physics
         }
     }
 
-    class SolutionCollection : Collection<Solution>
+    public class SolutionCollection : Collection<Solution>
     {
     }
 
-    class Solution
+    public class Solution
     {
         public CollisionCollection Collections { get; }
 

@@ -8,7 +8,7 @@ using Emgu.CV.Util;
 
 namespace Billiard.Camera.vision.Geometries
 {
-    internal static class ListExtensions
+    public static class ListExtensions
     {
         public static int size<T>(this List<T> list)
         {
@@ -17,7 +17,7 @@ namespace Billiard.Camera.vision.Geometries
     }
 
 
-    internal static class VectorOfPointExtensions
+    public static class VectorOfPointExtensions
     {
         public static List<Point> AsList(this VectorOfPoint vector)
         {
@@ -30,7 +30,7 @@ namespace Billiard.Camera.vision.Geometries
         }
     }
 
-    internal static class PointFExtensions
+    public static class PointFExtensions
     {
         public static PointF Extend(PointF p1, PointF p2)
         {
@@ -40,12 +40,12 @@ namespace Billiard.Camera.vision.Geometries
             return x.AsPoint();
         }
 
-        public static Vector2 AsVector2(this System.Drawing.PointF p)
+        public static Vector2 AsVector2(this PointF p)
         {
             return new Vector2(p.X, p.Y);
         }
 
-        public static Vector2 AsVector2(this System.Drawing.Point? p)
+        public static Vector2 AsVector2(this Point? p)
         {
             if (p == null)
             {
@@ -71,9 +71,9 @@ namespace Billiard.Camera.vision.Geometries
             return new Point((int) point.X, (int) point.Y);
         }
 
-        public static System.Drawing.PointF AsPoint(this Vector2 point)
+        public static PointF AsPoint(this Vector2 point)
         {
-            return new System.Drawing.PointF(point.X, point.Y);
+            return new PointF(point.X, point.Y);
         }
 
         public static System.Windows.Point AsPoint(this PointF point)
@@ -82,7 +82,7 @@ namespace Billiard.Camera.vision.Geometries
         }
     }
 
-    internal static class MatExtensions
+    public static class MatExtensions
     {
         public static ImageSource ToImageSource(this Mat mat)
         {

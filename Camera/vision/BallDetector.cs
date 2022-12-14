@@ -1,20 +1,14 @@
 ﻿using System.Collections.Generic;
-using Billiard.Camera.vision.algorithms;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using System.Drawing;
-
-using Billiard.Camera.vision.Geometries;
-using Billiard.UI.Converters;
-using MaterialDesignColors.ColorManipulation;
-using System.Threading.Tasks;
 using Emgu.CV.Util;
 
 
 namespace Billiard.Camera.vision
 {
-    internal class BallDetector
+    public class BallDetector
     {
         public Mat originMat = new();
         public Mat floodFillMat = new();
@@ -61,7 +55,7 @@ namespace Billiard.Camera.vision
 
         private System.Windows.Point FindBall(Mat image)
         {
-            CvInvoke.GaussianBlur(image, image, new System.Drawing.Size(5, 5), 1);
+            CvInvoke.GaussianBlur(image, image, new Size(5, 5), 1);
 
             VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
             CvInvoke.FindContours(image, contours, null, RetrType.External, ChainApproxMethod.ChainApproxNone);
@@ -73,7 +67,7 @@ namespace Billiard.Camera.vision
                     foundContours.Add(contours[i]);
             }
 
-            if (foundContours.Count == 1)
+            if (foundContours.Count > 0)
             {
                  var M = CvInvoke.Moments(foundContours[0]);
                 
@@ -114,7 +108,7 @@ namespace Billiard.Camera.vision
 
         private void FindHsv()
         {
-            CvInvoke.GaussianBlur(originMat, originMat, new System.Drawing.Size(3, 3), 1);
+            CvInvoke.GaussianBlur(originMat, originMat, new Size(3, 3), 1);
             CvInvoke.CvtColor(originMat, hsvTableMat, ColorConversion.Bgr2Hsv);
             CvInvoke.ExtractChannel(hsvTableMat, hTableMat, 0);
             CvInvoke.ExtractChannel(hsvTableMat, sTableMat, 1);
@@ -127,7 +121,7 @@ namespace Billiard.Camera.vision
 
             float cannyThreshold = 180.0f;
             float cannyThresholdLinking = 120.0f;
-            CvInvoke.GaussianBlur(grayTableMat, grayTableMat, new System.Drawing.Size(3, 3), 1);
+            CvInvoke.GaussianBlur(grayTableMat, grayTableMat, new Size(3, 3), 1);
             CvInvoke.Canny(grayTableMat, cannyTableMat, cannyThreshold, cannyThresholdLinking);
 
         }

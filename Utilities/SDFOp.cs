@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Billiard.Utilities
 {
-    static class SDFOp
+    public static class SDFOp
     {
         public static float Union(float d1, float d2) => Math.Min(d1, d2);
         public static float Subtraction(float d1, float d2) => Math.Max(-d1, d2);
