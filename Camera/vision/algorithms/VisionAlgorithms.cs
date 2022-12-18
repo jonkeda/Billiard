@@ -58,13 +58,30 @@ namespace Billiard.Camera.vision.algorithms
             return false;
         }
 
-        public static PointF findSimilarPointOnCenterSpiral(Mat image, float diff = 20, int angleSteps = 100, float radiusIncrement = 0.5f, float xFix = 0.57f, float yFix = 0.33f)
+        public static PointF findSimilarPointOnCenterSpiral(Mat image, float diff = 20, int angleSteps = 100, float radiusIncrement = 0.5f, float xFix = -1f, float yFix = 0.33f)
         {
+            if (xFix < 0)
+            {
+                if (image.Height > image.Width)
+                {
+                    xFix = 0.33f;
+                    yFix = 0.57f;
+                }
+                else
+                {
+                    xFix = 0.57f;
+                    yFix = 0.33f;
+                }
+            }
+
             float angleIncrement = (MathF.PI * 2) / angleSteps;
             Scalar lastColor = new Scalar(-diff, -diff, -diff);
             int x = 0, y = 0, countSimilarLastOnes = 0;
             float a = 0, radius = 0;
-            while (countSimilarLastOnes <= 30 || radius > (image.height() / 2))
+            float firstX = 0, firstY = 0;
+            while (countSimilarLastOnes <= 30 
+                   && radius < (image.height() / 2)
+                   && radius < (image.width() / 2))
             {
                 x = (int)(Math.cos(a) * radius + (image.width() * xFix));
                 y = (int)(Math.sin(a) * radius + (image.height() * yFix));

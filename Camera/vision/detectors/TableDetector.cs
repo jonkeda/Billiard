@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Numerics;
 using Billiard.Camera.vision.algorithms;
+using Billiard.Camera.vision.Geometries;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-using System.Drawing;
-using System.Linq;
-using Billiard.Camera.vision.Geometries;
-using System.Numerics;
 using Emgu.CV.Util;
 
-namespace Billiard.Camera.vision
+namespace Billiard.Camera.vision.detectors
 {
     public class TableDetector
     {
         public Mat originMat = new();
         public Mat floodFillMat = new();
         public Mat inRangeMat = new();
+        public Mat sameColorMat = new();
         public Mat tableMat = new();
-
         public Mat grayTableMat = new();
         public Mat cannyTableMat = new();
         public Mat hsvTableMat = new();
@@ -25,58 +25,67 @@ namespace Billiard.Camera.vision
         public Mat sTableMat = new();
         public Mat vTableMat = new();
 
-        public List<PointF> points = new();
+        public List<PointF> floodFillPoints = new();
+
+        public List<PointF> sameColorPoints = new();
+        public List<PointF> floodFillMPoints = new ();
+        public List<PointF> sameColorMPoints = new ();
 
         public void Detect(Mat image)
         {
+            int floodFillColor = 100;
+
             originMat = image;
 
             FindContours();
 
-            Rectangle bounds = FloodFill();
+            Rectangle bounds = FloodFill(floodFillColor);
+            (floodFillPoints, floodFillMPoints) = FindLines(bounds, floodFillMat, floodFillColor);
 
-            FindInRange();
+            bounds = FindSameColor(floodFillColor);
+            (sameColorPoints, sameColorMPoints) = FindLines(bounds, sameColorMat, floodFillColor);
 
-            points = FindLines(bounds);
+            FindInRange(floodFillColor);
+
 
             FindHsv();
         }
 
-        private List<PointF> FindLines(Rectangle bounds)
+        private (List<PointF> rectPoints, List<PointF> pointsf) FindLines(Rectangle bounds, Mat inRangeMat, int findColor)
         {
             Size size = bounds.Size;
 
             // top
-            int width4 = size.Width / 4;
-            int length4 = size.Height / 3;
+            int width4 = size.Width / 3;
+            int length4 = size.Height / 3;  
 
             Point? top1 = FindWhiteOnLine(inRangeMat,
                 bounds.X + width4, bounds.Y,
-                bounds.X + width4, bounds.Y + bounds.Height, false);
+                bounds.X + width4, bounds.Y + bounds.Height, false, findColor);
             Point? top2 = FindWhiteOnLine(inRangeMat,
-                bounds.X + width4 * 3, bounds.Y,
-                bounds.X + width4 * 3, bounds.Y + bounds.Height, false);
+                bounds.X + bounds.Width - width4, bounds.Y,
+                bounds.X + bounds.Width - width4, bounds.Y + bounds.Height, false, findColor);
 
             Point? bottom1 = FindWhiteOnLine(inRangeMat,
                 bounds.X + width4, bounds.Y,
-                bounds.X + width4, bounds.Y + bounds.Height, true);
-            Point? bottom2 = FindWhiteOnLine(inRangeMat, bounds.X + width4 * 3, bounds.Y, bounds.X + width4 * 3,
-                bounds.Y + bounds.Height, true);
+                bounds.X + width4, bounds.Y + bounds.Height, true, findColor);
+            Point? bottom2 = FindWhiteOnLine(inRangeMat, bounds.X + bounds.Width - width4, bounds.Y, bounds.X + bounds.Width - width4,
+                bounds.Y + bounds.Height, true, findColor);
 
             Point? left1 = FindWhiteOnLine(inRangeMat, bounds.X, bounds.Y + length4,
-                bounds.X + bounds.Width, bounds.Y + length4, false);
-            Point? left2 = FindWhiteOnLine(inRangeMat, bounds.X, bounds.Y + length4 * 2,
-                bounds.X + bounds.Width, bounds.Y + length4 * 2, false);
+                bounds.X + bounds.Width, bounds.Y + length4, false, findColor);
+            Point? left2 = FindWhiteOnLine(inRangeMat, bounds.X, bounds.Y + bounds.Height - length4,
+                bounds.X + bounds.Width, bounds.Y + bounds.Height - length4, false, findColor);
 
             Point? right1 = FindWhiteOnLine(inRangeMat, bounds.X, bounds.Y + length4,
-                bounds.X + bounds.Width, bounds.Y + length4, true);
-            Point? right2 = FindWhiteOnLine(inRangeMat, bounds.X, bounds.Y + length4 * 2,
-                bounds.X + bounds.Width, bounds.Y + length4 * 2, true);
+                bounds.X + bounds.Width, bounds.Y + length4, true, findColor);
+            Point? right2 = FindWhiteOnLine(inRangeMat, bounds.X, bounds.Y + bounds.Height - length4,
+                bounds.X + bounds.Width, bounds.Y + bounds.Height - length4, true, findColor);
 
             List<PointF> pointsf = AddPoints(top1, top2, bottom1, bottom2, left1, left2, right1, right2);
             if (pointsf.Count != 8)
             {
-                return new List<PointF>();
+                return (new List<PointF>(), new List<PointF>());
             }
             //return pointsf;  
 
@@ -124,7 +133,7 @@ namespace Billiard.Camera.vision
 
             WarpTablePerspective(topLeft, topRight, bottomLeft, bottomRight);
 
-            return rectPoints;
+            return (rectPoints, pointsf);
 
             // return rect.GetVertices().ToList(); 
 
@@ -231,7 +240,7 @@ namespace Billiard.Camera.vision
             return points.Where(p => p.HasValue).Select(i => new PointF(i.Value.X, i.Value.Y)).ToList();
         }
 
-        private Point? FindWhiteOnLine(Mat mat, int startX, int startY, int endX, int endY, bool reverse)
+        private Point? FindWhiteOnLine(Mat mat, int startX, int startY, int endX, int endY, bool reverse, int findColor)
         {
             if (reverse)
             {
@@ -240,7 +249,7 @@ namespace Billiard.Camera.vision
                     for (int y = endY; y >= startY; y--)
                     {
                         int color = GetColorByte(mat, x, y);
-                        if (color == 255)
+                        if (color == findColor)
                         {
                             return new Point(x, y);
                         }
@@ -254,7 +263,7 @@ namespace Billiard.Camera.vision
                     for (int y = startY; y <= endY; y++)
                     {
                         int color = GetColorByte(mat, x, y);
-                        if (color == 255)
+                        if (color == findColor)
                         {
                             return new Point(x, y);
                         }
@@ -271,22 +280,65 @@ namespace Billiard.Camera.vision
             return rawData[0];
         }
 
-        private void FindInRange()
+        private void FindInRange(int floodFillColor)
         {
             CvInvoke.Resize(floodFillMat, inRangeMat, floodFillMat.Size);
             CvInvoke.ExtractChannel(inRangeMat, inRangeMat, 0);
-            CvInvoke.InRange(inRangeMat, new ScalarArray(255), new ScalarArray(255), inRangeMat);
+            CvInvoke.InRange(inRangeMat, new ScalarArray(floodFillColor), new ScalarArray(floodFillColor), inRangeMat);
 
         }
 
-        private Rectangle FloodFill()
+        private MCvScalar GetColorScalarArray(Mat image, int x, int y)
+        {
+            var rawData = image.GetRawData(y, x);
+            return new MCvScalar(rawData[0], rawData[1], rawData[2]);
+            //return rawData[0];
+        }
+
+
+        private Rectangle FindSameColor(int floodFillColor)
+        {
+            CvInvoke.CvtColor(originMat, sameColorMat, ColorConversion.Bgr2Hsv);
+            CvInvoke.ExtractChannel(sameColorMat, sameColorMat, 0);
+            PointF pointOnTable = VisionAlgorithms.findSimilarPointOnCenterSpiral(sameColorMat);
+
+            /*            MCvScalar color = GetColorScalarArray(sameColorMat, (int)pointOnTable.X, (int)pointOnTable.Y);
+                        CvInvoke.InRange(sameColorMat, new ScalarArray(color), new ScalarArray(color), sameColorMat);
+            */
+            int colorInt = GetColorByte(sameColorMat, (int)pointOnTable.X, (int)pointOnTable.Y);
+            CvInvoke.InRange(sameColorMat,
+                new ScalarArray(System.Math.Max(colorInt - 5, 0)),
+                new ScalarArray(System.Math.Min(colorInt + 5, 180)), sameColorMat);
+
+
+            CvInvoke.BitwiseNot(sameColorMat, sameColorMat);
+
+            MCvScalar newColor = new MCvScalar(floodFillColor);
+            Mat mask = new Mat();
+            MCvScalar diff = new MCvScalar(0,0,0);
+            CvInvoke.FloodFill(sameColorMat, mask, pointOnTable.AsWindowsPoint(), newColor,
+                out var boundingRect, diff, diff, Connectivity.EightConnected);
+            return boundingRect;
+            //return Rectangle.Empty;
+            
+        }
+
+        private Rectangle FloodFill(int floodFillColor)
         {
             CvInvoke.CvtColor(originMat, floodFillMat, ColorConversion.Bgr2Hsv);
             CvInvoke.ExtractChannel(floodFillMat, floodFillMat, 0);
+
+            CvInvoke.GaussianBlur(floodFillMat, floodFillMat, new Size(5, 5), 1);
+            // get rid of small objects
+            /*            Mat kernelOp = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(3, 3), new Point(-1, -1));
+                        CvInvoke.MorphologyEx(floodFillMat, floodFillMat, MorphOp.Open, kernelOp, new Point(-1, -1), 1, BorderType.Default, new MCvScalar());
+                        Mat kernelCl = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(11, 11), new Point(-1, -1));
+                        CvInvoke.MorphologyEx(floodFillMat, floodFillMat, MorphOp.Close, kernelCl, new Point(-1, -1), 1, BorderType.Default, new MCvScalar());
+            */
             PointF pointOnTable = VisionAlgorithms.findSimilarPointOnCenterSpiral(floodFillMat);
             Mat mask = new Mat();
 
-            MCvScalar newColor = Color.WHITE.AsMCvScalar();
+            MCvScalar newColor = new MCvScalar(floodFillColor);
 
             float floodFillDiff = 1.5f;
 

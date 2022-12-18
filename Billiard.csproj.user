@@ -12,6 +12,9 @@
     <Compile Update="views\CaptureView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="views\VideoDeviceView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="views\VideoView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -27,6 +30,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="views\CaptureView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\VideoDeviceView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="views\VideoView.xaml">

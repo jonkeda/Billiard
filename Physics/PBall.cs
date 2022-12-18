@@ -153,7 +153,9 @@ namespace Billiard.Physics
 
         public bool Simulate(float dt, bool animate)
         {
-            if (Vector2.Abs(velocity).SmallerThen(rest_velocity))
+            if (velocity.X == Double.NaN
+                || velocity.Y == Double.NaN
+                || Vector2.Abs(velocity).SmallerThen(rest_velocity))
             {
                 return true;
             }

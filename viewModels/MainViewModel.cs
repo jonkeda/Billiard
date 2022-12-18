@@ -34,11 +34,12 @@ namespace Billiard.viewModels
             set { SetProperty(ref captureViewModel, value); }
         }
 
-        public MainViewModel(TableViewModel tableViewModel, BallViewModel ballViewModel, CaptureViewModel captureViewModel)
+        public MainViewModel(TableViewModel tableViewModel, BallViewModel ballViewModel, CaptureViewModel captureViewModel, PhysicsEngine physicsEngine)
         {
             TableViewModel = tableViewModel;
             BallViewModel = ballViewModel;
             CaptureViewModel = captureViewModel;
+            PhysicsEngine = physicsEngine;
         }
         
     }

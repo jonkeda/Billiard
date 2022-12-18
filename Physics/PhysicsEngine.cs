@@ -7,20 +7,31 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Billiard.Camera.vision.Geometries;
 using Billiard.Physics.Events;
 using Billiard.Physics.Prefabs;
+using Billiard.UI;
 using Billiard.Utilities;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using FlowDirection = System.Windows.FlowDirection;
+using Math = System.Math;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
 
 namespace Billiard.Physics
 {
-    public class PhysicsEngine
+    public class PhysicsEngine : ViewModel
     {
+        private ImageSource solutionsImage;
+        public ImageSource SolutionsImage
+        {
+            get { return solutionsImage; }
+            set { SetProperty(ref solutionsImage, value); }
+        }
+
+
         public const float stepSize = 0.001f;
 
         public float Length
@@ -50,6 +61,9 @@ namespace Billiard.Physics
         private const float ballRestitution = 0.98f;
         private const float staticRestitution = 0.7f;
         private const float ecs = 0.01f; // Error correction scalar
+
+        public PhysicsEngine() : this(GameType.Billiart)
+        { }
 
         public PhysicsEngine(GameType gameType)
         {
@@ -392,7 +406,7 @@ namespace Billiard.Physics
             return balls.Find(b => b.index == 7);
         }
 
-        public RenderTargetBitmap CalculateSolutions()
+        public void CalculateSolutions()
         {
             DateTime now = DateTime.Now;
             DrawingVisual visual = new DrawingVisual();
@@ -451,7 +465,7 @@ namespace Billiard.Physics
             }
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)Length, (int)Width, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(visual);
-            return bitmap;
+            SolutionsImage = bitmap;
             //return new DrawingImage(visual.Drawing);  
         }
 
@@ -538,6 +552,35 @@ namespace Billiard.Physics
                 Solutions = physicsEngine.CalculateSolutionsDirectOnBall(cue, other, brush, power);
 
             }
+        }
+
+        public void SetBalls(Point whiteBallPoint, Point yellowBallPoint, Point redBallPoint)
+        {
+            if (whiteBallPoint.AsVector2() != Vector2.Zero)
+            {
+                GetCueBall().position = FromRelative(whiteBallPoint).AsVector2();
+            }
+            if (yellowBallPoint.AsVector2() != Vector2.Zero)
+            {
+                GetYellowBall().position = FromRelative(yellowBallPoint).AsVector2();
+            }
+            if (redBallPoint.AsVector2() != Vector2.Zero)
+            {
+                GetRedBall().position = FromRelative(redBallPoint).AsVector2();
+            }
+
+            if (GetCueBall().position != Vector2.Zero
+                && GetYellowBall().position != Vector2.Zero
+                && GetRedBall().position != Vector2.Zero)
+            {
+                // CalculateSolutions();
+
+            }
+        }
+
+        private Point FromRelative(Point p)
+        {
+            return new Point(p.X * LengthD, p.Y * WidthD);
         }
     }
 

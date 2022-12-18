@@ -14,14 +14,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        <local:VideoDeviceView Grid.Row="0" DataContext="{Binding VideoDevice}" />
         
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Command="{Binding CaptureCommand}">Capture</Button>
-        </StackPanel>
-
-        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevice.VideoDevices}" 
-                  SelectedItem="{Binding VideoDevice.SelectedVideoDevice}"></ComboBox>
-
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />

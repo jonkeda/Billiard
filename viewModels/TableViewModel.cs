@@ -1,12 +1,14 @@
-﻿using System.Windows.Input;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using Billiard.UI;
 using Emgu.CV;
-using Billiard.Camera.vision;
 using Billiard.Camera.vision.Geometries;
 using System.Windows;
+using Billiard.Camera.vision.detectors;
 using Brushes = System.Windows.Media.Brushes;
 using Pen = System.Windows.Media.Pen;
+using System.Collections.Generic;
+using System.Drawing;
+using Point = System.Windows.Point;
 
 namespace Billiard.viewModels
 {
@@ -17,6 +19,7 @@ namespace Billiard.viewModels
         public TableViewModel(VideoDeviceViewModel videoDevice)
         {
             VideoDevice = videoDevice;
+            videoDevice.CaptureImage += VideoDevice_CaptureImage;
         }
 
         private ImageSource originalImage;
@@ -24,18 +27,18 @@ namespace Billiard.viewModels
 
         private ImageSource tableImage;
         private ImageSource floodFillImage;
+        private ImageSource floodFillPointImage;
         private ImageSource cannyTableImage;
         private ImageSource hsvTableImage;
         private ImageSource hTableImage;
         private ImageSource sTableImage;
         private ImageSource vTableImage;
+        private ImageSource inRangeImage;
+        private ImageSource foundTableImage;
+        private ImageSource sameColorImage;
 
         public TableDetector tableDetector = new();
-
-        public ICommand CaptureCommand
-        {
-            get { return new TargetCommand(Captures); }
-        }
+        private ImageSource sameColorPointImage;
 
         public ImageSource OriginalImage
         {
@@ -49,13 +52,31 @@ namespace Billiard.viewModels
             set { SetProperty(ref floodFillImage, value); }
         }
 
-        private ImageSource inRangeImage;
-        private ImageSource foundTableImage;
+        public ImageSource FloodFillPointImage
+        {
+            get { return floodFillPointImage; }
+            set { SetProperty(ref floodFillPointImage, value); }
+        }
 
         public ImageSource InRangeImage
         {
             get { return inRangeImage; }
             set { SetProperty(ref inRangeImage, value); }
+        }
+
+        public ImageSource SameColorImage
+        {
+            get { return sameColorImage; }
+            set { SetProperty(ref sameColorImage, value); }
+        }
+
+        public ImageSource SameColorPointImage
+        {
+            get
+            {
+                return sameColorPointImage;
+            }
+            set { SetProperty(ref sameColorPointImage, value); }
         }
 
         public ImageSource TableImage
@@ -106,15 +127,9 @@ namespace Billiard.viewModels
             set { SetProperty(ref foundTableImage, value); }
         }
 
-        private void Captures()
+        private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
         {
-            if (VideoDevice.Capturer == null
-                || !VideoDevice.Capturer.Grab())
-            {
-                return;
-            }
-
-            Mat image = VideoDevice.Capturer.QueryFrame();
+            Mat image = e.Image;
             if (image == null)
             {
                 return;
@@ -127,6 +142,8 @@ namespace Billiard.viewModels
             FloodFillImage = tableDetector.floodFillMat?.ToImageSource();
             InRangeImage = tableDetector.inRangeMat?.ToImageSource();
 
+            SameColorImage = tableDetector.sameColorMat?.ToImageSource();
+
             TableImage = tableDetector.tableMat?.ToImageSource();
 
             GrayTableImage = tableDetector.grayTableMat?.ToImageSource();
@@ -137,30 +154,44 @@ namespace Billiard.viewModels
             STableImage = tableDetector.sTableMat?.ToImageSource();
             VTableImage = tableDetector.vTableMat?.ToImageSource();
 
-            FoundTableImage = DrawFoundTable(InRangeImage, tableDetector);
+
+            FloodFillPointImage = DrawFoundTable(floodFillImage, tableDetector.floodFillPoints, tableDetector.floodFillMPoints);
+            SameColorPointImage = DrawFoundTable(SameColorImage, tableDetector.sameColorPoints, tableDetector.sameColorMPoints);
 
         }
 
-        public static DrawingImage DrawFoundTable(ImageSource InRangeImage, TableDetector tableDetector)
+        public static DrawingImage DrawFoundTable(ImageSource image, List<PointF> points, List<PointF> pointsM)
         {
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
                 drawingContext.PushClip(new RectangleGeometry(
-                    new Rect(new Point(0, 0),
-                        new Point(InRangeImage.Width, InRangeImage.Height))));
+                    new Rect(new Point(0, 0), new Point(image.Width, image.Height))));
                 drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
-                    new Rect(0, 0,
-                        InRangeImage.Width, InRangeImage.Height));
+                    new Rect(0, 0, image.Width, image.Height));
 
 
-                Pen forceColor = new Pen(Brushes.GreenYellow, 5)
+                /*                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Colors.Aqua), null,
+                                    new Rect(0, 0, image.Width/2, image.Height/2));
+                */
+                double radius = System.Math.Max(image.Height / 100, image.Width / 100);
+
+                // drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Colors.Aqua), null,
+                //    new Rect(0, 0, image.Width, image.Height));
+
+                /*                Pen forceColor = new Pen(Brushes.GreenYellow, 5)
+                                {
+                                    DashStyle = DashStyles.Solid
+                                };
+                */
+                foreach (System.Drawing.PointF point in points)
                 {
-                    DashStyle = DashStyles.Solid
-                };
-                foreach (System.Drawing.PointF point in tableDetector.points)
+                    drawingContext.DrawEllipse(Brushes.GreenYellow, null, point.AsPoint(), radius, radius);
+                }
+
+                foreach (System.Drawing.PointF point in pointsM)
                 {
-                    drawingContext.DrawEllipse(null, forceColor, point.AsPoint(), 5, 5);
+                    drawingContext.DrawEllipse(Brushes.Red, null, point.AsPoint(), radius, radius);
                 }
 
                 drawingContext.Close();

@@ -51,7 +51,10 @@
                             <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                         </Canvas.Background>
                         -->
-                                <Image x:Name="Solutions" Width="{Binding LengthD}" Height="{Binding WidthD}" Stretch="None" />
+                                <Image x:Name="Solutions" 
+                                       Width="{Binding LengthD}" Height="{Binding WidthD}" 
+                                       Source="{Binding SolutionsImage}"
+                                       Stretch="None" />
 
                                 <Canvas x:Name="Table" Width="{Binding LengthD}" Height="{Binding WidthD}" ClipToBounds="True">
                                     <!--

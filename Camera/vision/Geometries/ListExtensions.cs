@@ -40,6 +40,11 @@ namespace Billiard.Camera.vision.Geometries
             return x.AsPoint();
         }
 
+        public static Vector2 AsVector2(this System.Windows.Point p)
+        {
+            return new Vector2((float)p.X, (float)p.Y);
+        }
+
         public static Vector2 AsVector2(this PointF p)
         {
             return new Vector2(p.X, p.Y);

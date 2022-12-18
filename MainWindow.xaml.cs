@@ -129,7 +129,7 @@ namespace Billiard
         #endregion
 
 
-        public MainWindow(MainViewModel mainViewModel)
+        public MainWindow(MainViewModel mainViewModel, PhysicsEngine physicsEngine)
         {
             this.mainViewModel = mainViewModel;
 
@@ -137,7 +137,7 @@ namespace Billiard
             InitializeComponent();
             CompositionTarget.Rendering += Update;
 
-            physicsEngine = new PhysicsEngine(GameType.Billiart);
+            this.physicsEngine = physicsEngine;
             mainViewModel.PhysicsEngine = physicsEngine;
 
             renderer = new Renderer.Renderer(Table, Overlay, Solutions, physicsEngine.Length, physicsEngine.Width);
@@ -227,7 +227,7 @@ namespace Billiard
             calculating = true;
 
             Mouse.SetCursor(Cursors.Wait);
-            Solutions.Source = physicsEngine.CalculateSolutions();
+            physicsEngine.CalculateSolutions();
             Mouse.SetCursor(Cursors.Arrow);
 
             calculating = false;

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Billiard.Physics;
 using Billiard.viewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,13 +28,14 @@ namespace Billiard
             services.AddSingleton<TableViewModel>();
             services.AddSingleton<CaptureViewModel>();
             services.AddSingleton<MainViewModel>();
+            services.AddSingleton<PhysicsEngine>();
 
 /*              services.AddSingleton<DataViewModel>();
-                                                                            services.AddSingleton<TranslatorViewModel>();
-                                                                            services.AddSingleton<ImagesViewModel>();
-                                                                            services.AddSingleton<PdfViewModel>();
-                                                                            services.AddSingleton<EnumUpdater>();
-                                                                        */
+                                                                                        services.AddSingleton<TranslatorViewModel>();
+                                                                                        services.AddSingleton<ImagesViewModel>();
+                                                                                        services.AddSingleton<PdfViewModel>();
+                                                                                        services.AddSingleton<EnumUpdater>();
+                                                                                    */
         }
 
         private void OnStartup(object sender, StartupEventArgs e)

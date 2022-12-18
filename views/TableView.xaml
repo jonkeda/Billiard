@@ -14,40 +14,54 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Command="{Binding CaptureCommand}">Capture</Button>
-        </StackPanel>
 
-        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevice.VideoDevices}" 
-                  SelectedItem="{Binding VideoDevice.SelectedVideoDevice}"></ComboBox>
+        <local:VideoDeviceView Grid.Row="0" DataContext="{Binding VideoDevice}" />
 
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Image Grid.Row="0" Grid.Column="0" Source="{Binding OriginalImage}" />
-            <Image Grid.Row="0" Grid.Column="1" Source="{Binding FloodFillImage}" />
-            <Image Grid.Row="0" Grid.Column="2" Source="{Binding InRangeImage}" />
-            <Image Grid.Row="0" Grid.Column="2" Source="{Binding FoundTableImage}" />
+            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >Original</TextBlock>
+            <Image Grid.Row="1" Grid.Column="0" Source="{Binding OriginalImage}" />
 
-            <Image Grid.Row="1" Grid.Column="0" Source="{Binding GrayTableImage}" />
-            <Image Grid.Row="1" Grid.Column="1" Source="{Binding CannyTableImage}" />
-            <Image Grid.Row="1" Grid.Column="2" Source="{Binding TableImage}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" >Floodfill</TextBlock>
+            <Image Grid.Row="1" Grid.Column="1" Source="{Binding FloodFillImage}" />
+            <Image Grid.Row="1" Grid.Column="1" Source="{Binding FloodFillPointImage}" />
 
-            <Image Grid.Row="2" Grid.Column="0" Source="{Binding HTableImage}" />
-            <Image Grid.Row="2" Grid.Column="1" Source="{Binding STableImage}" />
-            <Image Grid.Row="2" Grid.Column="2" Source="{Binding VTableImage}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" >In Range</TextBlock>
+            <Image Grid.Row="1" Grid.Column="2" Source="{Binding InRangeImage}" />
+            <Image Grid.Row="1" Grid.Column="2" Source="{Binding FoundTableImage}" />
 
-            <TextBlock Grid.Row="1" Grid.Column="0">1</TextBlock>
+            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" >Gray</TextBlock>
+            <Image Grid.Row="3" Grid.Column="0" Source="{Binding GrayTableImage}" />
+            <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" >Canny</TextBlock>
+            <Image Grid.Row="3" Grid.Column="1" Source="{Binding CannyTableImage}" />
+            <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" >Table</TextBlock>
+            <Image Grid.Row="3" Grid.Column="2" Source="{Binding TableImage}" />
+            <TextBlock Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" >Same color</TextBlock>
+            <Image Grid.Row="3" Grid.Column="3" Source="{Binding SameColorImage}" />
+            <Image Grid.Row="3" Grid.Column="3" Source="{Binding SameColorPointImage}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" >H</TextBlock>
+            <Image Grid.Row="5" Grid.Column="0" Source="{Binding HTableImage}" />
+            <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Center" >S</TextBlock>
+            <Image Grid.Row="5" Grid.Column="1" Source="{Binding STableImage}" />
+            <TextBlock Grid.Row="4" Grid.Column="2" HorizontalAlignment="Center" >V</TextBlock>
+            <Image Grid.Row="5" Grid.Column="2" Source="{Binding VTableImage}" />
+            <TextBlock Grid.Row="4" Grid.Column="3" HorizontalAlignment="Center" >HSV</TextBlock>
+            <Image Grid.Row="5" Grid.Column="3" Source="{Binding HsvTableImage}" />
         </Grid>
 
 </Grid>

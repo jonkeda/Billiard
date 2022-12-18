@@ -20,24 +20,12 @@ namespace Billiard.viewModels
         public CaptureViewModel(VideoDeviceViewModel videoDevice)
         {
             VideoDevice = videoDevice;
+            videoDevice.CaptureImage += VideoDevice_CaptureImage;
+        }
 
-/*            //the fps of the webcam
-            int cameraFps = 30;
-            timer = new Timer()
-            {
-                Interval = 1000 / cameraFps,
-                Enabled = true
-            };
-            timer.Elapsed += new ElapsedEventHandler(timer_Tick);
-*/        }
-
-        private void Capturer_ImageGrabbed(object sender, System.EventArgs e)
+        private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
         {
-            var frame = VideoDevice.Capturer.QueryFrame();
-
-            /*            //flip the image horizontally
-                        CvInvoke.Flip(frame, frame, FlipType.Horizontal);
-            */
+            Mat frame = e.Image;
             if (frame != null)
             {
                 ThreadDispatcher.Invoke(() => Output = frame.ToBitmapSource());
@@ -52,12 +40,7 @@ namespace Billiard.viewModels
 
         private void Stop()
         {
-            if (VideoDevice.Capturer != null)
-            {
-                VideoDevice.Capturer.Stop();
-
-                VideoDevice.Capturer.ImageGrabbed -= Capturer_ImageGrabbed;
-            }
+            VideoDevice.Stop();
         }
 
         public ICommand StartCommand
@@ -67,13 +50,7 @@ namespace Billiard.viewModels
             
         private void Start()
         {
-            if (VideoDevice.Capturer != null)
-            {
-                VideoDevice.Capturer.ImageGrabbed -= Capturer_ImageGrabbed;
-                VideoDevice.Capturer.ImageGrabbed += Capturer_ImageGrabbed;
-
-                VideoDevice.Capturer.Start();
-            }
+            VideoDevice.Start();
         }
         
     }

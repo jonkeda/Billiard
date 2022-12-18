@@ -1,20 +1,23 @@
-﻿using System.Windows.Input;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using Billiard.UI;
 using Emgu.CV;
 using System.Windows;
-using Billiard.Camera.vision;
+using Billiard.Camera.vision.detectors;
 using Billiard.Camera.vision.Geometries;
+using Billiard.Physics;
 
 namespace Billiard.viewModels
 {
     public class BallViewModel : ViewModel
     {
         public VideoDeviceViewModel VideoDevice { get; }
+        private readonly PhysicsEngine physicsEngine;
 
-        public BallViewModel(VideoDeviceViewModel videoDevice)
+        public BallViewModel(VideoDeviceViewModel videoDevice, PhysicsEngine physicsEngine)
         {
             VideoDevice = videoDevice;
+            videoDevice.CaptureImage += VideoDevice_CaptureImage;
+            this.physicsEngine = physicsEngine;
         }
 
         private ImageSource originalImage;
@@ -32,14 +35,10 @@ namespace Billiard.viewModels
 
         public TableDetector tableDetector = new();
         public BallDetector ballDetector = new();
+
         private ImageSource whiteBallImage;
         private ImageSource yellowBallImage;
         private ImageSource redBallImage;
-
-        public ICommand CaptureCommand
-        {
-            get { return new TargetCommand(Captures); }
-        }
 
         public ImageSource OriginalImage
         {
@@ -130,21 +129,10 @@ namespace Billiard.viewModels
             get { return redBallImage; }
             set { SetProperty(ref redBallImage, value); }
         }
-       
-        private void Captures()
+
+        private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
         {
-            if (VideoDevice.SelectedVideoDevice == null)
-            {
-                return;
-            }
-
-            if (VideoDevice.Capturer == null
-                || !VideoDevice.Capturer.Grab())
-            {
-                return;
-            }
-
-            Mat image = VideoDevice.Capturer.QueryFrame();
+            Mat image = e.Image;
             if (image == null)
             {
                 return;
@@ -170,7 +158,11 @@ namespace Billiard.viewModels
             RedBallImage = ballDetector.redBallMat?.ToImageSource();
 
             FoundBallsImage = DrawBalls();
-            FoundTableImage = TableViewModel.DrawFoundTable(InRangeImage, tableDetector);
+            FoundTableImage = TableViewModel.DrawFoundTable(FloodFillImage, tableDetector.floodFillPoints, tableDetector.floodFillMPoints);
+
+
+            physicsEngine.SetBalls(ballDetector.WhiteBallRelativePoint, ballDetector.YellowBallRelativePoint,
+                ballDetector.RedBallRelativePoint);
         }
 
         private DrawingImage DrawBalls()
@@ -184,23 +176,25 @@ namespace Billiard.viewModels
                 drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
                     new Rect(0, 0, OriginalImage.Width, OriginalImage.Height));
 
+                double radius = System.Math.Max(OriginalImage.Height / 100, OriginalImage.Width / 100);
+
                 Pen whiteColor = new Pen(Brushes.Black, 5)
                 {
                     DashStyle = DashStyles.Solid
                 };
-                drawingContext.DrawEllipse(Brushes.Wheat, whiteColor, ballDetector.whiteBallPoint, 10, 10);
+                drawingContext.DrawEllipse(Brushes.Wheat, whiteColor, ballDetector.WhiteBallPoint, radius, radius);
 
                 Pen yellowColor = new Pen(Brushes.Black, 5)
                 {
                     DashStyle = DashStyles.Solid
                 };
-                drawingContext.DrawEllipse(Brushes.Yellow, yellowColor, ballDetector.yellowBallPoint, 10, 10);
+                drawingContext.DrawEllipse(Brushes.Yellow, yellowColor, ballDetector.YellowBallPoint, radius, radius);
 
                 Pen redColor = new Pen(Brushes.Black, 5)
                 {
                     DashStyle = DashStyles.Solid
                 };
-                drawingContext.DrawEllipse(Brushes.Red, redColor, ballDetector.redBallPoint, 10, 10);
+                drawingContext.DrawEllipse(Brushes.Red, redColor, ballDetector.RedBallPoint, radius, radius);
 
 
                 drawingContext.Close();
