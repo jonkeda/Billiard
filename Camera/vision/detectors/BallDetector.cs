@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Billiard.Camera.vision.Geometries;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -22,6 +23,13 @@ namespace Billiard.Camera.vision.detectors
         public Mat sTableMat = new();
         public Mat vTableMat = new();
 
+        public Mat hlsTableMat = new();
+        public Mat h2TableMat = new();
+        public Mat l2TableMat = new();
+        public Mat s2TableMat = new();
+
+        public Mat hueMat = new();
+        
         public Mat whiteBallMat = new();
         public Mat yellowBallMat = new();
         public Mat redBallMat = new();
@@ -102,6 +110,10 @@ namespace Billiard.Camera.vision.detectors
 
             FindHsv();
 
+            FindHls();
+
+            HsvToRgb();
+
             FindWhiteBall();
             FindYellowBall();
             FindRedBall();
@@ -156,9 +168,16 @@ namespace Billiard.Camera.vision.detectors
 
         private void FindWhiteBall()
         {
-            ScalarArray lower = new ScalarArray(new MCvScalar(0, 0, 128));
-            ScalarArray upper = new ScalarArray(new MCvScalar(0, 0, 255));
+            int sensitivity = 50;
+            ScalarArray lower = new ScalarArray(new MCvScalar(0, 0, 255 - sensitivity));
+            ScalarArray upper = new ScalarArray(new MCvScalar(255, sensitivity, 255));
 
+/*            ScalarArray lower = new ScalarArray(new MCvScalar(110, 100, 100));
+            ScalarArray upper = new ScalarArray(new MCvScalar(130, 255, 255));
+*/
+/*            ScalarArray lower = new ScalarArray(new MCvScalar(0, 0, 128));
+            ScalarArray upper = new ScalarArray(new MCvScalar(0, 0, 255));
+*/
             CvInvoke.InRange(hsvTableMat, lower, upper, whiteBallMat);
             WhiteBallPoint = FindBall(whiteBallMat);
         }
@@ -183,11 +202,49 @@ namespace Billiard.Camera.vision.detectors
 
         private void FindHsv()
         {
-            CvInvoke.GaussianBlur(originMat, originMat, new Size(3, 3), 1);
             CvInvoke.CvtColor(originMat, hsvTableMat, ColorConversion.Bgr2Hsv);
             CvInvoke.ExtractChannel(hsvTableMat, hTableMat, 0);
+
             CvInvoke.ExtractChannel(hsvTableMat, sTableMat, 1);
             CvInvoke.ExtractChannel(hsvTableMat, vTableMat, 2);
+        }
+
+        private void HsvToRgb()
+        {
+            //CvInvoke.GaussianBlur(originMat, originMat, new Size(3, 3), 1);
+            CvInvoke.CvtColor(originMat, hsvTableMat, ColorConversion.Bgr2Hsv);
+
+            Mat hMat = new Mat();
+            CvInvoke.ExtractChannel(hsvTableMat, hMat, 0);
+            
+            Mat sMat = new Mat();
+            CvInvoke.ExtractChannel(hsvTableMat, sMat, 1);
+            sMat.SetTo(new MCvScalar(255));
+
+            Mat vMat = new Mat();
+            CvInvoke.ExtractChannel(hsvTableMat, vMat, 2);
+            vMat.SetTo(new MCvScalar(255));
+
+            /*            Mat sMat = Mat.Ones(hMat.Rows, hMat.Cols, hMat.Depth, hMat.NumberOfChannels);
+                        Mat vMat = Mat.Ones(hMat.Rows, hMat.Cols, hMat.Depth, hMat.NumberOfChannels);
+                        CvInvoke.FloodFill(sMat, sMat, Point.Empty, new MCvScalar(255), out _, 
+                            new MCvScalar(1), new MCvScalar(1), Connectivity.EightConnected);
+                        CvInvoke.FloodFill(vMat, vMat, Point.Empty, new MCvScalar(255), out _,
+                            new MCvScalar(1), new MCvScalar(1), Connectivity.EightConnected);
+            */
+            CvInvoke.Merge(new VectorOfMat(hMat, sMat, vMat), hueMat);
+
+            CvInvoke.CvtColor(hueMat, hueMat, ColorConversion.Hsv2Bgr);
+        }
+
+
+        private void FindHls()
+        {
+            CvInvoke.GaussianBlur(originMat, originMat, new Size(3, 3), 1);
+            CvInvoke.CvtColor(originMat, hlsTableMat, ColorConversion.Bgr2Hls);
+            CvInvoke.ExtractChannel(hlsTableMat, h2TableMat, 0);
+            CvInvoke.ExtractChannel(hlsTableMat, l2TableMat, 1);
+            CvInvoke.ExtractChannel(hlsTableMat, s2TableMat, 2);
         }
 
         private void FindContours()

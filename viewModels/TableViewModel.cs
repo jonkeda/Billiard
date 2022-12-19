@@ -39,12 +39,24 @@ namespace Billiard.viewModels
 
         public TableDetector tableDetector = new();
         private ImageSource sameColorPointImage;
+        private ImageSource tablePointImage;
 
         public ImageSource OriginalImage
         {
             get { return originalImage; }
             private set { SetProperty(ref originalImage, value); }
         }
+
+        public ImageSource TablePointImage
+        {
+            get
+            {
+                return tablePointImage;
+            }
+            set { SetProperty(ref tablePointImage, value); }
+        }
+
+
 
         public ImageSource FloodFillImage
         {
@@ -157,6 +169,7 @@ namespace Billiard.viewModels
 
             FloodFillPointImage = DrawFoundTable(floodFillImage, tableDetector.floodFillPoints, tableDetector.floodFillMPoints);
             SameColorPointImage = DrawFoundTable(SameColorImage, tableDetector.sameColorPoints, tableDetector.sameColorMPoints);
+            TablePointImage = sameColorPointImage;
 
         }
 

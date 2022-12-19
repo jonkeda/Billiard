@@ -39,6 +39,11 @@ namespace Billiard.viewModels
         private ImageSource whiteBallImage;
         private ImageSource yellowBallImage;
         private ImageSource redBallImage;
+        private ImageSource tablePointImage;
+        private ImageSource hlsTableImage;
+        private ImageSource h2TableImage;
+        private ImageSource l2TableImage;
+        private ImageSource hueImage;
 
         public ImageSource OriginalImage
         {
@@ -63,6 +68,15 @@ namespace Billiard.viewModels
             get { return tableImage; }
             set { SetProperty(ref tableImage, value); }
         }
+        public ImageSource TablePointImage
+        {
+            get
+            {
+                return tablePointImage;
+            }
+            set { SetProperty(ref tablePointImage, value); }
+        }
+
 
         public ImageSource GrayTableImage
         {
@@ -100,13 +114,48 @@ namespace Billiard.viewModels
             set { SetProperty(ref vTableImage, value); }
         }
 
+
+        public ImageSource HueImage
+        {
+            get { return hueImage; }
+            set { SetProperty(ref hueImage, value); }
+        }
+
+
+        public ImageSource HlsTableImage
+        {
+            get { return hlsTableImage; }
+            set { SetProperty(ref hlsTableImage, value); }
+        }
+
+        public ImageSource H2TableImage
+        {
+            get { return h2TableImage; }
+            set { SetProperty(ref h2TableImage, value); }
+        }
+
+        public ImageSource S2TableImage
+        {
+            get { return sTableImage; }
+            set { SetProperty(ref sTableImage, value); }
+        }
+
+        public ImageSource L2TableImage
+        {
+            get { return l2TableImage; }
+            set { SetProperty(ref l2TableImage, value); }
+        }
+
+
+
+
         public ImageSource FoundBallsImage
         {
             get { return foundBallsImage; }
             set { SetProperty(ref foundBallsImage, value); }
         }
 
-        public ImageSource FoundTableImage
+        public ImageSource FoundTablePointImage
         {
             get { return foundTableImage; }
             set { SetProperty(ref foundTableImage, value); }
@@ -152,14 +201,21 @@ namespace Billiard.viewModels
             HTableImage = ballDetector.hTableMat?.ToImageSource();
             STableImage = ballDetector.sTableMat?.ToImageSource();
             VTableImage = ballDetector.vTableMat?.ToImageSource();
+            
+            HlsTableImage = ballDetector.hlsTableMat?.ToImageSource();
+            H2TableImage = ballDetector.h2TableMat?.ToImageSource();
+            S2TableImage = ballDetector.s2TableMat?.ToImageSource();
+            L2TableImage = ballDetector.l2TableMat?.ToImageSource();
+
+            HueImage = ballDetector.hueMat?.ToImageSource();
 
             WhiteBallImage = ballDetector.whiteBallMat?.ToImageSource();
             YellowBallImage = ballDetector.yellowBallMat?.ToImageSource();
             RedBallImage = ballDetector.redBallMat?.ToImageSource();
 
             FoundBallsImage = DrawBalls();
-            FoundTableImage = TableViewModel.DrawFoundTable(FloodFillImage, tableDetector.floodFillPoints, tableDetector.floodFillMPoints);
-
+            FoundTablePointImage = TableViewModel.DrawFoundTable(FloodFillImage, tableDetector.floodFillPoints, tableDetector.floodFillMPoints);
+            TablePointImage = FoundTablePointImage;
 
             physicsEngine.SetBalls(ballDetector.WhiteBallRelativePoint, ballDetector.YellowBallRelativePoint,
                 ballDetector.RedBallRelativePoint);

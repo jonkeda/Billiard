@@ -573,7 +573,7 @@ namespace Billiard.Physics
                 && GetYellowBall().position != Vector2.Zero
                 && GetRedBall().position != Vector2.Zero)
             {
-                // CalculateSolutions();
+                 CalculateSolutions();
 
             }
         }

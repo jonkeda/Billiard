@@ -18,38 +18,65 @@
         
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
 
-            <Image Grid.Row="0" Grid.Column="0" Source="{Binding TableImage}" />
-            <Image Grid.Row="0" Grid.Column="1" Source="{Binding FloodFillImage}" />
-            <Image Grid.Row="0" Grid.Column="2" Source="{Binding InRangeImage}" />
-            <Image Grid.Row="0" Grid.Column="2" Source="{Binding FoundTableImage}" />
+            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >Original</TextBlock>
+            <Image Grid.Row="1" Grid.Column="0" Source="{Binding TableImage}" />
+            <Image Grid.Row="1" Grid.Column="0" Source="{Binding TablePointImage}" />
 
-            <Image Grid.Row="1" Grid.Column="0" Source="{Binding OriginalImage}" />
-            <Image Grid.Row="1" Grid.Column="0" Source="{Binding FoundBallsImage}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" >Original</TextBlock>
+            <Image Grid.Row="1" Grid.Column="1" Source="{Binding FloodFillImage}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" >In Range</TextBlock>
+            <Image Grid.Row="1" Grid.Column="2" Source="{Binding InRangeImage}" />
+            <Image Grid.Row="1" Grid.Column="2" Source="{Binding FoundTablePointImage}" />
+            <TextBlock Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" >OriginalImage</TextBlock>
+            <Image Grid.Row="1" Grid.Column="3" Source="{Binding OriginalImage}" />
+            <Image Grid.Row="1" Grid.Column="3" Source="{Binding FoundBallsImage}" />
 
-<!--
-            <Image Grid.Row="1" Grid.Column="0" Source="{Binding GrayTableImage}" />
-            <Image Grid.Row="1" Grid.Column="1" Source="{Binding CannyTableImage}" />
-            <Image Grid.Row="1" Grid.Column="2" Source="{Binding TableImage}" />
--->
-<!--
-            <Image Grid.Row="2" Grid.Column="0" Source="{Binding HTableImage}" />
-            <Image Grid.Row="2" Grid.Column="1" Source="{Binding STableImage}" />
-            <Image Grid.Row="2" Grid.Column="2" Source="{Binding VTableImage}" />
--->
-            <Image Grid.Row="2" Grid.Column="0" Source="{Binding WhiteBallImage}" />
-            <Image Grid.Row="2" Grid.Column="1" Source="{Binding YellowBallImage}" />
-            <Image Grid.Row="2" Grid.Column="2" Source="{Binding RedBallImage}" />
+            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" >H2</TextBlock>
+            <Image Grid.Row="3" Grid.Column="0" Source="{Binding H2TableImage}" />
+            <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" >S2</TextBlock>
+            <Image Grid.Row="3" Grid.Column="1" Source="{Binding S2TableImage}" />
+            <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" >L</TextBlock>
+            <Image Grid.Row="3" Grid.Column="2" Source="{Binding L2TableImage}" />
+            <TextBlock Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" >HSV</TextBlock>
+            <Image Grid.Row="3" Grid.Column="3" Source="{Binding HlsTableImage}" />
+
+
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" >White</TextBlock>
+            <Image Grid.Row="5" Grid.Column="0" Source="{Binding WhiteBallImage}" />
+            <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Center" >Yellow</TextBlock>
+            <Image Grid.Row="5" Grid.Column="1" Source="{Binding YellowBallImage}" />
+            <TextBlock Grid.Row="4" Grid.Column="2" HorizontalAlignment="Center" >Red</TextBlock>
+            <Image Grid.Row="5" Grid.Column="2" Source="{Binding RedBallImage}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="3" HorizontalAlignment="Center" >HUE</TextBlock>
+            <Image Grid.Row="5" Grid.Column="3" Source="{Binding HueImage}" />
+
+            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Center" >H</TextBlock>
+            <Image Grid.Row="7" Grid.Column="0" Source="{Binding HTableImage}" />
+            <TextBlock Grid.Row="6" Grid.Column="1" HorizontalAlignment="Center" >S</TextBlock>
+            <Image Grid.Row="7" Grid.Column="1" Source="{Binding STableImage}" />
+            <TextBlock Grid.Row="6" Grid.Column="2" HorizontalAlignment="Center" >V</TextBlock>
+            <Image Grid.Row="7" Grid.Column="2" Source="{Binding VTableImage}" />
+            <TextBlock Grid.Row="6" Grid.Column="3" HorizontalAlignment="Center" >HSV</TextBlock>
+            <Image Grid.Row="7" Grid.Column="3" Source="{Binding HsvTableImage}" />
+
         </Grid>
 
 </Grid>
