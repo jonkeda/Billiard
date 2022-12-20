@@ -19,10 +19,10 @@
             <Button Command="{Binding StartCommand}">Start</Button>
             <Button Command="{Binding StopCommand}">Stop</Button>
         </StackPanel>
-
-        <ComboBox Grid.Row="1" ItemsSource="{Binding VideoDevice.VideoDevices}" SelectedItem="{Binding VideoDevice.SelectedVideoDevice}"></ComboBox>
+        <local:VideoDeviceView Grid.Row="1" DataContext="{Binding VideoDevice}" />
 
         <Image Grid.Row="2"  Source="{Binding Output}" />
+        <Image Grid.Row="2"  Source="{Binding Overlay}" />
 
 </Grid>
 

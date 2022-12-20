@@ -1,17 +1,13 @@
 ﻿using Billiard.Camera.Devices;
-using Billiard.Physics;
 using Billiard.UI;
 using Emgu.CV;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using Emgu.CV.CvEnum;
 using Microsoft.Win32;
-using Emgu.CV.Structure;
 
 namespace Billiard.viewModels
 {
@@ -105,7 +101,6 @@ namespace Billiard.viewModels
             if (image.Height > image.Width)
             {
                 CvInvoke.ResizeForFrame(image, image, new System.Drawing.Size(500, 1000));
-                //CvInvoke.Rotate(image, image, RotateFlags.Rotate90Clockwise);
             }
             else
             {
@@ -113,6 +108,22 @@ namespace Billiard.viewModels
             }
             CaptureImage?.Invoke(this, new CaptureEvent(image));
         }
+
+
+        public event EventHandler<CaptureEvent> StreamImage;
+        protected void OnStreamImage(Mat image)
+        {
+            if (image.Height > image.Width)
+            {
+                CvInvoke.ResizeForFrame(image, image, new System.Drawing.Size(500, 1000));
+            }
+            else
+            {
+                CvInvoke.ResizeForFrame(image, image, new System.Drawing.Size(1000, 500));
+            }
+            CaptureImage?.Invoke(this, new CaptureEvent(image));
+        }
+
 
         public void Stop()
         {
@@ -138,7 +149,7 @@ namespace Billiard.viewModels
 
         private void Capturer_ImageGrabbed(object sender, EventArgs e)
         {
-            OnCaptureImage(Camera.QueryFrame());
+            OnStreamImage(Camera.QueryFrame());
         }
     }
 

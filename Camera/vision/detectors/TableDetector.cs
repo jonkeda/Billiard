@@ -31,6 +31,28 @@ namespace Billiard.Camera.vision.detectors
         public List<PointF> floodFillMPoints = new ();
         public List<PointF> sameColorMPoints = new ();
 
+        public (List<PointF> sameColorPoints, List<PointF> sameColorMPoints) DetectFast(Mat image)
+        {
+            int floodFillColor = 100;
+
+            originMat = image;
+
+            // FindContours();
+
+            /*            Rectangle bounds = FloodFill(floodFillColor);
+                        (floodFillPoints, floodFillMPoints) = FindLines(bounds, floodFillMat, floodFillColor);
+            */
+            Rectangle bounds = FindSameColor(floodFillColor);
+            (sameColorPoints, sameColorMPoints) = FindLines(bounds, sameColorMat, floodFillColor);
+
+            //FindInRange(floodFillColor);
+
+
+            //FindHsv();
+
+            return (sameColorPoints, sameColorMPoints);
+        }
+
         public void Detect(Mat image)
         {
             int floodFillColor = 100;
