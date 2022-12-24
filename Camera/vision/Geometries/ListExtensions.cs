@@ -36,7 +36,7 @@ namespace Billiard.Camera.vision.Geometries
         {
             Vector2 v1 = p1.AsVector2();
             Vector2 v2 = p2.AsVector2();
-            Vector2 x = (v1 - v2) * 10 + v1;
+            Vector2 x = (v1 - v2) * 1000 + v1;
             return x.AsPoint();
         }
 
@@ -81,10 +81,21 @@ namespace Billiard.Camera.vision.Geometries
             return new PointF(point.X, point.Y);
         }
 
+        public static PointF AsPointF(this System.Windows.Point point)
+        {
+            return new PointF((float)point.X, (float)point.Y);
+        }
+
         public static System.Windows.Point AsPoint(this PointF point)
         {
             return new System.Windows.Point(point.X, point.Y);
         }
+
+        public static System.Windows.Point AsPoint(this System.Drawing.Point point)
+        {
+            return new System.Windows.Point(point.X, point.Y);
+        }
+
     }
 
     public static class MatExtensions

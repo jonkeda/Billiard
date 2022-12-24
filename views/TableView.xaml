@@ -35,6 +35,7 @@
 
             <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >Original</TextBlock>
             <Image Grid.Row="1" Grid.Column="0" Source="{Binding OriginalImage}" />
+            <Image Grid.Row="1" Grid.Column="0" Source="{Binding FoundOriginalImage}" />
 
             <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" >Floodfill</TextBlock>
             <Image Grid.Row="1" Grid.Column="1" Source="{Binding FloodFillImage}" />
@@ -43,6 +44,15 @@
             <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" >In Range</TextBlock>
             <Image Grid.Row="1" Grid.Column="2" Source="{Binding InRangeImage}" />
             <Image Grid.Row="1" Grid.Column="2" Source="{Binding FoundTableImage}" />
+            <Image Grid.Row="1" Grid.Column="2" Source="{Binding FoundLinesImage}" />
+            <Image Grid.Row="1" Grid.Column="2" Source="{Binding InRangePointImage}" />
+
+            <TextBlock Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" >Mask</TextBlock>
+            <Image Grid.Row="1" Grid.Column="3" Source="{Binding FloodFillMaskImage}" />
+<!--            <Image Grid.Row="1" Grid.Column="3" Source="{Binding FoundTableImage}" />
+-->
+            <Image Grid.Row="1" Grid.Column="3" Source="{Binding FloodFillFoundLinesImage}" />
+
 
             <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" >Gray</TextBlock>
             <Image Grid.Row="3" Grid.Column="0" Source="{Binding GrayTableImage}" />
@@ -56,6 +66,8 @@
 
             <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" >H</TextBlock>
             <Image Grid.Row="5" Grid.Column="0" Source="{Binding HTableImage}" />
+            <Image Grid.Row="5" Grid.Column="0" Source="{Binding HTableMidImage}" />
+
             <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Center" >S</TextBlock>
             <Image Grid.Row="5" Grid.Column="1" Source="{Binding STableImage}" />
             <TextBlock Grid.Row="4" Grid.Column="2" HorizontalAlignment="Center" >V</TextBlock>

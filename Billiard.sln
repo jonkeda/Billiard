@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiard", "Billiard.csproj", "{D41893A4-F97F-4542-B6A0-0E05624CE76B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingBilliards", "..\BlazingBilliards\BlazingBilliards.csproj", "{BA836E44-A59C-42C8-905F-F70DCFC11F90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{D41893A4-F97F-4542-B6A0-0E05624CE76B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D41893A4-F97F-4542-B6A0-0E05624CE76B}.Release|x64.ActiveCfg = Release|x64
 		{D41893A4-F97F-4542-B6A0-0E05624CE76B}.Release|x64.Build.0 = Release|x64
+		{BA836E44-A59C-42C8-905F-F70DCFC11F90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA836E44-A59C-42C8-905F-F70DCFC11F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA836E44-A59C-42C8-905F-F70DCFC11F90}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BA836E44-A59C-42C8-905F-F70DCFC11F90}.Debug|x64.Build.0 = Debug|Any CPU
+		{BA836E44-A59C-42C8-905F-F70DCFC11F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA836E44-A59C-42C8-905F-F70DCFC11F90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA836E44-A59C-42C8-905F-F70DCFC11F90}.Release|x64.ActiveCfg = Release|Any CPU
+		{BA836E44-A59C-42C8-905F-F70DCFC11F90}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

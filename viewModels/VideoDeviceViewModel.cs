@@ -3,6 +3,7 @@ using Billiard.UI;
 using Emgu.CV;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -15,7 +16,7 @@ namespace Billiard.viewModels
     {
         private VideoDevice selectedVideoDevice;
         private VideoCapture camera;
-        
+
         public IReadOnlyList<VideoDevice> VideoDevices
         {
             get
@@ -48,6 +49,7 @@ namespace Billiard.viewModels
                 {
                     camera = new VideoCapture(SelectedVideoDevice.Index);
                 }
+
                 return camera;
             }
         }
@@ -77,6 +79,8 @@ namespace Billiard.viewModels
             get { return new TargetCommand(Load); }
         }
 
+        private string pathName;
+
         private void Load()
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -86,12 +90,116 @@ namespace Billiard.viewModels
                 {
                     Mat image = CvInvoke.Imread(ofd.FileName, ImreadModes.Color);
                     OnCaptureImage(image);
+                    pathName = ofd.FileName;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        public ICommand NextCommand
+        {
+            get { return new TargetCommand(Next); }
+        }
+
+        private void Next()
+        {
+            if (pathName == null)
+            {
+                return;
+            }
+            try
+            {
+                string folder = Path.GetDirectoryName(pathName);
+                if (folder == null)
+                {
+                    return;
+                }
+
+                string name = Directory.EnumerateFiles(folder, "*.jpg")
+                    .OrderBy(n => n)
+                    .FirstOrDefault(n => String.CompareOrdinal(n, pathName) > 0);
+                if (name == null)
+                {
+                    return;
+                }
+                Mat image = CvInvoke.Imread(name, ImreadModes.Color);
+                OnCaptureImage(image);
+                pathName = name;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        public ICommand PreviousCommand
+        {
+            get { return new TargetCommand(Previous); }
+        }
+
+        private void Previous()
+        {
+            if (pathName == null)
+            {
+                return;
+            }
+            try
+            {
+                string folder = Path.GetDirectoryName(pathName);
+                if (folder == null)
+                {
+                    return;
+                }
+
+                string name = Directory.EnumerateFiles(folder, "*.jpg")
+                    .OrderByDescending(n => n)
+                    .FirstOrDefault(n => String.CompareOrdinal(n, pathName) < 0);
+                if (name == null)
+                {
+                    return;
+                }
+                Mat image = CvInvoke.Imread(name, ImreadModes.Color);
+                OnCaptureImage(image);
+                pathName = name;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        public ICommand DeleteCommand
+        {
+            get { return new TargetCommand(Delete); }
+        }
+
+        private void Delete()
+        {
+            if (pathName == null)
+            {
+                return;
+            }
+            File.Delete(pathName);
+            Next();
+        }
+
+        public ICommand OkCommand
+        {
+            get { return new TargetCommand(Ok); }
+        }
+
+        private void Ok()
+        {
+            if (pathName == null)
+            {
+                return;
+            }
+            string newName = Path.Combine(Path.GetDirectoryName(pathName), "GrootOk", Path.GetFileName(pathName));
+            File.Move(pathName, newName);
+            Next();
         }
 
         public event EventHandler<CaptureEvent> CaptureImage;
@@ -121,7 +229,7 @@ namespace Billiard.viewModels
             {
                 CvInvoke.ResizeForFrame(image, image, new System.Drawing.Size(1000, 500));
             }
-            CaptureImage?.Invoke(this, new CaptureEvent(image));
+            StreamImage?.Invoke(this, new CaptureEvent(image));
         }
 
 

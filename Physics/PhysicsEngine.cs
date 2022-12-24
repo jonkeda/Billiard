@@ -31,6 +31,13 @@ namespace Billiard.Physics
             set { SetProperty(ref solutionsImage, value); }
         }
 
+        private ImageSource backGroundImage;
+        public ImageSource BackGroundImage
+        {
+            get { return backGroundImage; }
+            set { SetProperty(ref backGroundImage, value); }
+        }
+
 
         public const float stepSize = 0.001f;
 
@@ -63,7 +70,9 @@ namespace Billiard.Physics
         private const float ecs = 0.01f; // Error correction scalar
 
         public PhysicsEngine() : this(GameType.Billiart)
-        { }
+        {
+            DrawBackground();
+        }
 
         public PhysicsEngine(GameType gameType)
         {
@@ -406,6 +415,45 @@ namespace Billiard.Physics
             return balls.Find(b => b.index == 7);
         }
 
+        public void DrawBackground()
+        {
+            DrawingVisual visual = new DrawingVisual();
+            using (DrawingContext drawingContext = visual.RenderOpen())
+            {
+                drawingContext.PushClip(new RectangleGeometry(new Rect(new Point(0, 0), new Point(Length, Width))));
+
+                DrawLines(drawingContext);
+
+                drawingContext.Close();
+            }
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)Length, (int)Width, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(visual);
+            SolutionsImage = bitmap;
+        }
+
+        private void DrawLines(DrawingContext drawingContext)
+        {
+            drawingContext.DrawRectangle(Brushes.Green, null, new Rect(0, 0, Length, Width));
+
+            Pen pen = new Pen(Brushes.SaddleBrown, 2)
+            {
+                DashStyle = DashStyles.Dot
+            };
+
+
+            float width4 = Width / 4;
+            for (int i = 1; i < 4; i++)
+            {
+                drawingContext.DrawLine(pen, new Point(0, i * width4), new Point(Length, i * width4));
+            }
+
+            float length8 = Length / 8;
+            for (int i = 1; i < 8; i++)
+            {
+                drawingContext.DrawLine(pen, new Point(i * length8, 0), new Point(i * length8, Width));
+            }
+        }
+
         public void CalculateSolutions()
         {
             DateTime now = DateTime.Now;
@@ -415,6 +463,8 @@ namespace Billiard.Physics
             {
                 drawingContext.PushClip(new RectangleGeometry(new Rect(new Point(0, 0), new Point(Length, Width))));
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, new Rect(0, 0, Length, Width));
+
+                DrawLines(drawingContext);
 
                 PBall cue = GetCueBall();
                 PBall yellow = GetYellowBall();

@@ -8,7 +8,11 @@ using Brushes = System.Windows.Media.Brushes;
 using Pen = System.Windows.Media.Pen;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Point = System.Windows.Point;
+using Emgu.CV.Structure;
+using System.Windows.Shapes;
+using Brush = System.Windows.Media.Brush;
 
 namespace Billiard.viewModels
 {
@@ -35,11 +39,17 @@ namespace Billiard.viewModels
         private ImageSource vTableImage;
         private ImageSource inRangeImage;
         private ImageSource foundTableImage;
+        private ImageSource foundLinesImage;
         private ImageSource sameColorImage;
 
         public TableDetector tableDetector = new();
         private ImageSource sameColorPointImage;
         private ImageSource tablePointImage;
+        private ImageSource floodFillMaskImage;
+        private ImageSource floodFillFoundLinesImage;
+        private ImageSource hTableMidImage;
+        private ImageSource inRangePointImage;
+        private ImageSource foundOriginalImage;
 
         public ImageSource OriginalImage
         {
@@ -47,21 +57,28 @@ namespace Billiard.viewModels
             private set { SetProperty(ref originalImage, value); }
         }
 
-        public ImageSource TablePointImage
+        public ImageSource FoundOriginalImage
         {
-            get
-            {
-                return tablePointImage;
-            }
-            set { SetProperty(ref tablePointImage, value); }
+            get { return foundOriginalImage; }
+            private set { SetProperty(ref foundOriginalImage, value); }
         }
 
-
+        public ImageSource TablePointImage
+        {
+            get { return tablePointImage; }
+            set { SetProperty(ref tablePointImage, value); }
+        }
 
         public ImageSource FloodFillImage
         {
             get { return floodFillImage; }
             set { SetProperty(ref floodFillImage, value); }
+        }
+
+        public ImageSource FloodFillMaskImage
+        {
+            get { return floodFillMaskImage; }
+            set { SetProperty(ref floodFillMaskImage, value); }
         }
 
         public ImageSource FloodFillPointImage
@@ -84,11 +101,14 @@ namespace Billiard.viewModels
 
         public ImageSource SameColorPointImage
         {
-            get
-            {
-                return sameColorPointImage;
-            }
+            get { return sameColorPointImage; }
             set { SetProperty(ref sameColorPointImage, value); }
+        }
+
+        public ImageSource InRangePointImage
+        {
+            get { return inRangePointImage; }
+            set { SetProperty(ref inRangePointImage, value); }
         }
 
         public ImageSource TableImage
@@ -121,6 +141,12 @@ namespace Billiard.viewModels
             set { SetProperty(ref hTableImage, value); }
         }
 
+        public ImageSource HTableMidImage
+        {
+            get { return hTableMidImage; }
+            set { SetProperty(ref hTableMidImage, value); }
+        }
+
         public ImageSource STableImage
         {
             get { return sTableImage; }
@@ -139,6 +165,18 @@ namespace Billiard.viewModels
             set { SetProperty(ref foundTableImage, value); }
         }
 
+        public ImageSource FoundLinesImage
+        {
+            get { return foundLinesImage; }
+            set { SetProperty(ref foundLinesImage, value); }
+        }
+
+        public ImageSource FloodFillFoundLinesImage
+        {
+            get { return floodFillFoundLinesImage; }
+            set { SetProperty(ref floodFillFoundLinesImage, value); }
+        }
+
         private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
         {
             Mat image = e.Image;
@@ -153,6 +191,7 @@ namespace Billiard.viewModels
 
             FloodFillImage = tableDetector.floodFillMat?.ToImageSource();
             InRangeImage = tableDetector.inRangeMat?.ToImageSource();
+            FloodFillMaskImage = tableDetector.floodFillMaskMat?.ToImageSource();
 
             SameColorImage = tableDetector.sameColorMat?.ToImageSource();
 
@@ -169,8 +208,60 @@ namespace Billiard.viewModels
 
             FloodFillPointImage = DrawFoundTable(floodFillImage, tableDetector.floodFillPoints, tableDetector.floodFillMPoints);
             SameColorPointImage = DrawFoundTable(SameColorImage, tableDetector.sameColorPoints, tableDetector.sameColorMPoints);
+
+            InRangePointImage = DrawFoundTable(floodFillImage, tableDetector.inRangePoints, tableDetector.inRangeMPoints);
+
+
+            FoundLinesImage = DrawFoundLines(floodFillImage, tableDetector.HoughLines);
+
+            FloodFillFoundLinesImage = DrawFoundLines(floodFillImage, tableDetector.FloodFillMatHoughLines);
+
             TablePointImage = sameColorPointImage;
 
+            HTableMidImage = DrawMidpoint(HTableImage);
+
+            FoundOriginalImage = DrawFoundOriginalTable(OriginalImage, tableDetector.inRangeMPoints);
+
+        }
+
+
+        public static DrawingImage DrawFoundOriginalTable(ImageSource image, List<PointF> tableCornerPoints)
+        {
+            DrawingVisual visual = new DrawingVisual();
+            using (DrawingContext drawingContext = visual.RenderOpen())
+            {
+                drawingContext.PushClip(new RectangleGeometry(
+                    new Rect(new Point(0, 0), new Point(image.Width, image.Height))));
+                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
+                    new Rect(0, 0, image.Width, image.Height));
+
+                if (tableCornerPoints.Count == 0)
+                {
+                    return null;
+                }
+
+                Pen examplePen = new Pen(Brushes.GreenYellow, 5)
+                {
+                    DashStyle = DashStyles.Solid
+                };
+                PathFigure figure = new PathFigure
+                {
+                    IsClosed = true,
+                    StartPoint = tableCornerPoints[0].AsPoint()
+                };
+                foreach (PointF pointF in tableCornerPoints.Skip(1))
+                {
+                    figure.Segments.Add(new LineSegment(pointF.AsPoint(), true));
+                }
+
+                Geometry geometry = new PathGeometry(new List<PathFigure> { figure });
+                drawingContext.DrawGeometry(null, examplePen, geometry);
+
+
+                drawingContext.Close();
+            }
+
+            return new DrawingImage(visual.Drawing);
         }
 
         public static DrawingImage DrawFoundTable(ImageSource image, List<PointF> points, List<PointF> pointsM)
@@ -212,5 +303,159 @@ namespace Billiard.viewModels
 
             return new DrawingImage(visual.Drawing);
         }
+
+        public static DrawingImage DrawFoundLines(ImageSource image, LineSegment2D[] houghLines)
+        {
+            Pen pen = new Pen(Brushes.Aqua, 5)
+            {
+                DashStyle = DashStyles.Dot
+            };
+
+            DrawingVisual visual = new DrawingVisual();
+            using (DrawingContext drawingContext = visual.RenderOpen())
+            {
+                drawingContext.PushClip(new RectangleGeometry(
+                    new Rect(new Point(0, 0), new Point(image.Width, image.Height))));
+                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
+                    new Rect(0, 0, image.Width, image.Height));
+
+                foreach (LineSegment2D line in houghLines)
+                {
+                    drawingContext.DrawLine(pen, line.P1.AsPoint(), line.P2.AsPoint());
+                }
+                DrawLine(drawingContext, Brushes.Purple, MostTop(houghLines));
+                DrawLine(drawingContext, Brushes.Violet, MostBottom(houghLines));
+                DrawLine(drawingContext, Brushes.DeepPink, MostLeft(houghLines));
+                DrawLine(drawingContext, Brushes.Pink, MostRight(houghLines));
+
+                drawingContext.Close();
+            }
+
+            return new DrawingImage(visual.Drawing);
+        }
+
+        public static void DrawLine(DrawingContext drawingContext, Brush brush, LineSegment2D? line)
+        {
+            Pen pen2 = new Pen(brush, 10)
+            {
+                DashStyle = DashStyles.Solid
+            };
+            if (line.HasValue)
+            {
+                drawingContext.DrawLine(pen2, line.Value.P1.AsPoint(), line.Value.P2.AsPoint());
+            }
+        }
+
+        public static LineSegment2D? MostTop(LineSegment2D[] lines)
+        {
+            float top = float.MaxValue;
+            LineSegment2D? found = null;
+            foreach (LineSegment2D line in lines)
+            {
+                if (line.P1.Y < top)
+                {
+                    top = line.P1.Y;
+                    found = line;
+                }
+                if (line.P2.Y < top)
+                {
+                    top = line.P2.Y;
+                    found = line;
+                }
+            }
+
+            return found;
+        }
+
+        public static LineSegment2D? MostBottom(LineSegment2D[] lines)
+        {
+            float bottom = float.MinValue;
+            LineSegment2D? found = null;
+            foreach (LineSegment2D line in lines)
+            {
+                if (line.P1.Y > bottom)
+                {
+                    bottom = line.P1.Y;
+                    found = line;
+                }
+                if (line.P2.Y > bottom)
+                {
+                    bottom = line.P2.Y;
+                    found = line;
+                }
+            }
+
+            return found;
+        }
+
+        public static LineSegment2D? MostLeft(LineSegment2D[] lines)
+        {
+            float left = float.MaxValue;
+            LineSegment2D? found = null;
+            foreach (LineSegment2D line in lines)
+            {
+                if (line.P1.X < left)
+                {
+                    left = line.P1.X;
+                    found = line;
+                }
+                if (line.P2.X < left)
+                {
+                    left = line.P2.X;
+                    found = line;
+                }
+            }
+
+            return found;
+        }
+
+        public static LineSegment2D? MostRight(LineSegment2D[] lines)
+        {
+            float right = float.MinValue;
+            LineSegment2D? found = null;
+            foreach (LineSegment2D line in lines)
+            {
+                if (line.P1.X > right)
+                {
+                    right = line.P1.X;
+                    found = line;
+                }
+                if (line.P2.X > right)
+                {
+                    right = line.P2.X;
+                    found = line;
+                }
+            }
+
+            return found;
+        }
+
+        public static DrawingImage DrawMidpoint(ImageSource image)
+        {
+            Pen pen = new Pen(Brushes.Aqua, 5)
+            {
+                DashStyle = DashStyles.Dot
+            };
+
+            double radius = System. Math.Max(image.Height / 100, image.Width / 100);
+
+            DrawingVisual visual = new DrawingVisual();
+            using (DrawingContext drawingContext = visual.RenderOpen())
+            {
+                drawingContext.PushClip(new RectangleGeometry(
+                    new Rect(new Point(0, 0), new Point(image.Width, image.Height))));
+                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
+                    new Rect(0, 0, image.Width, image.Height));
+
+                drawingContext.DrawEllipse(Brushes.OrangeRed, null, new Point(image.Width / 2, image.Height / 2), radius, radius);
+
+                drawingContext.Close();
+            }
+
+            return new DrawingImage(visual.Drawing);
+        }
+
+
+
     }
 }

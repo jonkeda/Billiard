@@ -18,6 +18,10 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Command="{Binding CaptureCommand}">Capture</Button>
             <Button Command="{Binding LoadCommand}">Load</Button>
+            <Button Command="{Binding PreviousCommand}">Previous</Button>
+            <Button Command="{Binding NextCommand}">Next</Button>
+            <Button Command="{Binding DeleteCommand}">Delete</Button>
+            <Button Command="{Binding OkCommand}">Ok</Button>
 
         </StackPanel>
 

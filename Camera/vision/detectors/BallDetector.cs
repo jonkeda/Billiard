@@ -102,6 +102,19 @@ namespace Billiard.Camera.vision.detectors
             return new System.Windows.Point(p.X / originMat.Width, p.Y / originMat.Height);
         }
 
+        public (System.Windows.Point whiteBallPoint, System.Windows.Point yellowBallPoint, System.Windows.Point redBallPoint) DetectFast(Mat image)
+        {
+            originMat = image;
+
+            CvInvoke.CvtColor(originMat, hsvTableMat, ColorConversion.Bgr2Hsv);
+            FindWhiteBall();
+            FindYellowBall();
+            FindRedBall();
+
+
+            return (whiteBallPoint, yellowBallPoint, redBallPoint);
+        }
+
         public void Detect(Mat image)
         {
             originMat = image;
@@ -225,13 +238,6 @@ namespace Billiard.Camera.vision.detectors
             CvInvoke.ExtractChannel(hsvTableMat, vMat, 2);
             vMat.SetTo(new MCvScalar(255));
 
-            /*            Mat sMat = Mat.Ones(hMat.Rows, hMat.Cols, hMat.Depth, hMat.NumberOfChannels);
-                        Mat vMat = Mat.Ones(hMat.Rows, hMat.Cols, hMat.Depth, hMat.NumberOfChannels);
-                        CvInvoke.FloodFill(sMat, sMat, Point.Empty, new MCvScalar(255), out _, 
-                            new MCvScalar(1), new MCvScalar(1), Connectivity.EightConnected);
-                        CvInvoke.FloodFill(vMat, vMat, Point.Empty, new MCvScalar(255), out _,
-                            new MCvScalar(1), new MCvScalar(1), Connectivity.EightConnected);
-            */
             CvInvoke.Merge(new VectorOfMat(hMat, sMat, vMat), hueMat);
 
             CvInvoke.CvtColor(hueMat, hueMat, ColorConversion.Hsv2Bgr);

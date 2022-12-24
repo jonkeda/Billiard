@@ -12,12 +12,16 @@ using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
+using System;
+using System.Globalization;
+using System.Linq;
 
 namespace Billiard.viewModels
 {
     public class CaptureViewModel : ViewModel
     {
-        public TableDetector TableDetector { get; }
+        private TableDetector TableDetector { get; }
+        private BallDetector BallDetector { get; }
 
         public VideoDeviceViewModel VideoDevice { get; }
 
@@ -39,27 +43,45 @@ namespace Billiard.viewModels
         {
             VideoDevice = videoDevice;
             videoDevice.CaptureImage += VideoDevice_CaptureImage;
+            videoDevice.StreamImage += VideoDevice_CaptureImage;
             TableDetector = new TableDetector();
+            BallDetector = new BallDetector();
         }
 
         private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
         {
-
             Mat frame = e.Image;
-            var (tableCornerPoints, sameColorMPoints) = TableDetector.DetectFast(frame);
+            PointF whiteBallPointF = PointF.Empty;
+            PointF yellowBallPointF = PointF.Empty;
+            PointF redBallPointF = PointF.Empty;
+            var (_, tableCornerPoints) = TableDetector.DetectFast(frame);
+            if (tableCornerPoints.Count == 4)
+            {
+                var (whiteBallPoint, yellowBallPoint, redBallPoint) = BallDetector.DetectFast(TableDetector.tableMat);
+
+                whiteBallPointF = whiteBallPoint.AsPointF();
+                yellowBallPointF = yellowBallPoint.AsPointF();
+                redBallPointF = redBallPoint.AsPointF();
+
+                TableDetector.WarpTablePerspective(BallDetector.originMat, tableCornerPoints, ref whiteBallPointF,
+                    ref yellowBallPointF, ref redBallPointF);
+            }
+
             if (frame != null)
             {
                 ThreadDispatcher.Invoke(
                     () =>
                     {
                         Output = frame.ToBitmapSource();
-                        Overlay = DrawCaptureOverlay(frame, tableCornerPoints);
+                        Overlay = DrawCaptureOverlay(frame, tableCornerPoints, whiteBallPointF, yellowBallPointF, redBallPointF);
                     });
             }
         }
             
-        private DrawingImage DrawCaptureOverlay(Mat frame, List<PointF> tableCornerPoints)
+        private DrawingImage DrawCaptureOverlay(Mat frame, List<PointF> tableCornerPoints, PointF whiteBallPoint, PointF yellowBallPoint, PointF redBallPoint)
         {
+            DateTime now = DateTime.Now;
+
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
@@ -76,7 +98,22 @@ namespace Billiard.viewModels
                     new Rect(0, 0, width, height));
 
                 DrawExample(widthSepTop, heightSep, width, widthSepBottom, height, drawingContext);
+                
                 DrawFoundTable(tableCornerPoints, drawingContext);
+                if (tableCornerPoints.Count == 4)
+                {
+                    DrawBalls(whiteBallPoint, yellowBallPoint, redBallPoint, frame, drawingContext);
+                }
+
+                FormattedText formattedText = new(
+                    (DateTime.Now - now).TotalMilliseconds.ToString(),
+                    CultureInfo.CurrentUICulture,
+                    FlowDirection.LeftToRight,
+                    new Typeface("Verdana"),
+                    32,
+                    Brushes.AntiqueWhite, 1.25);
+
+                drawingContext.DrawText(formattedText, new Point(0, 0));
 
                 drawingContext.Close();
             }
@@ -84,23 +121,52 @@ namespace Billiard.viewModels
             return new DrawingImage(visual.Drawing);
         }
 
+        private void DrawBalls(PointF whiteBallPoint, PointF yellowBallPoint, PointF redBallPoint, Mat frame, DrawingContext drawingContext)
+        {
+                double radius = System.Math.Max(frame.Height / 100, frame.Width / 100);
+
+                Pen whiteColor = new Pen(Brushes.Black, 5)
+                {
+                    DashStyle = DashStyles.Solid
+                };
+                drawingContext.DrawEllipse(Brushes.Wheat, whiteColor, whiteBallPoint.AsPoint(), radius, radius);
+
+                Pen yellowColor = new Pen(Brushes.Black, 5)
+                {
+                    DashStyle = DashStyles.Solid
+                };
+                drawingContext.DrawEllipse(Brushes.Yellow, yellowColor, yellowBallPoint.AsPoint(), radius, radius);
+
+                Pen redColor = new Pen(Brushes.Black, 5)
+                {
+                    DashStyle = DashStyles.Solid
+                };
+                drawingContext.DrawEllipse(Brushes.Red, redColor, redBallPoint.AsPoint(), radius, radius);
+        }
+
         private static void DrawFoundTable(List<PointF> tableCornerPoints,
             DrawingContext drawingContext)
         {
+            if (tableCornerPoints.Count == 0)
+            {
+                return;
+            }
+
             Pen examplePen = new Pen(Brushes.GreenYellow, 5)
             {
                 DashStyle = DashStyles.Solid
             };
-            Geometry geometry = new PathGeometry(new List<PathFigure>()
+            PathFigure figure = new PathFigure
             {
-                new PathFigure(tableCornerPoints[0].AsPoint(),
-                    new List<PathSegment>
-                    {
-                        new LineSegment(tableCornerPoints[1].AsPoint(), true),
-                        new LineSegment(tableCornerPoints[3].AsPoint(), true),
-                        new LineSegment(tableCornerPoints[2].AsPoint(), true),
-                    }, true)
-            });
+                IsClosed = true,
+                StartPoint = tableCornerPoints[0].AsPoint()
+            };
+            foreach (PointF pointF in tableCornerPoints.Skip(1))
+            {
+                figure.Segments.Add(new LineSegment(pointF.AsPoint(), true));
+            }
+
+            Geometry geometry = new PathGeometry(new List<PathFigure> { figure });
             drawingContext.DrawGeometry(null, examplePen, geometry);
             
         }

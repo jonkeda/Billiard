@@ -193,32 +193,37 @@ namespace Billiard.viewModels
             FloodFillImage = tableDetector.floodFillMat?.ToImageSource();
             InRangeImage = tableDetector.inRangeMat?.ToImageSource();
 
-            ballDetector.Detect(tableDetector.tableMat);
-            GrayTableImage = ballDetector.grayTableMat?.ToImageSource();
-            CannyTableImage = ballDetector.cannyTableMat?.ToImageSource();
+            if (tableDetector.tableMat?.GetData() != null)
+            {
+                ballDetector.Detect(tableDetector.tableMat);
+                GrayTableImage = ballDetector.grayTableMat?.ToImageSource();
+                CannyTableImage = ballDetector.cannyTableMat?.ToImageSource();
 
-            HsvTableImage = ballDetector.hsvTableMat?.ToImageSource();
-            HTableImage = ballDetector.hTableMat?.ToImageSource();
-            STableImage = ballDetector.sTableMat?.ToImageSource();
-            VTableImage = ballDetector.vTableMat?.ToImageSource();
-            
-            HlsTableImage = ballDetector.hlsTableMat?.ToImageSource();
-            H2TableImage = ballDetector.h2TableMat?.ToImageSource();
-            S2TableImage = ballDetector.s2TableMat?.ToImageSource();
-            L2TableImage = ballDetector.l2TableMat?.ToImageSource();
+                HsvTableImage = ballDetector.hsvTableMat?.ToImageSource();
+                HTableImage = ballDetector.hTableMat?.ToImageSource();
+                STableImage = ballDetector.sTableMat?.ToImageSource();
+                VTableImage = ballDetector.vTableMat?.ToImageSource();
 
-            HueImage = ballDetector.hueMat?.ToImageSource();
+                HlsTableImage = ballDetector.hlsTableMat?.ToImageSource();
+                H2TableImage = ballDetector.h2TableMat?.ToImageSource();
+                S2TableImage = ballDetector.s2TableMat?.ToImageSource();
+                L2TableImage = ballDetector.l2TableMat?.ToImageSource();
 
-            WhiteBallImage = ballDetector.whiteBallMat?.ToImageSource();
-            YellowBallImage = ballDetector.yellowBallMat?.ToImageSource();
-            RedBallImage = ballDetector.redBallMat?.ToImageSource();
+                HueImage = ballDetector.hueMat?.ToImageSource();
 
-            FoundBallsImage = DrawBalls();
-            FoundTablePointImage = TableViewModel.DrawFoundTable(FloodFillImage, tableDetector.floodFillPoints, tableDetector.floodFillMPoints);
-            TablePointImage = FoundTablePointImage;
+                WhiteBallImage = ballDetector.whiteBallMat?.ToImageSource();
+                YellowBallImage = ballDetector.yellowBallMat?.ToImageSource();
+                RedBallImage = ballDetector.redBallMat?.ToImageSource();
 
-            physicsEngine.SetBalls(ballDetector.WhiteBallRelativePoint, ballDetector.YellowBallRelativePoint,
-                ballDetector.RedBallRelativePoint);
+                FoundBallsImage = DrawBalls();
+                FoundTablePointImage = TableViewModel.DrawFoundTable(FloodFillImage, tableDetector.floodFillPoints,
+                    tableDetector.floodFillMPoints);
+                TablePointImage = FoundTablePointImage;
+
+                /*            physicsEngine.SetBalls(ballDetector.WhiteBallRelativePoint, ballDetector.YellowBallRelativePoint,
+                                ballDetector.RedBallRelativePoint);
+                */
+            }
         }
 
         private DrawingImage DrawBalls()

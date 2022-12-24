@@ -58,6 +58,11 @@ namespace Billiard.Camera.vision.algorithms
             return false;
         }
 
+        public static PointF findMidPoint(Mat image)
+        {
+            return new PointF(image.width() / 2, image.height() * 0.6f);
+        }
+
         public static PointF findSimilarPointOnCenterSpiral(Mat image, float diff = 20, int angleSteps = 100, float radiusIncrement = 0.5f, float xFix = -1f, float yFix = 0.33f)
         {
             if (xFix < 0)
@@ -79,6 +84,10 @@ namespace Billiard.Camera.vision.algorithms
             int x = 0, y = 0, countSimilarLastOnes = 0;
             float a = 0, radius = 0;
             float firstX = 0, firstY = 0;
+
+            //int fx = (int)(Math.cos(a) * radius + (image.width() * xFix));
+            //int fy = (int)(Math.sin(a) * radius + (image.height() * yFix));
+
             while (countSimilarLastOnes <= 30 
                    && radius < (image.height() / 2)
                    && radius < (image.width() / 2))

@@ -45,12 +45,16 @@
                     <Button Style="{StaticResource ImageButton}" Click="HitBall" MouseRightButtonDown="UIElement_OnMouseRightButtonDown">
                         <TabPanel>
 
-                            <Canvas Width="{Binding LengthD}" Height="{Binding WidthD}" Background="Green">
+                            <Canvas Width="{Binding LengthD}" Height="{Binding WidthD}">
                                 <!--
                         <Canvas.Background>
                             <ImageBrush ImageSource="pack://application:,,,/Resources/Images/table.png" />
                         </Canvas.Background>
                         -->
+                                <Image Width="{Binding LengthD}" Height="{Binding WidthD}" 
+                                       Source="{Binding BackGroundImage}"
+                                       Stretch="None" />
+
                                 <Image x:Name="Solutions" 
                                        Width="{Binding LengthD}" Height="{Binding WidthD}" 
                                        Source="{Binding SolutionsImage}"

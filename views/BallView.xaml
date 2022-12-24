@@ -50,13 +50,15 @@
 
             <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" >H2</TextBlock>
             <Image Grid.Row="3" Grid.Column="0" Source="{Binding H2TableImage}" />
+
+<!--
             <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" >S2</TextBlock>
             <Image Grid.Row="3" Grid.Column="1" Source="{Binding S2TableImage}" />
             <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" >L</TextBlock>
             <Image Grid.Row="3" Grid.Column="2" Source="{Binding L2TableImage}" />
             <TextBlock Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" >HSV</TextBlock>
             <Image Grid.Row="3" Grid.Column="3" Source="{Binding HlsTableImage}" />
-
+-->
 
             <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" >White</TextBlock>
             <Image Grid.Row="5" Grid.Column="0" Source="{Binding WhiteBallImage}" />
