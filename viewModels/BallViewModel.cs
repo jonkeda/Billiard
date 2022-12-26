@@ -1,7 +1,9 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
 using Billiard.UI;
 using Emgu.CV;
 using System.Windows;
+using System.Windows.Media.Animation;
 using Billiard.Camera.vision.detectors;
 using Billiard.Camera.vision.Geometries;
 using Billiard.Physics;
@@ -33,8 +35,16 @@ namespace Billiard.viewModels
         private ImageSource foundTableImage;
         private ImageSource foundBallsImage;
 
+        private ImageSource contourImage;
+
+
         public TableDetector tableDetector = new();
-        public BallDetector ballDetector = new();
+
+        public BallDetector ballDetector
+        {
+            get { return ballDetector1; }
+            set { SetProperty(ref ballDetector1, value); }
+        }
 
         private ImageSource whiteBallImage;
         private ImageSource yellowBallImage;
@@ -44,11 +54,29 @@ namespace Billiard.viewModels
         private ImageSource h2TableImage;
         private ImageSource l2TableImage;
         private ImageSource hueImage;
+        private ImageSource contourRectImage;
+        private ImageSource histogramImage;
+        private ImageSource redHistBallImage;
+        private ImageSource whiteHistBallImage;
+        private ImageSource yellowHistBallImage;
+        private BallDetector ballDetector1 = new();
 
         public ImageSource OriginalImage
         {
             get { return originalImage; }
             private set { SetProperty(ref originalImage, value); }
+        }
+
+        public ImageSource ContourImage
+        {
+            get { return contourImage; }
+            private set { SetProperty(ref contourImage, value); }
+        }
+
+        public ImageSource ContourRectImage
+        {
+            get { return contourRectImage; }
+            private set { SetProperty(ref contourRectImage, value); }
         }
 
         public ImageSource FloodFillImage
@@ -100,6 +128,12 @@ namespace Billiard.viewModels
         {
             get { return hTableImage; }
             set { SetProperty(ref hTableImage, value); }
+        }
+
+        public ImageSource HistogramImage
+        {
+            get { return histogramImage; }
+            set { SetProperty(ref histogramImage, value); }
         }
 
         public ImageSource STableImage
@@ -173,11 +207,30 @@ namespace Billiard.viewModels
             set { SetProperty(ref yellowBallImage, value); }
         }
 
+        public ImageSource RedHistBallImage
+        {
+            get { return redHistBallImage; }
+            set { SetProperty(ref redHistBallImage, value); }
+        }
+
+        public ImageSource WhiteHistBallImage
+        {
+            get { return whiteHistBallImage; }
+            set { SetProperty(ref whiteHistBallImage, value); }
+        }
+
+        public ImageSource YellowHistBallImage
+        {
+            get { return yellowHistBallImage; }
+            set { SetProperty(ref yellowHistBallImage, value); }
+        }
+
         public ImageSource RedBallImage
         {
             get { return redBallImage; }
             set { SetProperty(ref redBallImage, value); }
         }
+
 
         private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
         {
@@ -215,14 +268,22 @@ namespace Billiard.viewModels
                 YellowBallImage = ballDetector.yellowBallMat?.ToImageSource();
                 RedBallImage = ballDetector.redBallMat?.ToImageSource();
 
+                WhiteHistBallImage = DrawHist(ballDetector.whiteHistBallMat);
+                YellowHistBallImage = DrawHist(ballDetector.yellowHistBallMat); 
+                RedHistBallImage = DrawHist(ballDetector.redHistBallMat);
+
                 FoundBallsImage = DrawBalls();
                 FoundTablePointImage = TableViewModel.DrawFoundTable(FloodFillImage, tableDetector.floodFillPoints,
                     tableDetector.floodFillMPoints);
                 TablePointImage = FoundTablePointImage;
 
+                ContourImage = ballDetector.contourMat?.ToImageSource();
+                ContourRectImage = ballDetector.contourRectMat?.ToImageSource();
                 /*            physicsEngine.SetBalls(ballDetector.WhiteBallRelativePoint, ballDetector.YellowBallRelativePoint,
                                 ballDetector.RedBallRelativePoint);
                 */
+                HistogramImage = DrawHist(ballDetector.histogramMat);
+
             }
         }
 
@@ -257,6 +318,43 @@ namespace Billiard.viewModels
                 };
                 drawingContext.DrawEllipse(Brushes.Red, redColor, ballDetector.RedBallPoint, radius, radius);
 
+
+                drawingContext.Close();
+            }
+
+            return new DrawingImage(visual.Drawing);
+        }
+
+
+        private DrawingImage DrawHist(Mat hist)
+        {
+            if (hist?.GetData() == null)
+            {
+                return null;
+            }
+
+            DrawingVisual visual = new DrawingVisual();
+            using (DrawingContext drawingContext = visual.RenderOpen())
+            {
+                drawingContext.PushClip(new RectangleGeometry(
+                    new Rect(new Point(0, 0),
+                        new Point(OriginalImage.Width, OriginalImage.Height))));
+                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
+                    new Rect(0, 0, OriginalImage.Width, OriginalImage.Height));
+
+                int width = 5;
+                Pen color = new Pen(Brushes.Black, 5)
+                {
+                    DashStyle = DashStyles.Solid
+                };
+
+                float[,] data = (float[,])hist.GetData();
+                for (int i = 0; i < data.Length; i++)
+                {
+
+                    drawingContext.DrawLine(color, new Point(i * width, 0),  new Point(i * width, (int)data[i, 0]));
+
+                }
 
                 drawingContext.Close();
             }

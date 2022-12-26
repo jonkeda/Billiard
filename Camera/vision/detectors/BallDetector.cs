@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Documents;
 using Billiard.Camera.vision.Geometries;
+using Billiard.UI;
+using Billiard.UI.Converters;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -9,12 +13,17 @@ using Emgu.CV.Util;
 
 namespace Billiard.Camera.vision.detectors
 {
-    public class BallDetector
+    public class BallDetector : ViewModel
     {
         public Mat originMat = new();
         public Mat floodFillMat = new();
         public Mat inRangeMat = new();
         public Mat tableMat = new();
+
+        public Mat histogramMat = new Mat();
+
+        public Mat contourMat = new Mat();
+        public Mat contourRectMat = new Mat();
 
         public Mat grayTableMat = new();
         public Mat cannyTableMat = new();
@@ -29,16 +38,26 @@ namespace Billiard.Camera.vision.detectors
         public Mat s2TableMat = new();
 
         public Mat hueMat = new();
-        
+
         public Mat whiteBallMat = new();
         public Mat yellowBallMat = new();
         public Mat redBallMat = new();
 
+        public Mat whiteHistBallMat = new();
+        public Mat yellowHistBallMat = new();
+        public Mat redHistBallMat = new();
 
         public List<PointF> points = new();
         private System.Windows.Point whiteBallPoint;
         private System.Windows.Point redBallPoint;
         private System.Windows.Point yellowBallPoint;
+        private int contourCount;
+
+        public int ContourCount
+        {
+            get { return contourCount; }
+            set { SetProperty(ref contourCount, value); }
+        }
 
         public System.Windows.Point WhiteBallPoint
         {
@@ -119,13 +138,17 @@ namespace Billiard.Camera.vision.detectors
         {
             originMat = image;
 
-            FindContours();
+            FindCanny();
 
             FindHsv();
 
             FindHls();
 
             HsvToRgb();
+
+            FindContours();
+
+            Histogram();
 
             FindWhiteBall();
             FindYellowBall();
@@ -185,12 +208,12 @@ namespace Billiard.Camera.vision.detectors
             ScalarArray lower = new ScalarArray(new MCvScalar(0, 0, 255 - sensitivity));
             ScalarArray upper = new ScalarArray(new MCvScalar(255, sensitivity, 255));
 
-/*            ScalarArray lower = new ScalarArray(new MCvScalar(110, 100, 100));
-            ScalarArray upper = new ScalarArray(new MCvScalar(130, 255, 255));
-*/
-/*            ScalarArray lower = new ScalarArray(new MCvScalar(0, 0, 128));
-            ScalarArray upper = new ScalarArray(new MCvScalar(0, 0, 255));
-*/
+            /*            ScalarArray lower = new ScalarArray(new MCvScalar(110, 100, 100));
+                        ScalarArray upper = new ScalarArray(new MCvScalar(130, 255, 255));
+            */
+            /*            ScalarArray lower = new ScalarArray(new MCvScalar(0, 0, 128));
+                        ScalarArray upper = new ScalarArray(new MCvScalar(0, 0, 255));
+            */
             CvInvoke.InRange(hsvTableMat, lower, upper, whiteBallMat);
             WhiteBallPoint = FindBall(whiteBallMat);
         }
@@ -229,7 +252,7 @@ namespace Billiard.Camera.vision.detectors
 
             Mat hMat = new Mat();
             CvInvoke.ExtractChannel(hsvTableMat, hMat, 0);
-            
+
             Mat sMat = new Mat();
             CvInvoke.ExtractChannel(hsvTableMat, sMat, 1);
             sMat.SetTo(new MCvScalar(255));
@@ -246,22 +269,116 @@ namespace Billiard.Camera.vision.detectors
 
         private void FindHls()
         {
-            CvInvoke.GaussianBlur(originMat, originMat, new Size(3, 3), 1);
-            CvInvoke.CvtColor(originMat, hlsTableMat, ColorConversion.Bgr2Hls);
+            CvInvoke.GaussianBlur(originMat, hlsTableMat, new Size(3, 3), 1);
+            CvInvoke.CvtColor(hlsTableMat, hlsTableMat, ColorConversion.Bgr2Hls);
             CvInvoke.ExtractChannel(hlsTableMat, h2TableMat, 0);
             CvInvoke.ExtractChannel(hlsTableMat, l2TableMat, 1);
             CvInvoke.ExtractChannel(hlsTableMat, s2TableMat, 2);
         }
 
-        private void FindContours()
+        private void FindCanny()
         {
-            CvInvoke.CvtColor(originMat, grayTableMat, ColorConversion.Bgr2Gray);
+/*            CvInvoke.CvtColor(originMat, grayTableMat, ColorConversion.Bgr2Gray);
 
             float cannyThreshold = 180.0f;
             float cannyThresholdLinking = 120.0f;
             CvInvoke.GaussianBlur(grayTableMat, grayTableMat, new Size(3, 3), 1);
             CvInvoke.Canny(grayTableMat, cannyTableMat, cannyThreshold, cannyThresholdLinking);
-
+*/
         }
+
+        private void FindContours()
+        {
+            CvInvoke.CvtColor(originMat, cannyTableMat, ColorConversion.Bgr2Hsv);
+            CvInvoke.ExtractChannel(cannyTableMat, cannyTableMat, 0);
+
+            Mat gray = new Mat();
+            CvInvoke.CvtColor(originMat, gray, ColorConversion.Bgr2Hsv);
+            CvInvoke.ExtractChannel(gray, gray, 0);
+
+            float cannyThreshold = 180.0f;
+            float cannyThresholdLinking = 120.0f;
+            CvInvoke.Canny(cannyTableMat, cannyTableMat, cannyThreshold, cannyThresholdLinking);
+            CvInvoke.GaussianBlur(cannyTableMat, cannyTableMat, new Size(3, 3), 1);
+            Mat kernelOp = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(3, 3), new Point(-1, -1));
+            CvInvoke.MorphologyEx(cannyTableMat, cannyTableMat, MorphOp.Open, kernelOp, new Point(-1, -1), 1, BorderType.Default, new MCvScalar());
+            Mat kernelCl = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(11, 11), new Point(-1, -1));
+            CvInvoke.MorphologyEx(cannyTableMat, cannyTableMat, MorphOp.Close, kernelCl, new Point(-1, -1), 1, BorderType.Default, new MCvScalar());
+
+            CvInvoke.Resize(cannyTableMat, contourMat, cannyTableMat.Size);
+
+            VectorOfVectorOfPoint immutableContours = new VectorOfVectorOfPoint();
+            CvInvoke.FindContours(contourMat, immutableContours, null, RetrType.External, ChainApproxMethod.ChainApproxNone);
+
+            CvInvoke.DrawContours(contourMat, immutableContours, -1, new MCvScalar(255), 2, LineType.Filled);
+
+
+            CvInvoke.Resize(cannyTableMat, contourRectMat, contourMat.Size);
+
+            Rectangle imageRect = new Rectangle(new Point(0, 0), originMat.Size);
+
+            contourCount = 0;
+            for (int i = 0; i < immutableContours.Size; i++)
+            {
+                VectorOfPoint contour = immutableContours[i];
+                if (contour != null)
+                {
+                    if (contour.Size > 5)
+                    {
+                        RotatedRect rectangle = CvInvoke.FitEllipse(contour);
+                        Point[] vertices = Array.ConvertAll(rectangle.GetVertices(), Point.Round);
+                        if (vertices.All(p => imageRect.Contains(p)))
+                        {
+                            ContourCount++;
+                            VectorOfPoint rectangleFilled = new VectorOfPoint(vertices);
+                            CvInvoke.FillPoly(contourRectMat, rectangleFilled, new MCvScalar(255));
+                            //CvInvoke.Polylines(contourRectMat, vertices, true, new MCvScalar(255), 5);
+
+                            CvInvoke.PutText(contourRectMat, ContourCount.ToString(), vertices.First(),
+                                FontFace.HersheyPlain, 5, new MCvScalar(120, 120, 120), 5, LineType.Filled);
+
+                            //CvInvoke.Rectangle(contourMat, rect, new MCvScalar(255), 2, LineType.Filled);
+
+                            Mat mask = Mat.Zeros(contourRectMat.Rows, contourRectMat.Cols, contourRectMat.Depth, contourRectMat.NumberOfChannels);
+                            CvInvoke.FillPoly(mask, rectangleFilled, new MCvScalar(255));
+                            if (ContourCount == 1)
+                            {
+                                whiteHistBallMat = Histogram(gray, mask);
+                            }
+                            else if (ContourCount == 2)
+                            {
+                                yellowHistBallMat = Histogram(gray, mask);
+                            } 
+                            else if (ContourCount == 3)
+                            {
+                                redHistBallMat = Histogram(gray, mask);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        private void Histogram()
+        {
+            CvInvoke.CvtColor(originMat, histogramMat, ColorConversion.Bgr2Hsv);
+            CvInvoke.ExtractChannel(histogramMat, histogramMat, 0);
+            histogramMat = Histogram(histogramMat, null);
+        }
+
+
+        private Mat Histogram(Mat image, Mat mask)
+        {
+            VectorOfMat vou = new VectorOfMat();
+            vou.Push(image);
+
+            Mat hist = new Mat();
+            CvInvoke.CalcHist(vou, new int[] { 0 }, mask, hist, new int[] { 256 }, new float[] { 0, 256 }, false);
+            
+            return hist;
+        }
+
     }
+
 }
