@@ -13,6 +13,8 @@ using Point = System.Windows.Point;
 using Emgu.CV.Structure;
 using System.Windows.Shapes;
 using Brush = System.Windows.Media.Brush;
+using Emgu.CV.CvEnum;
+using System.Runtime.InteropServices;
 
 namespace Billiard.viewModels
 {
@@ -50,6 +52,14 @@ namespace Billiard.viewModels
         private ImageSource hTableMidImage;
         private ImageSource inRangePointImage;
         private ImageSource foundOriginalImage;
+        private ImageSource hsvRangeTableImage;
+        private int hbValueLow;
+        private int hbValueHigh = 255;
+        private int sgValueHigh = 255;
+        private int sgValueLow;
+        private int vrValueLow;
+        private int vrValueHigh = 255;
+        private ImageSource hsvRgbTableImage;
 
         public ImageSource OriginalImage
         {
@@ -135,6 +145,18 @@ namespace Billiard.viewModels
             set { SetProperty(ref hsvTableImage, value); }
         }
 
+        public ImageSource HsvRangeTableImage
+        {
+            get { return hsvRangeTableImage; }
+            set { SetProperty(ref hsvRangeTableImage, value); }
+        }
+
+        public ImageSource HsvRgbTableImage
+        {
+            get { return hsvRgbTableImage; }
+            set { SetProperty(ref hsvRgbTableImage, value); }
+        }
+
         public ImageSource HTableImage
         {
             get { return hTableImage; }
@@ -176,6 +198,134 @@ namespace Billiard.viewModels
             get { return floodFillFoundLinesImage; }
             set { SetProperty(ref floodFillFoundLinesImage, value); }
         }
+
+        public int HBValueLow
+        {
+            get { return hbValueLow; }
+            set
+            {
+                if (SetProperty(ref hbValueLow, value))
+                {
+                    CalculateHsv();
+                }
+            }
+        }
+
+        public int HBValueHigh
+        {
+            get { return hbValueHigh; }
+            set
+            {
+                if (SetProperty(ref hbValueHigh, value))
+                {
+                    CalculateHsv();
+                }
+            }
+        }
+
+        public int SGValueHigh
+        {
+            get { return sgValueHigh; }
+            set
+            {
+                if (SetProperty(ref sgValueHigh, value))
+                {
+                    CalculateHsv();
+                }
+            }
+        }
+
+        public int SGValueLow
+        {
+            get { return sgValueLow; }
+            set
+            {
+                if (SetProperty(ref sgValueLow, value))
+                {
+                    CalculateHsv();
+                }
+            }
+        }
+
+        public int VRValueLow
+        {
+            get { return vrValueLow; }
+            set
+            {
+                if (SetProperty(ref vrValueLow, value))
+                {
+                    CalculateHsv();
+                }
+            }
+        }
+
+        public int VRValueHigh
+        {
+            get { return vrValueHigh; }
+            set
+            {
+                if (SetProperty(ref vrValueHigh, value))
+                {
+                    CalculateHsv();
+                }
+            }
+        }
+
+        private void CalculateHsv()
+        {
+            Mat hsvMat = new Mat();
+            Mat mask = new Mat();
+
+            //hsvMat = tableDetector.tableMat.Clone();
+            CvInvoke.CvtColor(tableDetector.tableMat, hsvMat, ColorConversion.Bgr2Hsv);
+
+            ScalarArray lower = new ScalarArray(new MCvScalar(HBValueLow, SGValueLow, VRValueLow));
+            ScalarArray upper = new ScalarArray(new MCvScalar(HBValueHigh, SGValueHigh, VRValueHigh));
+
+            CvInvoke.InRange(hsvMat, lower, upper, mask);
+
+            HsvRangeTableImage = mask?.ToImageSource();
+            
+            CvInvoke.BitwiseAnd(hsvMat, hsvMat, HsvRgbTableMat, mask);
+
+            //CvInvoke.CvtColor(hsvMat, hsvMat, ColorConversion.Hsv2Bgr);
+
+            HsvRgbTableImage = HsvRgbTableMat?.ToImageSource();
+
+            // HsvRgbTableMat.GetDataPointer()
+
+        }
+
+/*        public static ScalarArray GetValue(this Mat mat, int row, int col)
+        {
+            var value = CreateElement(mat.Depth);
+            Marshal.Copy(mat.DataPointer + (row * mat.Cols + col) * mat.ElementSize, value, 0, 1);
+            return value[0];
+        }
+*/
+        private Mat HsvRgbTableMat = new Mat();
+
+        public void ClickOnColorResult(double x, double y)
+        {
+            byte[,,] data = (byte[,,])HsvRgbTableMat.GetData();
+
+            double pX = HsvRgbTableMat.Cols * x;
+            double pY = HsvRgbTableMat.Rows * y;
+
+            byte b = data[(int)pY, (int)pX, 0];
+            byte g = data[(int)pY, (int)pX, 1];
+            byte r = data[(int)pY, (int)pX, 2];
+
+            HBValueLow = b - 3;
+            HBValueHigh = b + 3;
+
+            SGValueLow = g - 3;
+            SGValueHigh = g + 3;
+
+            VRValueLow = r - 3;
+            VRValueHigh = r + 3;
+        }
+
 
         private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
         {
@@ -222,6 +372,7 @@ namespace Billiard.viewModels
 
             FoundOriginalImage = DrawFoundOriginalTable(OriginalImage, tableDetector.inRangeMPoints);
 
+            CalculateHsv();
         }
 
 
@@ -437,7 +588,7 @@ namespace Billiard.viewModels
                 DashStyle = DashStyles.Dot
             };
 
-            double radius = System. Math.Max(image.Height / 100, image.Width / 100);
+            double radius = System.Math.Max(image.Height / 100, image.Width / 100);
 
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext drawingContext = visual.RenderOpen())
@@ -454,7 +605,6 @@ namespace Billiard.viewModels
 
             return new DrawingImage(visual.Drawing);
         }
-
 
 
     }

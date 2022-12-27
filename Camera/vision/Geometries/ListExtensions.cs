@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Media;
 using Emgu.CV;
 using Emgu.CV.Util;
+using Point = System.Drawing.Point;
 
 namespace Billiard.Camera.vision.Geometries
 {
@@ -96,6 +98,14 @@ namespace Billiard.Camera.vision.Geometries
             return new System.Windows.Point(point.X, point.Y);
         }
 
+    }
+
+    public static class RectangleExtensions
+    {
+        public static System.Windows.Rect AsRect(this System.Drawing.Rectangle r)
+        {
+            return new Rect(new System.Windows.Point(r.X, r.Y), new System.Windows.Size(r.Size.Width, r.Size.Height));
+        }
     }
 
     public static class MatExtensions

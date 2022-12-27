@@ -292,9 +292,20 @@ namespace Billiard.Camera.vision.detectors
             CvInvoke.CvtColor(originMat, cannyTableMat, ColorConversion.Bgr2Hsv);
             CvInvoke.ExtractChannel(cannyTableMat, cannyTableMat, 0);
 
+            MCvScalar newColor = new MCvScalar(255);
+            Mat mask2 = new Mat();
+            float floodFillDiff = 1.5f;
+            MCvScalar diff = new MCvScalar(floodFillDiff, floodFillDiff, floodFillDiff);
+            CvInvoke.FloodFill(cannyTableMat, mask2, new Point(cannyTableMat.Cols/2, cannyTableMat.Rows / 2), newColor,
+                out _, diff, diff, Connectivity.EightConnected);
+
             Mat gray = new Mat();
             CvInvoke.CvtColor(originMat, gray, ColorConversion.Bgr2Hsv);
             CvInvoke.ExtractChannel(gray, gray, 0);
+
+            CvInvoke.FloodFill(gray, mask2, new Point(gray.Cols / 2, gray.Rows / 2), newColor,
+                out _, diff, diff, Connectivity.EightConnected);
+
 
             float cannyThreshold = 180.0f;
             float cannyThresholdLinking = 120.0f;

@@ -143,10 +143,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="models\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Compile Update="views\FilterView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="views\ColorView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="views\TableView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

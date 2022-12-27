@@ -23,6 +23,7 @@ namespace Billiard
         {
             services.AddSingleton<MainWindow>();
 
+            services.AddSingleton<FilterViewModel>();
             services.AddSingleton<VideoDeviceViewModel>();
             services.AddSingleton<BallViewModel>();
             services.AddSingleton<TableViewModel>();

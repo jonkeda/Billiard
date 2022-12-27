@@ -31,6 +31,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >Original</TextBlock>
@@ -64,6 +65,19 @@
             <Image Grid.Row="3" Grid.Column="3" Source="{Binding SameColorImage}" />
             <Image Grid.Row="3" Grid.Column="3" Source="{Binding SameColorPointImage}" />
 
+            <TextBlock Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" >Same color</TextBlock>
+            <StackPanel Grid.Row="1" Grid.Column="4" >
+                <TextBlock>Red</TextBlock>
+                <Slider Value="{Binding HBValueLow}" Minimum="0" Maximum="255" />
+                <Slider Value="{Binding HBValueHigh}" Minimum="0" Maximum="255" />
+                <TextBlock>Green</TextBlock>
+                <Slider Value="{Binding SGValueLow}" Minimum="0" Maximum="255" />
+                <Slider Value="{Binding SGValueHigh}" Minimum="0" Maximum="255" />
+                <TextBlock>Blue</TextBlock>
+                <Slider Value="{Binding VRValueLow}" Minimum="0" Maximum="255" />
+                <Slider Value="{Binding VRValueHigh}" Minimum="0" Maximum="255" />
+            </StackPanel>
+
             <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" >H</TextBlock>
             <Image Grid.Row="5" Grid.Column="0" Source="{Binding HTableImage}" />
             <Image Grid.Row="5" Grid.Column="0" Source="{Binding HTableMidImage}" />
@@ -74,6 +88,13 @@
             <Image Grid.Row="5" Grid.Column="2" Source="{Binding VTableImage}" />
             <TextBlock Grid.Row="4" Grid.Column="3" HorizontalAlignment="Center" >HSV</TextBlock>
             <Image Grid.Row="5" Grid.Column="3" Source="{Binding HsvTableImage}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="4" HorizontalAlignment="Center" >HSV Range</TextBlock>
+            <Image Grid.Row="3" Grid.Column="4" Source="{Binding HsvRangeTableImage}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="4" HorizontalAlignment="Center" >HSV RGB</TextBlock>
+            <Image Grid.Row="5" Grid.Column="4" Source="{Binding HsvRgbTableImage}" />
+
         </Grid>
 
 </Grid>

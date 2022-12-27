@@ -23,6 +23,12 @@
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="views\FilterView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\ColorView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="views\TableView.xaml">
       <SubType>Designer</SubType>
     </Page>
