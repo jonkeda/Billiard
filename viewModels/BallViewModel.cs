@@ -1,9 +1,7 @@
-﻿using System;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using Billiard.UI;
 using Emgu.CV;
 using System.Windows;
-using System.Windows.Media.Animation;
 using Billiard.Camera.vision.detectors;
 using Billiard.Camera.vision.Geometries;
 using Billiard.Physics;

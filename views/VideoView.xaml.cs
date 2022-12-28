@@ -7,9 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using Billiard.viewModels;
 
 namespace Billiard.views
 {

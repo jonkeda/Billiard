@@ -202,6 +202,22 @@ namespace Billiard.viewModels
             Next();
         }
 
+        public ICommand NotOkCommand
+        {
+            get { return new TargetCommand(NotOk); }
+        }
+
+        private void NotOk()
+        {
+            if (pathName == null)
+            {
+                return;
+            }
+            string newName = Path.Combine(Path.GetDirectoryName(pathName), "..", Path.GetFileName(pathName));
+            File.Move(pathName, newName);
+            Next();
+        }
+
         public event EventHandler<CaptureEvent> CaptureImage;
 
         protected void OnCaptureImage(Mat image)

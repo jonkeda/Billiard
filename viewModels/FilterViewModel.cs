@@ -88,7 +88,7 @@ namespace Billiard.viewModels
     {
         public FloodFillFilterSet() : base("Flood fill")
         {
-            Original();
+            var original = Original();
             var hsv = CvtColorBgr2Hsv();
             ExtractChannel(hsv, 0);
             GaussianBlur();
@@ -97,7 +97,9 @@ namespace Billiard.viewModels
             var flood = FloodFill(255);
             Mask();
             DrawBoundingRect().BoundingRect = flood;
-            FindCorners().BoundingRect = flood;
+            var corners = FindCorners();
+            corners.BoundingRect = flood;
+            WarpPerspective(original).PointsFilter = corners;
         }
     }
 

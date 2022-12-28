@@ -287,23 +287,23 @@ namespace Billiard.Camera.vision.detectors
             Vector2 intersection;
             if (LineSegmentsIntersect(eTop1, eTop2, eLeft1, eLeft2, out intersection))
             {
-                topLeft = intersection.AsPoint();
+                topLeft = intersection.AsPointF();
                 rectPoints.Add(topLeft);
             }
             if (LineSegmentsIntersect(eTop1, eTop2, eRight1, eRight2, out intersection))
             {
-                topRight = intersection.AsPoint();
+                topRight = intersection.AsPointF();
 
                 rectPoints.Add(topRight);
             }
             if (LineSegmentsIntersect(eBottom1, eBottom2, eRight1, eRight2, out intersection))
             {
-                bottomRight = intersection.AsPoint();
+                bottomRight = intersection.AsPointF();
                 rectPoints.Add(bottomRight);
             }
             if (LineSegmentsIntersect(eBottom1, eBottom2, eLeft1, eLeft2, out intersection))
             {
-                bottomLeft = intersection.AsPoint();
+                bottomLeft = intersection.AsPointF();
                 rectPoints.Add(bottomLeft);
             }
 

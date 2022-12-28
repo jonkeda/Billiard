@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Billiard.viewModels;
 using Point = System.Windows.Point;
 

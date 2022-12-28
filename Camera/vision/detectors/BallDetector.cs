@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Windows.Documents;
-using Billiard.Camera.vision.Geometries;
 using Billiard.UI;
-using Billiard.UI.Converters;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;

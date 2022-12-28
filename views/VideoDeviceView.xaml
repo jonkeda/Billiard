@@ -22,6 +22,7 @@
             <Button Command="{Binding NextCommand}">Next</Button>
             <Button Command="{Binding DeleteCommand}">Delete</Button>
             <Button Command="{Binding OkCommand}">Ok</Button>
+            <Button Command="{Binding NotOkCommand}">Not</Button>
 
         </StackPanel>
 

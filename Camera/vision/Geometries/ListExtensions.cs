@@ -34,12 +34,26 @@ namespace Billiard.Camera.vision.Geometries
 
     public static class PointFExtensions
     {
+        public static Vector2? Extend(System.Windows.Point? p1, System.Windows.Point? p2)
+        {
+            if (!p1.HasValue
+                || !p2.HasValue)
+            {
+                return null;
+            }
+
+            Vector2 v1 = p1.Value.AsVector2();
+            Vector2 v2 = p2.Value.AsVector2();
+            Vector2 x = (v1 - v2) * 1000 + v1;
+            return x;
+        }
+
         public static PointF Extend(PointF p1, PointF p2)
         {
             Vector2 v1 = p1.AsVector2();
             Vector2 v2 = p2.AsVector2();
             Vector2 x = (v1 - v2) * 1000 + v1;
-            return x.AsPoint();
+            return x.AsPointF();
         }
 
         public static Vector2 AsVector2(this System.Windows.Point p)
@@ -78,7 +92,12 @@ namespace Billiard.Camera.vision.Geometries
             return new Point((int) point.X, (int) point.Y);
         }
 
-        public static PointF AsPoint(this Vector2 point)
+        public static System.Windows.Point AsPoint(this Vector2 point)
+        {
+            return new System.Windows.Point(point.X, point.Y);
+        }
+
+        public static PointF AsPointF(this Vector2 point)
         {
             return new PointF(point.X, point.Y);
         }
@@ -97,6 +116,7 @@ namespace Billiard.Camera.vision.Geometries
         {
             return new System.Windows.Point(point.X, point.Y);
         }
+
 
     }
 

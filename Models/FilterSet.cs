@@ -134,4 +134,14 @@ public class FilterSet : PropertyNotifier
         return Filters.AddFilter(new FindCornersFilter(result));
     }
 
+    protected WarpPerspectiveFilter WarpPerspective()
+    {
+        return WarpPerspective(Filters.LastOrDefault());
+    }
+
+    protected WarpPerspectiveFilter WarpPerspective(AbstractFilter result)
+    {
+        return Filters.AddFilter(new WarpPerspectiveFilter(result));
+    }
+
 }

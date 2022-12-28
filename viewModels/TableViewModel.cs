@@ -11,10 +11,8 @@ using System.Drawing;
 using System.Linq;
 using Point = System.Windows.Point;
 using Emgu.CV.Structure;
-using System.Windows.Shapes;
 using Brush = System.Windows.Media.Brush;
 using Emgu.CV.CvEnum;
-using System.Runtime.InteropServices;
 
 namespace Billiard.viewModels
 {
