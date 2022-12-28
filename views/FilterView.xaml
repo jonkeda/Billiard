@@ -50,7 +50,12 @@
                     <DataTemplate>
                         <StackPanel>
                             <TextBlock Text="{Binding Name}" FontWeight="Bold" HorizontalAlignment="Center" />
-                            <Image Source="{Binding ResultImage}" Height="100" Width="200" Stretch="Uniform" />
+                            <Grid>
+
+                                <Image  Opacity="0.5" Height="100" Width="200" Stretch="Uniform"
+                                       Source="{Binding DrawingImage}" />
+                                <Image Source="{Binding ResultImage}" Height="100" Width="200" Stretch="Uniform" />
+                            </Grid>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>

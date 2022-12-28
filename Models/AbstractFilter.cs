@@ -99,7 +99,7 @@ public abstract class AbstractFilter : PropertyNotifier
     public DrawingImage DrawingImage
     {
         get { return drawingImage; }
-        private set { drawingImage = value; }
+        protected set { drawingImage = value; }
     }
 
     protected void Draw(Action<DrawingContext> action)

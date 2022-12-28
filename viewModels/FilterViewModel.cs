@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.Metrics;
+using System.Linq;
 using Billiard.Models;
 using Billiard.UI;
 using Emgu.CV;
@@ -52,9 +53,10 @@ namespace Billiard.viewModels
         {
             FilterSets.Clear();
 
-            FilterSets.Add(new FindHsvContoursFilterSet());
-            FilterSets.Add(new HsvChannelsFilterSet());
-            FilterSets.Add(new FloodFillFilterSet());
+            //FilterSets.Add(new FindHsvContoursFilterSet());
+            //FilterSets.Add(new HsvChannelsFilterSet());
+            var table = FilterSets.AddSet(new TableDetectorSet());
+            FilterSets.AddSet(new BallDetectorSet(table.ResultFilter()));
 
             SelectedFilterSet = FilterSets.LastOrDefault();
             SelectedFilter = SelectedFilterSet?.Filters.LastOrDefault();
@@ -84,15 +86,15 @@ namespace Billiard.viewModels
         }
     }
 
-    public class FloodFillFilterSet : FilterSet
+    public class TableDetectorSet : FilterSet
     {
-        public FloodFillFilterSet() : base("Flood fill")
+        public TableDetectorSet() : base("Find table")
         {
             var original = Original();
             var hsv = CvtColorBgr2Hsv();
             ExtractChannel(hsv, 0);
             GaussianBlur();
-            MorphOpen();
+            MorphClose();
             MorphOpen();
             var flood = FloodFill(255);
             Mask();
@@ -100,6 +102,42 @@ namespace Billiard.viewModels
             var corners = FindCorners();
             corners.BoundingRect = flood;
             WarpPerspective(original).PointsFilter = corners;
+        }
+
+        public AbstractFilter ResultFilter()
+        {
+            return Filters.LastOrDefault();
+        }
+    }
+
+    public class BallDetectorSet : FilterSet
+    {
+        public BallDetectorSet(AbstractFilter filter) : base("Find balls")
+        {
+            var original = Clone(filter);
+            var hsv = CvtColorBgr2Hsv();
+            ExtractChannel(hsv, 0);
+            GaussianBlur();
+            FloodFill(255);
+            Mask();
+            MorphClose();
+            var morph = MorphOpen();
+            Filters.AddFilter(new FloodFillCornersFilter(morph, 255));
+            Not();
+            var masked = ToMask();
+            var canny = Canny();
+
+            And(hsv).MaskFilter = masked;
+            Histogram().MaskFilter = masked;
+
+            And(original).MaskFilter = masked;
+            Histogram().MaskFilter = masked;
+            /*
+            DrawBoundingRect().BoundingRect = flood;
+            var corners = FindCorners();
+            corners.BoundingRect = flood;
+            WarpPerspective(original).PointsFilter = corners;
+            */
         }
     }
 

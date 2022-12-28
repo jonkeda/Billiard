@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Security.Cryptography;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -45,6 +46,13 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
             out boundingRect, diff, diff, Connectivity.FourConnected,
             (FloodFillType) (4 | (255 << 8)));
 
+
+        Rectangle roi = new Rectangle(1, 1, mask.Cols - 2, mask.Rows - 2);
+        Mat srcROI = new Mat(mask, roi);
+
+        //Mat dstROI = new Mat(dst, roi);
+
+        srcROI.CopyTo(mask);
         // CvInvoke.BitwiseNot(mask, mask);
     }
 }

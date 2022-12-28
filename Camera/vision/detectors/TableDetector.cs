@@ -489,6 +489,15 @@ namespace Billiard.Camera.vision.detectors
 
         private int GetColorByte(Mat image, int x, int y)
         {
+            if (x < 0
+                || y < 0
+                || y > image.Rows
+                || x > image.Cols)
+            {
+                return -1;
+            }
+
+
             var rawData = image.GetRawData(y, x);
             return rawData[0];
         }

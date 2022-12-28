@@ -33,6 +33,17 @@ public class FilterSet : PropertyNotifier
         return Filters.AddFilter(new OriginalFilter());
     }
 
+    protected CloneFilter Clone()
+    {
+        return Clone(Filters.LastOrDefault());
+    }
+
+    protected CloneFilter Clone(AbstractFilter result)
+    {
+        return Filters.AddFilter(new CloneFilter(result));
+    }
+
+
     protected CvtColorBgr2HsvFilter CvtColorBgr2Hsv()
     {
         return CvtColorBgr2Hsv(Filters.LastOrDefault());
@@ -93,6 +104,15 @@ public class FilterSet : PropertyNotifier
         return Filters.AddFilter(new MaskFilter(result));
     }
 
+    protected ToMaskFilter ToMask()
+    {
+        return ToMask(Filters.LastOrDefault());
+    }
+
+    protected ToMaskFilter ToMask(AbstractFilter result)
+    {
+        return Filters.AddFilter(new ToMaskFilter(result));
+    }
 
     protected DrawBoundingRectFilter DrawBoundingRect()
     {
@@ -144,4 +164,33 @@ public class FilterSet : PropertyNotifier
         return Filters.AddFilter(new WarpPerspectiveFilter(result));
     }
 
+    protected AndFilter And()
+    {
+        return And(Filters.LastOrDefault());
+    }
+
+    protected AndFilter And(AbstractFilter result)
+    {
+        return Filters.AddFilter(new AndFilter(result));
+    }
+
+    protected NotFilter Not()
+    {
+        return Not(Filters.LastOrDefault());
+    }
+
+    protected NotFilter Not(AbstractFilter result)
+    {
+        return Filters.AddFilter(new NotFilter(result));
+    }
+
+    protected HistogramFilter Histogram()
+    {
+        return Histogram(Filters.LastOrDefault());
+    }
+
+    protected HistogramFilter Histogram(AbstractFilter result)
+    {
+        return Filters.AddFilter(new HistogramFilter(result));
+    }
 }

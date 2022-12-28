@@ -48,7 +48,7 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
             //Point? topRight = FindLastX(r.BoundingRect.Y + 1, r.BoundingRect, ResultMat);
             //Point? topRight2 = FindFirstXFromTop(topRight, r.BoundingRect, ResultMat);
 
-            Point? bottomLeft = FindFirstX(r.BoundingRect.Y + r.BoundingRect.Height, r.BoundingRect, ResultMat);
+            Point? bottomLeft = FindFirstX(r.BoundingRect.Y + r.BoundingRect.Height - 1, r.BoundingRect, ResultMat);
             Point? bottomLeft2 = FindFirstXFromBottom(bottomLeft, r.BoundingRect, ResultMat);
 
             //Point? bottomRight = FindLastX(r.BoundingRect.Y + r.BoundingRect.Height, r.BoundingRect, ResultMat);
@@ -60,7 +60,7 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
             //Point? leftBottom = FindLastY(r.BoundingRect.X + 1, r.BoundingRect, ResultMat);
             //Point? leftBottom2 = FindFirstYFromLeft(leftBottom, r.BoundingRect, ResultMat);
 
-            Point? rightTop = FindFirstY(r.BoundingRect.X + r.BoundingRect.Width, r.BoundingRect, ResultMat);
+            Point? rightTop = FindFirstY(r.BoundingRect.X + r.BoundingRect.Width - 1, r.BoundingRect, ResultMat);
             Point? rightTop2 = FindFirstYFromRight(rightTop, r.BoundingRect, ResultMat);
 
             //Point? rightBottom = FindLastY(r.BoundingRect.X + r.BoundingRect.Width, r.BoundingRect, ResultMat);
@@ -306,14 +306,14 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
 
         int step = r.Height / stepDivider;
         Point? p1 = null;
-        if (p.Value.X != 1)
+        if (p.Value.X > 1)
         {
             p1= FindFirstX((int)p.Value.Y + step, r, mat);
         }
         Point? p2 = FindFirstX((int)p.Value.Y - step, r, mat);
-        if (!p1.HasValue || p1.Value.X == 1)
+        if (!p1.HasValue || p1.Value.X <= 1)
             return p2;
-        if (!p2.HasValue || p2.Value.X == 1)
+        if (!p2.HasValue || p2.Value.X <= 1)
             return p1;
         if (p1.Value.X < p2.Value.X)
         {
@@ -332,15 +332,15 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
 
         int step = r.Height / stepDivider;
         Point? p1 = null;
-        if (p.Value.X < mat.Cols - 2)
+        if (p.Value.X < mat.Cols - 1)
         {
             p1 = FindLastX((int)p.Value.Y + step, r, mat);
         }
         //Point? p1 = FindLastX((int)p.Value.Y + step, r, mat);
         Point? p2 = FindLastX((int)p.Value.Y - step, r, mat);
-        if (!p1.HasValue || p1.Value.X >= mat.Cols - 2)
+        if (!p1.HasValue || p1.Value.X >= mat.Cols - 1)
             return p2;
-        if (!p2.HasValue || p1.Value.X == mat.Cols - 2)
+        if (!p2.HasValue || p1.Value.X >= mat.Cols - 1)
             return p1;
         if (p1.Value.X > p2.Value.X)
         {
@@ -405,7 +405,9 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
     private int GetColorByte(Mat image, int x, int y)
     {
         if (x < 0
-            || y < 0)
+            || y < 0
+            || y > image.Rows
+            || x > image.Cols)
         {
             return -1;
         }

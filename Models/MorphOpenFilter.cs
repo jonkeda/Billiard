@@ -15,6 +15,7 @@ public class MorphOpenFilter : AbstractFilter
     protected override void ApplyFilter(Mat originalImage)
     {
         Mat kernelOp = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(3, 3), new Point(-1, -1));
-        CvInvoke.MorphologyEx(GetInputMat(), ResultMat, MorphOp.Open, kernelOp, new Point(-1, -1), 1, BorderType.Default, new MCvScalar());
+        CvInvoke.MorphologyEx(GetInputMat(), ResultMat, MorphOp.Open, kernelOp, new Point(-1, -1), 
+            1, BorderType.Default, new MCvScalar());
     }
 }
