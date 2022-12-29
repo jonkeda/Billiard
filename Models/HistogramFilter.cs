@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Media;
 using Billiard.Camera.vision.Geometries;
 using Emgu.CV;
@@ -25,6 +20,9 @@ public class HistogramFilter : AbstractFilter
         get { return maskFilter; }
         set { SetProperty(ref maskFilter, value); }
     }
+
+    public int Start { get; set; } = 0;
+    public int End { get; set; } = 256;
 
     protected override void ApplyFilter(Mat originalImage)
     {
@@ -51,8 +49,55 @@ public class HistogramFilter : AbstractFilter
         DrawingImage = DrawHist(hists);
 
         ResultMat = new Mat();
+
+        for (int i = 0; i < hists.Count; i++)
+        {
+            FilterValues.Add($"{i} Mean", System.Math.Round(CalculateMean(hists[i]), 0));
+            FilterValues.Add($"{i} Max", CalculateMax(hists[i]));
+        }
+
+        /*        float[,] data = (float[,])hists[0].GetData();
+                for (int i = 0; i < data.Length; i++)
+                {
+                    FilterValues.Add(i.ToString(), ((int)data[i, 0]).ToString());
+                }*/
+
     }
 
+    private float CalculateMean(Mat hist)
+    {
+        float total = 0;
+        float totalSummed = 0;
+        float[,] data = (float[,])hist.GetData();
+        for (int i = Start; i < data.Length && i < End; i++)
+        {
+            float value = data[i, 0];
+
+            total += value;
+            totalSummed += i * value;
+        }
+
+        return totalSummed / total;
+    }
+
+    private int CalculateMax(Mat hist)
+    {
+        int index = 0;
+        float max = 0;
+        float[,] data = (float[,])hist.GetData();
+        for (int i = Start; i < data.Length && i < End; i++)
+        {
+
+            float value = data[i, 0];
+            if (value > max)
+            {
+                max = value;
+                index = i;
+            }
+        }
+
+        return index;
+    }
 
     private DrawingImage DrawHist(List<Mat> hists)
     {

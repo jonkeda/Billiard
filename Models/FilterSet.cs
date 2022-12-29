@@ -193,4 +193,15 @@ public class FilterSet : PropertyNotifier
     {
         return Filters.AddFilter(new HistogramFilter(result));
     }
+
+    protected ContoursFilter Contours()
+    {
+        return Contours(Filters.LastOrDefault());
+    }
+
+    protected ContoursFilter Contours(AbstractFilter result)
+    {
+        return Filters.AddFilter(new ContoursFilter(result));
+    }
+
 }

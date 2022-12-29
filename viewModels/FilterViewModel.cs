@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using System.Linq;
+﻿using System.Linq;
 using Billiard.Models;
 using Billiard.UI;
 using Emgu.CV;
@@ -97,10 +96,11 @@ namespace Billiard.viewModels
             MorphClose();
             MorphOpen();
             var flood = FloodFill(255);
-            Mask();
+            var asMask = Mask();
             DrawBoundingRect().BoundingRect = flood;
             var corners = FindCorners();
             corners.BoundingRect = flood;
+            //Filters.AddFilter(new FindCornerHarrisFilter(asMask));
             WarpPerspective(original).PointsFilter = corners;
         }
 
@@ -123,21 +123,45 @@ namespace Billiard.viewModels
             MorphClose();
             var morph = MorphOpen();
             Filters.AddFilter(new FloodFillCornersFilter(morph, 255));
+
             Not();
             var masked = ToMask();
             var canny = Canny();
+            var contours = Contours();
+            contours.MinimumArea = 500;
+            contours.MaximumArea = 2000;
+            contours.Resize = 0.7;
 
             And(hsv).MaskFilter = masked;
             Histogram().MaskFilter = masked;
 
             And(original).MaskFilter = masked;
             Histogram().MaskFilter = masked;
-            /*
-            DrawBoundingRect().BoundingRect = flood;
-            var corners = FindCorners();
-            corners.BoundingRect = flood;
-            WarpPerspective(original).PointsFilter = corners;
-            */
+
+            var and1 = And(hsv);
+            and1.ContourFilter = contours;
+            and1.MaskContour = 0;
+            var hist0 = Histogram();
+            hist0.End = 100;
+
+            var and2 = And(hsv);
+            and2.ContourFilter = contours;
+            and2.MaskContour = 1;
+            var hist1 = Histogram();
+            hist1.End = 100;
+
+            var and3 = And(hsv);
+            and3.ContourFilter = contours;
+            and3.MaskContour = 2;
+            var hist2 = Histogram();
+            hist2.End = 100;
+
+            var result = Filters.AddFilter(new BallResultFilter(original));
+            result.ContourFilter = contours;
+            result.Histogram0 = hist0;
+            result.Histogram1 = hist1;
+            result.Histogram2 = hist2;
+
         }
     }
 

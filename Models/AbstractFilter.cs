@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 using Billiard.Camera.vision.Geometries;
@@ -7,15 +8,56 @@ using Emgu.CV;
 
 namespace Billiard.Models;
 
+public class FilterValueCollection : ObservableCollection<FilterValue>
+{
+    public void Add(string name, double value)
+    {
+        Add(new FilterValue(name, value));
+    }
+
+    public void Add(string name, string text)
+    {
+        Add(new FilterValue(name, text));
+    }
+
+}
+
+public class FilterValue
+{
+    public FilterValue(string name, double value)
+    {
+        Name = name;
+        Value = value;
+    }
+
+    public FilterValue(string name, string text)
+    {
+        Name = name;
+        Text = text;
+    }
+
+    public string Name { get; set; }
+    public double Value { get; set; }
+
+    public string Text { get; set; }
+
+}
+
 public abstract class AbstractFilter : PropertyNotifier
 {
     private Mat resultMat = new Mat();
     private string name;
-    private string exception;
     private bool enabled = true;
     private DrawingImage drawingImage;
+    private FilterValueCollection filterValues = new FilterValueCollection();
 
     protected AbstractFilter InputFilter { get; private set; }
+
+    public FilterValueCollection FilterValues
+    {
+        get { return filterValues; }
+        private set { SetProperty(ref filterValues, value); }
+    }
 
     protected AbstractFilter(AbstractFilter filter)
     {
@@ -56,14 +98,9 @@ public abstract class AbstractFilter : PropertyNotifier
         set { SetProperty(ref name, value); }
     }
 
-    public string Exception
-    {
-        get { return exception; }
-        set { SetProperty(ref exception, value); }
-    }
-
     public void DoApplyFilter(Mat originalImage)
     {
+        FilterValues.Clear();
         if (!Enabled)
         {
             ResultMat = null;
@@ -77,7 +114,7 @@ public abstract class AbstractFilter : PropertyNotifier
         }
         catch (Exception ex)
         {
-            Exception = ex.Message;
+            FilterValues.Add("Exception", ex.Message);
         }
         NotifyChanged();
 
