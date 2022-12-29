@@ -491,8 +491,8 @@ namespace Billiard.Camera.vision.detectors
         {
             if (x < 0
                 || y < 0
-                || y > image.Rows
-                || x > image.Cols)
+                || y >= image.Rows
+                || x >= image.Cols)
             {
                 return -1;
             }

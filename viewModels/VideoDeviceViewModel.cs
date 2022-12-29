@@ -197,7 +197,7 @@ namespace Billiard.viewModels
             {
                 return;
             }
-            string newName = Path.Combine(Path.GetDirectoryName(pathName), "GrootOk", Path.GetFileName(pathName));
+            string newName = Path.Combine(Path.GetDirectoryName(pathName), "Ok", Path.GetFileName(pathName));
             File.Move(pathName, newName);
             Next();
         }

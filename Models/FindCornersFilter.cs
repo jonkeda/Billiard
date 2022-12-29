@@ -76,7 +76,7 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
             #region draw
 
             int radius = Math.max(ResultMat.Cols / 100, ResultMat.Rows / 100);
-            Pen blueColor = new Pen(Brushes.Blue, Math.max(ResultMat.Cols / 200, ResultMat.Rows / 200))
+/*            Pen blueColor = new Pen(Brushes.Blue, Math.max(ResultMat.Cols / 200, ResultMat.Rows / 200))
             {
                 DashStyle = DashStyles.Solid
             };
@@ -84,20 +84,9 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
             {
                 DashStyle = DashStyles.Solid
             };
+*/
             Draw(dc =>
             {
-                DrawEllipse(dc, Brushes.Blue, blueColor, topLeft, topLeft2, radius);
-                // DrawEllipse(dc, Brushes.Blue, blueColor, topRight, topRight2, radius);
-
-                DrawEllipse(dc, Brushes.Blue, redColor, bottomLeft, bottomLeft2, radius);
-                //DrawEllipse(dc, Brushes.Blue, redColor, bottomRight, bottomRight2, radius);
-
-                DrawEllipse(dc, Brushes.Red, blueColor, leftTop, leftTop2, radius);
-                //DrawEllipse(dc, Brushes.Red, blueColor, leftBottom, leftBottom2, radius);
-
-                DrawEllipse(dc, Brushes.Red, redColor, rightTop, rightTop2, radius);
-                //DrawEllipse(dc, Brushes.Red, redColor, rightBottom, rightBottom2, radius);
-
                 Pen examplePen = new Pen(Brushes.GreenYellow, 5)
                 {
                     DashStyle = DashStyles.Solid
@@ -114,6 +103,19 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
 
                 Geometry geometry = new PathGeometry(new List<PathFigure> { figure });
                 dc.DrawGeometry(null, examplePen, geometry);
+
+                DrawEllipse(dc, Brushes.Blue, null, topLeft, topLeft2, radius);
+                // DrawEllipse(dc, Brushes.Blue, null, topRight, topRight2, radius);
+
+                DrawEllipse(dc, Brushes.LightBlue, null, bottomLeft, bottomLeft2, radius);
+                //DrawEllipse(dc, Brushes.Blue, null, bottomRight, bottomRight2, radius);
+
+                DrawEllipse(dc, Brushes.Red, null, leftTop, leftTop2, radius);
+                //DrawEllipse(dc, Brushes.Red, null, leftBottom, leftBottom2, radius);
+
+                DrawEllipse(dc, Brushes.DeepPink, null, rightTop, rightTop2, radius);
+                //DrawEllipse(dc, Brushes.Red, null, rightBottom, rightBottom2, radius);
+
 
             });
             #endregion
@@ -238,7 +240,7 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
 
         if (p1.HasValue && p2.HasValue)
         {
-            dc.DrawLine(pen, p1.Value, p2.Value);
+            dc.DrawLine(new Pen(brush, 2), p1.Value, p2.Value);
         }
     }
 
@@ -406,8 +408,8 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
     {
         if (x < 0
             || y < 0
-            || y > image.Rows
-            || x > image.Cols)
+            || y >= image.Rows
+            || x >= image.Cols)
         {
             return -1;
         }

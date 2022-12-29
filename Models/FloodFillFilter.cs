@@ -23,6 +23,10 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         set { SetProperty(ref mask, value); }
     }
 
+    public IPointFilter PointFilter { get; set; }
+    public int MinimumArea { get; set; }
+    public int MaximumArea { get; set; } = 100;
+
     public FloodFillFilter(AbstractFilter filter, int floodFillColor) : base(filter)
     {
         Name = "FloodFill";
@@ -30,6 +34,30 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
     }
 
     protected override void ApplyFilter(Mat originalImage)
+    {
+        if (FindArea(originalImage, 0))
+        {
+            return;
+        }
+        if (FindArea(originalImage, 50))
+        {
+            return;
+        }
+        if (FindArea(originalImage, -50))
+        {
+            return;
+        }
+        if (FindArea(originalImage, 100))
+        {
+            return;
+        }
+        if (FindArea(originalImage, -100))
+        {
+            return;
+        }
+    }
+
+    protected bool FindArea(Mat originalImage, int yStep)
     {
         Mat input = GetInputMat();
         ResultMat = input.Clone();
@@ -39,8 +67,18 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         float floodFillDiff = 1.5f;
         MCvScalar diff = new MCvScalar(floodFillDiff, floodFillDiff, floodFillDiff);
 
+        Point mid;
+        if (PointFilter?.Point != null)
+        {
+            mid = new Point((int)PointFilter.Point.X, (int)PointFilter.Point.Y);
+        }
+        else
+        {
+            mid = new Point(input.Cols / 2, input.Rows / 2 + yStep);
+        }
+
         CvInvoke.FloodFill(ResultMat, mask, 
-            new Point(input.Cols / 2, input.Rows / 2), 
+            mid, 
             newColor,
             out boundingRect, diff, diff, Connectivity.FourConnected,
             (FloodFillType) (4 | (255 << 8)));
@@ -53,5 +91,16 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
 
         srcROI.CopyTo(mask);
         // CvInvoke.BitwiseNot(mask, mask);
+
+        double area = boundingRect.Width * boundingRect.Height;
+        double fullArea = input.Cols * input.Rows;
+        double areaPerc = System.Math.Round((area / fullArea) * 100d);
+        FilterValues.Add("Area", area);
+        FilterValues.Add("Full Area", fullArea);
+        FilterValues.Add("Area %",  areaPerc);
+        FilterValues.Add("Mid", mid.ToString());
+        FilterValues.Add("Bounds", boundingRect.ToString());
+
+        return  areaPerc >= MinimumArea && areaPerc <= MaximumArea;
     }
 }
