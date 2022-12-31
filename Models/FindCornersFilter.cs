@@ -14,7 +14,14 @@ namespace Billiard.Models;
 public class FindCornersFilter : AbstractFilter, IPointsFilter
 {
     private IBoundingRectFilter boundingRect;
+
     private List<Point> points;
+    public List<Point> Points
+    {
+        get { return points; }
+        set { SetProperty(ref points, value); }
+    }
+
     public int FindColor { get; set; } = 255;
 
     public FindCornersFilter(AbstractFilter filter) : base(filter)
@@ -145,92 +152,27 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
         Point? bottomRight = null;
         List<Point> rectPoints = new List<Point>();
         Vector2 intersection;
-        if (LineSegmentsIntersect(eTop1, eTop2, eLeft1, eLeft2, out intersection))
+        if (PointFExtensions.LineSegmentsIntersect(eTop1, eTop2, eLeft1, eLeft2, out intersection))
         {
             topLeft = intersection.AsPoint();
             rectPoints.Add(topLeft.Value);
         }
-        if (LineSegmentsIntersect(eTop1, eTop2, eRight1, eRight2, out intersection))
+        if (PointFExtensions.LineSegmentsIntersect(eTop1, eTop2, eRight1, eRight2, out intersection))
         {
             topRight = intersection.AsPoint();
             rectPoints.Add(topRight.Value);
         }
-        if (LineSegmentsIntersect(eBottom1, eBottom2, eRight1, eRight2, out intersection))
+        if (PointFExtensions.LineSegmentsIntersect(eBottom1, eBottom2, eRight1, eRight2, out intersection))
         {
             bottomRight = intersection.AsPoint();
             rectPoints.Add(bottomRight.Value);
         }
-        if (LineSegmentsIntersect(eBottom1, eBottom2, eLeft1, eLeft2, out intersection))
+        if (PointFExtensions.LineSegmentsIntersect(eBottom1, eBottom2, eLeft1, eLeft2, out intersection))
         {
             bottomLeft = intersection.AsPoint();
             rectPoints.Add(bottomLeft.Value);
         }
         return rectPoints;
-    }
-
-    public static bool LineSegmentsIntersect(Vector2? pn, Vector2? p2n, Vector2? qn, Vector2? q2n,
-    out Vector2 intersection, bool considerCollinearOverlapAsIntersect = false)
-    {
-        intersection = new Vector2();
-
-        if (!pn.HasValue
-            || !p2n.HasValue
-            || !qn.HasValue
-            || !q2n.HasValue)
-        {
-            return false;
-        }
-        Vector2 p = pn.Value;
-        Vector2 p2 = p2n.Value;
-        Vector2 q = qn.Value;
-        Vector2 q2 = q2n.Value;
-
-        Vector2 r = p2 - p;
-        Vector2 s = q2 - q;
-        float rxs = r.Cross(s);
-        float qpxr = (q - p).Cross(r);
-
-        // If r x s = 0 and (q - p) x r = 0, then the two lines are collinear.
-        if (rxs.IsZero() && qpxr.IsZero())
-        {
-            // 1. If either  0 <= (q - p) * r <= r * r or 0 <= (p - q) * s <= * s
-            // then the two lines are overlapping,
-            /*                if (considerCollinearOverlapAsIntersect)
-                                if ((0 <= (q - p) * r 
-                                     && (q - p) * r <= r * r) 
-                                    || (0 <= (p - q) * s && (p - q) * s <= s * s))
-                                    return true;
-            */
-            // 2. If neither 0 <= (q - p) * r = r * r nor 0 <= (p - q) * s <= s * s
-            // then the two lines are collinear but disjoint.
-            // No need to implement this expression, as it follows from the expression above.
-            return false;
-        }
-
-        // 3. If r x s = 0 and (q - p) x r != 0, then the two lines are parallel and non-intersecting.
-        if (rxs.IsZero() && !qpxr.IsZero())
-            return false;
-
-        // t = (q - p) x s / (r x s)
-        var t = (q - p).Cross(s) / rxs;
-
-        // u = (q - p) x r / (r x s)
-
-        var u = (q - p).Cross(r) / rxs;
-
-        // 4. If r x s != 0 and 0 <= t <= 1 and 0 <= u <= 1
-        // the two line segments meet at the point p + t r = q + u s.
-        if (!rxs.IsZero() && (0 <= t && t <= 1) && (0 <= u && u <= 1))
-        {
-            // We can calculate the intersection point using either t or u.
-            intersection = p + t * r;
-
-            // An intersection was found.
-            return true;
-        }
-
-        // 5. Otherwise, the two line segments are not parallel but do not intersect.
-        return false;
     }
 
     private void DrawEllipse(DrawingContext dc, SolidColorBrush brush, Pen pen, Point? p1, Point? p2, int radius)
@@ -415,11 +357,5 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
         }
         var rawData = image.GetRawData(y, x);
         return rawData[0];
-    }
-
-    public List<Point> Points
-    {
-        get { return points; }
-        set { SetProperty(ref points, value); }
     }
 }

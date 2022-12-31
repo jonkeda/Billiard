@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 using Emgu.CV.CvEnum;
-using Microsoft.Win32;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using Billiard.Threading;
 
 namespace Billiard.viewModels
 {
@@ -74,12 +75,78 @@ namespace Billiard.viewModels
             }
         }
 
+        private FileSystemWatcher FolderWatcher;
+
+        public bool LoadFromFolder
+        {
+            get { return loadFromFolder; }
+            set
+            {
+                if (SetProperty(ref loadFromFolder, value))
+                {
+                    FolderWatcher?.Dispose();
+                    if (!String.IsNullOrEmpty(SelectedFolder))
+                    {
+                        FolderWatcher = new FileSystemWatcher(SelectedFolder, "*.jpg");
+                        FolderWatcher.IncludeSubdirectories = true;
+                        FolderWatcher.EnableRaisingEvents = true;
+                        FolderWatcher.Created += FolderWatcher_Created;
+
+                    }
+                }
+            }
+        }
+
+        private void FolderWatcher_Created(object sender, FileSystemEventArgs e)
+        {
+            try
+            {
+                Mat image = CvInvoke.Imread(e.FullPath, ImreadModes.Color);
+                OnCaptureImage(image);
+                pathName = e.FullPath;
+            }
+            catch
+            {
+                //
+            }
+
+        }
+
+        public ICommand SelectFolderCommand
+        {
+            get { return new TargetCommand(SelectFolder); }
+        }
+
+        public string SelectedFolder
+        {
+            get { return selectedFolder; }
+            set
+            {
+                if (SetProperty(ref selectedFolder, value))
+                {
+                    LoadFromFolder = false;
+                    LoadFromFolder = true;
+                }
+            }
+        }
+
+        private void SelectFolder()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() == true)
+            {
+                SelectedFolder = Path.GetDirectoryName(ofd.FileName);
+            }
+        }
+
         public ICommand LoadCommand
         {
             get { return new TargetCommand(Load); }
         }
 
         private string pathName;
+        private string selectedFolder;
+        private bool loadFromFolder;
 
         private void Load()
         {
@@ -125,9 +192,10 @@ namespace Billiard.viewModels
                 {
                     return;
                 }
+                pathName = name;
+
                 Mat image = CvInvoke.Imread(name, ImreadModes.Color);
                 OnCaptureImage(image);
-                pathName = name;
             }
             catch (Exception ex)
             {
@@ -161,9 +229,10 @@ namespace Billiard.viewModels
                 {
                     return;
                 }
+                pathName = name;
+
                 Mat image = CvInvoke.Imread(name, ImreadModes.Color);
                 OnCaptureImage(image);
-                pathName = name;
             }
             catch (Exception ex)
             {
@@ -222,15 +291,19 @@ namespace Billiard.viewModels
 
         protected void OnCaptureImage(Mat image)
         {
-            if (image.Height > image.Width)
+            ThreadDispatcher.Invoke(() =>
             {
-                CvInvoke.ResizeForFrame(image, image, new System.Drawing.Size(500, 1000));
-            }
-            else
-            {
-                CvInvoke.ResizeForFrame(image, image, new System.Drawing.Size(1000, 500));
-            }
-            CaptureImage?.Invoke(this, new CaptureEvent(image));
+                if (image.Height > image.Width)
+                {
+                    CvInvoke.ResizeForFrame(image, image, new System.Drawing.Size(500, 1000));
+                }
+                else
+                {
+                    CvInvoke.ResizeForFrame(image, image, new System.Drawing.Size(1000, 500));
+                }
+
+                CaptureImage?.Invoke(this, new CaptureEvent(image));
+            });
         }
 
 

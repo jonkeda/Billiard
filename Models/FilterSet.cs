@@ -94,6 +94,17 @@ public class FilterSet : PropertyNotifier
         return Filters.AddFilter(new FloodFillFilter(result, floodFill));
     }
 
+    protected FloodFillCornersFilter FloodFillCorners(int floodFillColor)
+    {
+        return FloodFillCorners(Filters.LastOrDefault(), floodFillColor);
+    }
+
+    protected FloodFillCornersFilter FloodFillCorners(AbstractFilter result, int floodFillColor)
+    {
+        return Filters.AddFilter(new FloodFillCornersFilter(result, floodFillColor));
+    }
+
+
     protected MaskFilter Mask()
     {
         return Mask(Filters.LastOrDefault());

@@ -25,9 +25,9 @@ namespace Billiard
 
             services.AddSingleton<FilterViewModel>();
             services.AddSingleton<VideoDeviceViewModel>();
-            services.AddSingleton<BallViewModel>();
+/*            services.AddSingleton<BallViewModel>();
             services.AddSingleton<TableViewModel>();
-            services.AddSingleton<CaptureViewModel>();
+*/            services.AddSingleton<CaptureViewModel>();
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<PhysicsEngine>();
 

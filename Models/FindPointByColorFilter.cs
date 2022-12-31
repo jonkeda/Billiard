@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using Billiard.Camera.vision.Geometries;
 using Emgu.CV;
 using Point = System.Windows.Point;
 

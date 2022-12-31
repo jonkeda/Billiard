@@ -17,7 +17,9 @@ public enum ContourType
     Points,
     Rectangle,
     Circle,
-    Ellipse
+    Ellipse,
+    ConvexHulls,
+    ConvexHull
 }
 
 public class ContoursFilter : AbstractFilter, IContourFilter
@@ -43,12 +45,15 @@ public class ContoursFilter : AbstractFilter, IContourFilter
 
     public ContourCollection Contours { get; set; }
 
+    public RetrType RetrType { get; set; } = RetrType.External;
+    public ChainApproxMethod ChainApproxMethod { get; set; } = ChainApproxMethod.ChainApproxNone;
+
     protected override void ApplyFilter(Mat originalImage)
     {
         ResultMat = GetInputMat();
 
         VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
-        CvInvoke.FindContours(GetInputMat(), contours, null, RetrType.External, ChainApproxMethod.ChainApproxNone);
+        CvInvoke.FindContours(GetInputMat(), contours, null, RetrType, ChainApproxMethod);
 
         FilterValues.Add("Contours", contours.Size);
 
@@ -58,10 +63,10 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             VectorOfPoint contour = contours[i];
             double area = CvInvoke.ContourArea(contour);
             FilterValues.Add($"Area {i}", area);
-            if ((MinimumArea < 0 || area > MinimumArea)
-                && (MaximumArea < 0 || area < MaximumArea))
+            if ((MinimumArea <= 0 || area > MinimumArea)
+                && (MaximumArea <= 0 || area < MaximumArea))
             {
-                contourList.Add(new Contour(contour) );
+                contourList.Add(new Contour(contour));
             }
         }
         FilterValues.Add("Contours found", contourList.Count);
@@ -84,21 +89,95 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             {
                 DrawAsEllipse(contourList, dc);
             }
+            else if (ContourType == ContourType.ConvexHull)
+            {
+                DrawAsConvexHull(contourList, dc);
+            }
+            else if (ContourType == ContourType.ConvexHulls)
+            {
+                DrawAsConvexHulls(contourList, dc);
+            }
 
         });
 
         Contours = contourList;
     }
 
-    private static void DrawAsPoints(ContourCollection contours, DrawingContext dc)
+    private static void DrawAsConvexHull(ContourCollection contours, DrawingContext dc)
     {
-        Pen examplePen = new Pen(Brushes.GreenYellow, 5)
+        Pen examplePen = new Pen(Brushes.GreenYellow, 2)
         {
             DashStyle = DashStyles.Solid
         };
-        for (int i = 0; i < contours.Count; i++)
+        List<Point> allPoints = new List<Point>();
+        foreach (var contour in contours)
         {
-            VectorOfPoint contour = contours[i].AsVectorOfPoint();
+            allPoints.AddRange(contour.Points);
+        }
+
+        var points = CvInvoke.ConvexHull(allPoints.AsPointFArray());
+
+        PathFigure figure = new PathFigure
+        {
+            IsClosed = true,
+            StartPoint = points[0].AsPoint()
+        };
+        for (int j = 1; j < points.Length; j++)
+        {
+            figure.Segments.Add(new LineSegment(points[j].AsPoint(), true));
+        }
+
+        Geometry geometry = new PathGeometry(new List<PathFigure> { figure });
+        dc.DrawGeometry(null, examplePen, geometry);
+        for (int j = 0; j < points.Length; j++)
+        {
+            dc.DrawEllipse(Brushes.Red, null, points[j].AsPoint(), 5, 5);
+        }
+
+        contours.Clear();
+        contours.Add(new Contour(points.AsListOfDrawingPoint()));
+    }
+
+
+    private static void DrawAsConvexHulls(ContourCollection contours, DrawingContext dc)
+    {
+        Pen examplePen = new Pen(Brushes.GreenYellow, 2)
+        {
+            DashStyle = DashStyles.Solid
+        };
+        foreach (var contour in contours)
+        {
+            var points = CvInvoke.ConvexHull(contour.AsArray());
+
+            PathFigure figure = new PathFigure
+            {
+                IsClosed = true,
+                StartPoint = points[0].AsPoint()
+            };
+            for (int j = 1; j < points.Length; j++)
+            {
+                figure.Segments.Add(new LineSegment(points[j].AsPoint(), true));
+            }
+
+            Geometry geometry = new PathGeometry(new List<PathFigure> { figure });
+            dc.DrawGeometry(null, examplePen, geometry);
+            for (int j = 0; j < points.Length; j++)
+            {
+                dc.DrawEllipse(Brushes.Red, null, points[j].AsPoint(), 5, 5);
+            }
+        }
+    }
+
+
+    private static void DrawAsPoints(ContourCollection contours, DrawingContext dc)
+    {
+        Pen examplePen = new Pen(Brushes.GreenYellow, 2)
+        {
+            DashStyle = DashStyles.Solid
+        };
+        foreach (var t in contours)
+        {
+            VectorOfPoint contour = t.AsVectorOfPoint();
             PathFigure figure = new PathFigure
             {
                 IsClosed = true,
@@ -111,6 +190,10 @@ public class ContoursFilter : AbstractFilter, IContourFilter
 
             Geometry geometry = new PathGeometry(new List<PathFigure> { figure });
             dc.DrawGeometry(null, examplePen, geometry);
+            for (int j = 0; j < contour.Size; j++)
+            {
+                dc.DrawEllipse(Brushes.Red, null, contour[j].AsPoint(), 5, 5);
+            }
         }
     }
 
@@ -120,9 +203,9 @@ public class ContoursFilter : AbstractFilter, IContourFilter
         {
             DashStyle = DashStyles.Solid
         };
-        for (int i = 0; i < contours.Count; i++)
+        foreach (var t in contours)
         {
-            VectorOfPoint contour = contours[i].AsVectorOfPoint();
+            VectorOfPoint contour = t.AsVectorOfPoint();
             for (int j = 1; j < contour.Size; j++)
             {
                 var circle = CvInvoke.MinEnclosingCircle(contour);
@@ -144,7 +227,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             {
                 RotatedRect rectangle = CvInvoke.MinAreaRect(contour);
                 System.Drawing.Point[] vertices = Array.ConvertAll(rectangle.GetVertices(), System.Drawing.Point.Round);
-                
+
                 PathFigure figure = new PathFigure
                 {
                     IsClosed = true,

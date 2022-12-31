@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using Billiard.Camera.vision.Geometries;
 using Emgu.CV.Structure;
 
 namespace Billiard.Models;
@@ -45,6 +46,20 @@ public class Contour
     {
         return new VectorOfPoint(Points.ToArray());
     }
+
+    public PointF[] AsArray()
+    {
+        PointF[] a = new PointF[Points.Count];
+        int i = 0;
+        foreach (Point point in Points)
+        {
+            a[i] = point.AsPointF();
+            i++;
+        }
+        return a;
+    }
+
+
 }
 
 public interface IContourFilter : IAbstractFilter

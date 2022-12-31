@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Media;
 using Billiard.Camera.vision.Geometries;
+using Billiard.Physics;
 using Emgu.CV;
 
 namespace Billiard.Models;
@@ -28,7 +30,7 @@ public class BallResultFilter : AbstractFilter
 {
     public BallResultFilter(AbstractFilter filter) : base(filter)
     {
-        Name = "Histogram";
+        Name = "Ball results";
     }
 
     private IContourFilter contourFilter;
@@ -58,6 +60,11 @@ public class BallResultFilter : AbstractFilter
         get { return histogram2; }
         set { SetProperty(ref histogram2, value); }
     }
+
+    public System.Windows.Point? WhiteBallPoint { get; set; }
+    public System.Windows.Point? YellowBallPoint { get; set; }
+    public System.Windows.Point? RedBallPoint { get; set; }
+
 
     protected override void ApplyFilter(Mat originalImage)
     {
@@ -89,12 +96,10 @@ public class BallResultFilter : AbstractFilter
                     32,
                     Brushes.AntiqueWhite, 1.25);
 
-
                 if (ball.Contour?.RotatedRectangle != null)
                 {
                     var mid = ball.Contour.RotatedRectangle.Value.Center.AsPoint();
                     dc.DrawText(formattedText, mid);
-
 
                     Brush color = null;
                     if (ball.Color == BallColor.Red)
@@ -118,11 +123,32 @@ public class BallResultFilter : AbstractFilter
 
     private void PredictBalls(List<BallResult> balls)
     {
+        RedBallPoint = null;
+        WhiteBallPoint = null;
+        YellowBallPoint = null;
+
         int color = 0;
         foreach (BallResult result in balls.OrderBy(b => b.Mean))
         {
             result.Color = (BallColor)color;
             color++;
+            if (result?.Contour?.RotatedRectangle != null
+                && result.Contour.RotatedRectangle.HasValue)
+            {
+                var mid = result.Contour.RotatedRectangle.Value.Center.AsPoint();
+                if (result.Color == BallColor.Red)
+                {
+                    RedBallPoint = mid;
+                }
+                else if (result.Color == BallColor.White)
+                {
+                    WhiteBallPoint = mid;
+                }
+                else if (result.Color == BallColor.Yellow)
+                {
+                    YellowBallPoint = mid;
+                }
+            }
         }
     }
 

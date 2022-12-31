@@ -21,7 +21,7 @@ public class WarpPerspectiveFilter : AbstractFilter
 
     protected override void ApplyFilter(Mat originalImage)
     {
-        if (PointsFilter == null
+        if (PointsFilter?.Points == null
             || PointsFilter.Points.Count < 4)
         {
             return;

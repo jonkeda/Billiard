@@ -41,7 +41,14 @@ namespace Billiard.viewModels
             set { SetProperty(ref filterViewModel, value); }
         }
 
-        public MainViewModel(TableViewModel tableViewModel, BallViewModel ballViewModel, CaptureViewModel captureViewModel, FilterViewModel filterViewModel, PhysicsEngine physicsEngine)
+        public MainViewModel(CaptureViewModel captureViewModel, FilterViewModel filterViewModel, PhysicsEngine physicsEngine)
+        {
+            CaptureViewModel = captureViewModel;
+            PhysicsEngine = physicsEngine;
+            FilterViewModel = filterViewModel;
+        }
+
+/*        public MainViewModel(TableViewModel tableViewModel, BallViewModel ballViewModel, CaptureViewModel captureViewModel, FilterViewModel filterViewModel, PhysicsEngine physicsEngine)
         {
             TableViewModel = tableViewModel;
             BallViewModel = ballViewModel;
@@ -49,6 +56,6 @@ namespace Billiard.viewModels
             PhysicsEngine = physicsEngine;
             FilterViewModel = filterViewModel;
         }
-        
+*/        
     }
 }

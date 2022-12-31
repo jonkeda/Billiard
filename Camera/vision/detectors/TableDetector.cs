@@ -354,7 +354,7 @@ namespace Billiard.Camera.vision.detectors
             CvInvoke.WarpPerspective(originMat, tableMat, warpingMat, originMat.Size);
         }
 
-        public void WarpTablePerspective(Mat mat, List<PointF> tableCornerPoints, ref PointF whiteBallPoint, ref PointF yellowBallPoint, ref PointF redBallPoint)
+        public static void WarpTablePerspective(Mat mat, List<PointF> tableCornerPoints, ref PointF whiteBallPoint, ref PointF yellowBallPoint, ref PointF redBallPoint)
         {
             bool needSideReverse = true; // table.tableNeedSideReverse();
             VectorOfPointF

@@ -1,7 +1,12 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Printing;
+using System.Windows;
+using System.Windows.Documents;
 using Billiard.Models;
 using Billiard.UI;
 using Emgu.CV;
+using Emgu.CV.CvEnum;
 
 namespace Billiard.viewModels
 {
@@ -37,6 +42,9 @@ namespace Billiard.viewModels
             set { SetProperty(ref selectedFilter, value); }
         }
 
+        public BallResultFilter BallResultFilter { get; private set; }
+        public IPointsFilter PointsFilter { get; set; }
+
         private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
         {
             Mat image = e.Image;
@@ -48,6 +56,13 @@ namespace Billiard.viewModels
             FilterSets.ApplyFilters(image);
         }
 
+        public (List<Point> corners, Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint) ApplyFilters(Mat image)
+        {
+            FilterSets.ApplyFilters(image);
+
+            return (PointsFilter.Points, BallResultFilter.WhiteBallPoint, BallResultFilter.YellowBallPoint, BallResultFilter.RedBallPoint);
+        }
+
         protected void InitFilters()
         {
             FilterSets.Clear();
@@ -55,7 +70,12 @@ namespace Billiard.viewModels
             //FilterSets.Add(new FindHsvContoursFilterSet());
             //FilterSets.Add(new HsvChannelsFilterSet());
             var table = FilterSets.AddSet(new TableDetectorSet());
-            FilterSets.AddSet(new BallDetectorSet(table.ResultFilter()));
+            CornerDetectorSet corner = FilterSets.AddSet(new CornerDetectorSet(table.OriginalFilter, table.FloodFilter));
+            var ball = FilterSets.AddSet(new BallDetectorSet(corner.ResultFilter()));
+
+
+            BallResultFilter = ball.BallResultFilter;
+            PointsFilter = corner.PointsFilter;
 
             SelectedFilterSet = FilterSets.LastOrDefault();
             SelectedFilter = SelectedFilterSet?.Filters.LastOrDefault();
@@ -87,6 +107,9 @@ namespace Billiard.viewModels
 
     public class TableDetectorSet : FilterSet
     {
+        public OriginalFilter OriginalFilter { get; private set; }
+        public FloodFillFilter FloodFilter { get; private set; }
+
         public TableDetectorSet() : base("Find table")
         {
             var original = Original();
@@ -105,11 +128,10 @@ namespace Billiard.viewModels
 
             //flood.PointFilter = findPoint;
             var asMask = Mask();
-            DrawBoundingRect().BoundingRect = flood;
-            var corners = FindCorners();
-            corners.BoundingRect = flood;
-            //Filters.AddFilter(new FindCornerHarrisFilter(asMask));
-            WarpPerspective(original).PointsFilter = corners;
+            //DrawBoundingRect().BoundingRect = flood;
+
+            OriginalFilter = original;
+            FloodFilter = flood;
         }
 
         public AbstractFilter ResultFilter()
@@ -118,8 +140,47 @@ namespace Billiard.viewModels
         }
     }
 
+
+    public class CornerDetectorSet : FilterSet
+    {
+        public IPointsFilter PointsFilter { get; private set; }
+
+        public CornerDetectorSet(OriginalFilter original, FloodFillFilter flood ) : base("Find corner")
+        {
+            var asMask = Mask(flood);
+            // DrawBoundingRect().BoundingRect = flood;
+            //var corners = FindCorners();
+            //corners.BoundingRect = flood;
+            //Filters.AddFilter(new FindCornerHarrisFilter(asMask));
+            //FloodFillCorners(255);
+
+            //var canny = Canny(asMask);
+            // Filters.AddFilter(new FindCornerGoodFeaturesFilter(canny));
+
+            var contour = Contours();
+            contour.ContourType = ContourType.ConvexHull;
+            contour.ChainApproxMethod = ChainApproxMethod.ChainApproxSimple;
+            contour.MinimumArea = 0;
+             
+            var convexConvers = Filters.AddFilter(new FindCornersConvexHullFilter(contour));
+            convexConvers.ContourFilter = contour;
+
+            PointsFilter = convexConvers;
+
+            WarpPerspective(original).PointsFilter = convexConvers;
+        }
+
+        public AbstractFilter ResultFilter()
+        {
+            return Filters.LastOrDefault();
+        }
+    }
+
+
     public class BallDetectorSet : FilterSet
     {
+        public BallResultFilter BallResultFilter { get; private set; }
+
         public BallDetectorSet(AbstractFilter filter) : base("Find balls")
         {
             var original = Clone(filter);
@@ -127,25 +188,26 @@ namespace Billiard.viewModels
             ExtractChannel(hsv, 0);
             var gaus = GaussianBlur();
             // Filters.AddFilter(new FindPointByColorFilter(gaus));
-            FloodFill(255);
+            var flood = FloodFill(255);
+            flood.MinimumArea = 20;
             Mask();
             MorphClose();
             var morph = MorphOpen();
-            Filters.AddFilter(new FloodFillCornersFilter(morph, 255));
+            FloodFillCorners(255);
 
             Not();
             var masked = ToMask();
             var canny = Canny();
             var contours = Contours();
             contours.MinimumArea = 500;
-            contours.MaximumArea = 2000;
+            contours.MaximumArea = 2500;
             contours.Resize = 0.7;
 
-            And(hsv).MaskFilter = masked;
-            Histogram().MaskFilter = masked;
+            // And(hsv).MaskFilter = masked;
+            // Histogram().MaskFilter = masked;
 
-            And(original).MaskFilter = masked;
-            Histogram().MaskFilter = masked;
+            // And(original).MaskFilter = masked;
+            // Histogram().MaskFilter = masked;
 
             var and1 = And(hsv);
             and1.ContourFilter = contours;
@@ -171,6 +233,7 @@ namespace Billiard.viewModels
             result.Histogram1 = hist1;
             result.Histogram2 = hist2;
 
+            BallResultFilter = result;
         }
     }
 

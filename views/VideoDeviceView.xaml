@@ -16,6 +16,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Command="{Binding SelectFolderCommand}" Content="..."/>
+            <TextBox Text="{Binding SelectedFolder}" Width="200"/>
+            <CheckBox IsChecked="{Binding LoadFromFolder}"></CheckBox>
             <Button Command="{Binding CaptureCommand}">Capture</Button>
             <Button Command="{Binding LoadCommand}">Load</Button>
             <Button Command="{Binding PreviousCommand}">Previous</Button>

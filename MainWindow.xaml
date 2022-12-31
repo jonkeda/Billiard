@@ -83,6 +83,7 @@
 
             </Grid>
         </TabItem>
+<!--
         <TabItem Header="Table Detector">
             <views:TableView DataContext="{Binding TableViewModel}" />
         </TabItem>
@@ -94,7 +95,7 @@
         <TabItem Header="Ball Detector">
             <views:BallView DataContext="{Binding BallViewModel}" />
         </TabItem>
-
+-->
         <TabItem Header="Filter view">
             <views:FilterView DataContext="{Binding FilterViewModel}" />
         </TabItem>

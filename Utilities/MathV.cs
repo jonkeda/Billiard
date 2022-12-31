@@ -42,13 +42,14 @@ namespace Billiard.Utilities
             return new Vector2((float)MathF.Cos(angle), (float)MathF.Sin(angle));
         }
 
+        private static Vector2 vec1 = new Vector2(1f, 0f);
         public static float GetAngle(this Vector2 a)
         {
             if (a.Y > 0)
             {
-                return (float)MathF.Acos(Vector2.Dot(a, new Vector2(1f, 0f))) * 180f / (float)MathF.PI;
+                return (float)MathF.Acos(Vector2.Dot(a, vec1)) * 180f / (float)MathF.PI;
             }
-            return -(float)MathF.Acos(Vector2.Dot(a, new Vector2(1f, 0f))) * 180f / (float)MathF.PI;
+            return -(float)MathF.Acos(Vector2.Dot(a, vec1)) * 180f / (float)MathF.PI;
         }
     }
 }
