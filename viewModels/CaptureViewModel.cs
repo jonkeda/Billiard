@@ -15,6 +15,7 @@ using Point = System.Windows.Point;
 using System;
 using System.Globalization;
 using System.Linq;
+using Billiard.Physics;
 using Emgu.CV.Util;
 
 namespace Billiard.viewModels
@@ -24,6 +25,7 @@ namespace Billiard.viewModels
         private TableDetector TableDetector { get; }
         private BallDetector BallDetector { get; }
         private FilterViewModel FilterViewModel { get; }
+        private PhysicsEngine PhysicsEngine { get; }
 
         public VideoDeviceViewModel VideoDevice { get; }
 
@@ -43,9 +45,10 @@ namespace Billiard.viewModels
             set { SetProperty(ref overlay, value); }
         }
 
-        public CaptureViewModel(VideoDeviceViewModel videoDevice, FilterViewModel filterViewModel)
+        public CaptureViewModel(VideoDeviceViewModel videoDevice, FilterViewModel filterViewModel, PhysicsEngine physicsEngine)
         {
             FilterViewModel = filterViewModel;
+            PhysicsEngine = physicsEngine;
             VideoDevice = videoDevice;
             videoDevice.CaptureImage += VideoDevice_CaptureImage;
             videoDevice.StreamImage += VideoDevice_CaptureImage;
@@ -110,6 +113,20 @@ namespace Billiard.viewModels
                 });
         }
 
+        public System.Windows.Point ToRelativePoint(Rect frame, System.Windows.Point p)
+        {
+            if (p.X == 0 && p.Y == 0)
+            {
+                return p;
+            }
+
+            if (frame.Height > frame.Width)
+            {
+                return new System.Windows.Point(p.Y / frame.Height, 1 - (p.X / frame.Width));
+            }
+            return new System.Windows.Point(p.X / frame.Width, p.Y / frame.Height);
+        }
+
 
         private void CaptureImage(Mat frame)
         {
@@ -119,7 +136,8 @@ namespace Billiard.viewModels
                     Output = frame.ToBitmapSource();
                 });
 
-            (List<Point> corners, Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint) =
+            (List<Point> corners, Rect tableSize,
+                    Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint) =
                 FilterViewModel.ApplyFilters(frame);
 
             List<PointF> tableCornerPoints = corners.AsListOfPointF();
@@ -135,17 +153,28 @@ namespace Billiard.viewModels
             );
             Mat warpingMat = CvInvoke.GetPerspectiveTransform(src, dest);
 
-            whiteBallPoint = WarpPerspective(warpingMat, whiteBallPoint);
-            redBallPoint = WarpPerspective(warpingMat, redBallPoint);
-            yellowBallPoint = WarpPerspective(warpingMat, yellowBallPoint);
-
             ThreadDispatcher.Invoke(
                 () =>
                 {
-                    Overlay = DrawCaptureOverlay(frame, corners, whiteBallPoint, yellowBallPoint,
-                        redBallPoint);
+                    Overlay = DrawCaptureOverlay(frame, corners,
+                        WarpPerspective(warpingMat, whiteBallPoint),
+                        WarpPerspective(warpingMat, yellowBallPoint),
+                        WarpPerspective(warpingMat, redBallPoint));
                 });
-
+            ThreadDispatcher.Invoke(
+                () =>
+                {
+                    if (VideoDevice.Calculate
+                        && whiteBallPoint.HasValue
+                        && yellowBallPoint.HasValue
+                        && redBallPoint.HasValue)
+                    {
+                        PhysicsEngine.SetBalls(
+                            ToRelativePoint(tableSize, whiteBallPoint.Value),
+                            ToRelativePoint(tableSize, yellowBallPoint.Value),
+                            ToRelativePoint(tableSize, redBallPoint.Value));
+                    }
+                });
         }
 
         public static Point? WarpPerspective(Mat warpingMat,

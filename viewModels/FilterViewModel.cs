@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Printing;
 using System.Windows;
@@ -7,6 +8,7 @@ using Billiard.Models;
 using Billiard.UI;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
+using Point = System.Windows.Point;
 
 namespace Billiard.viewModels
 {
@@ -56,11 +58,16 @@ namespace Billiard.viewModels
             FilterSets.ApplyFilters(image);
         }
 
-        public (List<Point> corners, Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint) ApplyFilters(Mat image)
+        public (List<Point> corners, Rect tableSize, 
+            Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint) ApplyFilters(Mat image)
         {
             FilterSets.ApplyFilters(image);
 
-            return (PointsFilter.Points, BallResultFilter.WhiteBallPoint, BallResultFilter.YellowBallPoint, BallResultFilter.RedBallPoint);
+            return (PointsFilter.Points,
+                BallResultFilter.TableSize,
+                BallResultFilter.WhiteBallPoint, 
+                BallResultFilter.YellowBallPoint, 
+                BallResultFilter.RedBallPoint);
         }
 
         protected void InitFilters()

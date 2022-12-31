@@ -75,6 +75,12 @@ namespace Billiard.viewModels
             }
         }
 
+        public bool Calculate
+        {
+            get { return calculate; }
+            set { SetProperty(ref calculate, value); }
+        }
+
         private FileSystemWatcher FolderWatcher;
 
         public bool LoadFromFolder
@@ -147,6 +153,7 @@ namespace Billiard.viewModels
         private string pathName;
         private string selectedFolder;
         private bool loadFromFolder;
+        private bool calculate;
 
         private void Load()
         {

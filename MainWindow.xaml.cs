@@ -22,6 +22,7 @@ namespace Billiard
         #region Gameloop
         private void Update(object sender, EventArgs e)
         {
+
             if (calculating)
             {
                 return;

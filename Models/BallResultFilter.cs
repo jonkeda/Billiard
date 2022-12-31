@@ -61,14 +61,16 @@ public class BallResultFilter : AbstractFilter
         set { SetProperty(ref histogram2, value); }
     }
 
-    public System.Windows.Point? WhiteBallPoint { get; set; }
-    public System.Windows.Point? YellowBallPoint { get; set; }
-    public System.Windows.Point? RedBallPoint { get; set; }
-
+    public System.Windows.Point? WhiteBallPoint { get; private set; }
+    public System.Windows.Point? YellowBallPoint { get; private set; }
+    public System.Windows.Point? RedBallPoint { get; private set; }
+    public System.Windows.Rect TableSize { get; private set; }
 
     protected override void ApplyFilter(Mat originalImage)
     {
         ResultMat = GetInputMat();
+
+        TableSize = new Rect(new(0, 0), new Size(ResultMat.Cols, ResultMat.Rows));
 
         List<BallResult> balls = new ()
         {
