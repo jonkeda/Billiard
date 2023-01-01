@@ -1,3 +1,5 @@
-/bin
-/obj
+/Billiards.Base/obj
+/Billiards.Base/bin
+obj
+bin
 .vs

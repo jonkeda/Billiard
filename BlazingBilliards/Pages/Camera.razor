@@ -1,0 +1,116 @@
+﻿@page "/camera"
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+\-
+@using OpenCvSharp
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Formats.Bmp
+@using SixLabors.ImageSharp.Formats.Jpeg
+@using SixLabors.ImageSharp.Processing
+@using FlipMode = SixLabors.ImageSharp.Processing.FlipMode
+@using Size = OpenCvSharp.Size
+@implements IDisposable
+
+<h1>Blazor Webcam</h1>
+<video id="videoFeed" width="320" height="240" ></video>
+<canvas class="d-none" id="currentFrame" width="320" height="240"></canvas>
+<br />
+<input class="form-control mb-3" style="width:320px;" type="text" @bind="captionText" placeholder="Enter caption" />
+<button class="btn btn-primary mb-3" @onclick="CaptureFrame">Capture Frame</button> <br />
+@if (!string.IsNullOrEmpty(frameUri))
+{
+    <img src="@frameUri" />
+}
+<canvas @ref="dstCanvas" width="320" height="240" style="border:1px solid gray;">
+    Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+    
+@code {
+    private string captionText;
+    private string frameUri;
+
+
+    private Mat? srcMat;
+    private ElementReference dstCanvas;
+    private CanvasClient? dstCanvasClient;
+
+    public void Dispose()
+    {
+        srcMat?.Dispose();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+    //if (!firstRender)
+    //    return;
+        await base.OnAfterRenderAsync(firstRender);
+
+        dstCanvasClient ??= new CanvasClient(JSRuntime, dstCanvas);
+    }
+
+
+    private async Task CaptureFrame()
+    {
+        await JSRuntime.InvokeAsync<String>("getFrame", "videoFeed", "currentFrame", DotNetObjectReference.Create(this));
+    }
+
+
+    [JSInvokable]
+    public async Task ProcessImage(string imageString)
+    {
+        string base64 = imageString.Split(',')[1];
+        byte[] imageData = Convert.FromBase64String(base64);
+
+        //srcMat = Mat.FromImageData(imageData, ImreadModes.AnyColor);
+
+        //srcMat = Mat.Zeros( new Size(10, 10), MatType.CV_8U);
+
+        //int cols = srcMat.Cols;
+        //await dstCanvasClient.DrawMatAsync(srcMat);
+
+        //var imageBytes = await Http.GetByteArrayAsync("images/Mandrill.bmp");
+        //srcMat = Mat.FromImageData(imageBytes);
+
+        //await dstCanvasClient.DrawMatAsync(srcMat);
+
+
+        using Image? image = Image.Load(imageData);
+
+        MemoryStream ms = new MemoryStream();
+        image.SaveAsBmp(ms, new BmpEncoder()
+        {
+            BitsPerPixel = BmpBitsPerPixel.Pixel32
+        });
+        Byte[] bmp = ms.ToArray();
+
+        try
+        {
+            srcMat?.Dispose();
+            srcMat = Mat.FromImageData(bmp);
+
+            using Mat grayMat = new Mat();
+            Cv2.CvtColor(srcMat, grayMat, ColorConversionCodes.BGR2GRAY);
+
+            await dstCanvasClient.DrawMatAsync(grayMat);
+
+
+    // await dstCanvasClient.DrawMatAsync(srcMat);
+        }
+        catch (Exception ex)
+        {
+            string m = ex.Message;
+        }
+
+
+    //image.Mutate(x => x
+    //    .Flip(FlipMode.Horizontal)
+    //);
+    // frameUri = image.ToBase64String(JpegFormat.Instance);
+    }
+}
