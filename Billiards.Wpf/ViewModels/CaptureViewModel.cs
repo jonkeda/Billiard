@@ -136,34 +136,34 @@ namespace Billiard.viewModels
         private void DrawBalls(Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint, Mat frame,
             DrawingContext drawingContext)
         {
-            double radius = System.Math.Max(frame.Height / 100, frame.Width / 100);
+            double radius = System.Math.Max(frame.Height / 50, frame.Width / 50);
 
             if (whiteBallPoint.HasValue)
             {
-                Pen whiteColor = new Pen(Brushes.Black, 5)
+                Pen whiteColor = new Pen(Brushes.White, 5)
                 {
                     DashStyle = DashStyles.Solid
                 };
-                drawingContext.DrawEllipse(Brushes.Wheat, whiteColor, whiteBallPoint.Value, radius, radius);
+                drawingContext.DrawEllipse(null, whiteColor, whiteBallPoint.Value, radius, radius);
             }
 
             if (yellowBallPoint.HasValue)
             {
-                Pen yellowColor = new Pen(Brushes.Black, 5)
+                Pen yellowColor = new Pen(Brushes.Yellow, 5)
                 {
                     DashStyle = DashStyles.Solid
                 };
-                drawingContext.DrawEllipse(Brushes.Yellow, yellowColor, yellowBallPoint.Value, radius, radius);
+                drawingContext.DrawEllipse(null, yellowColor, yellowBallPoint.Value, radius, radius);
             }
 
             if (redBallPoint.HasValue)
             {
-                Pen redColor = new Pen(Brushes.Black, 5)
+                Pen redColor = new Pen(Brushes.DarkRed, 5)
                 {
                     DashStyle = DashStyles.Solid
                 };
 
-                drawingContext.DrawEllipse(Brushes.Red, redColor, redBallPoint.Value, radius, radius);
+                drawingContext.DrawEllipse(null, redColor, redBallPoint.Value, radius, radius);
             }
         }
 
