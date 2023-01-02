@@ -11,18 +11,11 @@ namespace Billiard.Physics
 {
     public class PhysicsEngine
     {
-        public float Length
-        {
-            get { return table.Length; }
-        }
+        private float Length { get { return table.Length; } }
+        private float Width { get { return table.Width; } }
 
-        public float Width
-        {
-            get { return table.Width; }
-        }
-
-        public readonly PTable table;
-        public readonly List<PBall> balls = new();
+        private readonly PTable table;
+        private readonly List<PBall> balls = new();
 
         private const float StepSize = 0.001f;
         private const float BallRestitution = 0.98f;
@@ -71,9 +64,9 @@ namespace Billiard.Physics
                 return;
             }
 
-            GetWhiteBall().position = FromRelative(result.WhiteBallPoint.Value);
-            GetYellowBall().position = FromRelative(result.YellowBallPoint.Value);
-            GetRedBall().position = FromRelative(result.RedBallPoint.Value);
+            GetWhiteBall().position = FromRelative(result.Image, result.WhiteBallPoint.Value);
+            GetYellowBall().position = FromRelative(result.Image, result.YellowBallPoint.Value);
+            GetRedBall().position = FromRelative(result.Image, result.RedBallPoint.Value);
 
             result.Problems = CalculateSolutions(result.OnMainBall, result.Power);
         }
@@ -352,6 +345,7 @@ namespace Billiard.Physics
 
         public class Problem
         {
+            public BallColor Color { get; set; }
             private readonly PBall cue;
             private readonly PBall other;
             private readonly float power;
@@ -360,11 +354,13 @@ namespace Billiard.Physics
 
             public Problem(PBall cue, PBall other, float power, PhysicsEngine physicsEngine)
             {
+                this.Color = other.BallColor;
                 this.cue = cue;
                 this.other = other;
                 this.power = power;
                 this.physicsEngine = physicsEngine;
             }
+
 
             public void Run()
             {
@@ -373,9 +369,15 @@ namespace Billiard.Physics
             }
         }
 
-        private Vector2 FromRelative(Point2f p)
+        private Vector2 FromRelative(Mat frame, Point2f p)
         {
-            return new Vector2(p.X * Length, p.Y * Width);
+            if (frame.Height > frame.Width)
+            {
+                return new Vector2(p.Y * Length / frame.Height, Width - (p.X * Width / frame.Width));
+            }
+            return new Vector2(p.X * Length / frame.Width, p.Y * Width / frame.Height);
+
+            //return new Vector2(p.X * Length / image.Width, p.Y * Width / image.Height);
         }
     }
 }

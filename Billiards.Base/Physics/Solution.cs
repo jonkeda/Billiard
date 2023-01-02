@@ -2,10 +2,10 @@
 
 public class Solution
 {
-    public CollisionCollection Collections { get; }
+    public CollisionCollection Collisions { get; }
 
-    public Solution(CollisionCollection collections)
+    public Solution(CollisionCollection collisions)
     {
-        Collections = collections;
+        Collisions = collisions;
     }
 }

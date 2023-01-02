@@ -24,6 +24,7 @@ namespace Billiards.Wpf
         {
             services.AddSingleton<MainWindow>();
 
+            services.AddSingleton<TableViewModel>();
             services.AddSingleton<FilterViewModel>();
             services.AddSingleton<VideoDeviceViewModel>();
             services.AddSingleton<CaptureViewModel>();

@@ -38,12 +38,20 @@ public class ContoursFilter : AbstractFilter, IContourFilter
 
         FilterValues.Add("Contours", contours.Length);
 
+        double imageArea = ResultMat.Cols * ResultMat.Rows; 
+
         ContourCollection contourList = new ContourCollection();
         for (int i = 0; i < contours.Length; i++)
         {
             Point[] contour = contours[i];
             double area = Cv2.ContourArea(contour);
+
             FilterValues.Add($"Area {i}", area);
+            FilterValues.Add($"Area {i} %", Math.Round( area * 100 * 100 / imageArea) / 100);
+
+            var rectangle = Cv2.MinAreaRect(contour);
+
+            FilterValues.Add($"Area {i} R", Math.Round(rectangle.Size.Height * rectangle.Size.Width));
             if ((MinimumArea <= 0 || area > MinimumArea)
                 && (MaximumArea <= 0 || area < MaximumArea))
             {

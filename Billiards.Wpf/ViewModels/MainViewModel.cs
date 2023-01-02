@@ -9,14 +9,19 @@ namespace Billiard.viewModels
     public class MainViewModel : ViewModel
     {
         public VideoDeviceViewModel VideoDevice { get; }
+        public TableViewModel TableViewModel { get; }
         public PhysicsEngine PhysicsEngine { get; }
         public CaptureViewModel CaptureViewModel { get; }
         public FilterViewModel FilterViewModel { get; }
         public CaramboleDetector Detector { get; }
 
-        public MainViewModel(CaptureViewModel captureViewModel, FilterViewModel filterViewModel,
-            PhysicsEngine physicsEngine, VideoDeviceViewModel videoDevice)
+        public MainViewModel(TableViewModel tableViewModel, 
+            CaptureViewModel captureViewModel, 
+            FilterViewModel filterViewModel,
+            PhysicsEngine physicsEngine, 
+            VideoDeviceViewModel videoDevice)
         {
+            TableViewModel = tableViewModel;
             CaptureViewModel = captureViewModel;
             PhysicsEngine = physicsEngine;
             FilterViewModel = filterViewModel;
@@ -54,6 +59,7 @@ namespace Billiard.viewModels
             ThreadDispatcher.Invoke(
                 () =>
                 {
+                    TableViewModel.CaptureImage(result);
                     CaptureViewModel.CaptureImage(result);
                     FilterViewModel.CaptureImage(result);
                 });

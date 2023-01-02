@@ -1,4 +1,5 @@
 ﻿using Billiards.Base.Filters;
+using OpenCvSharp;
 
 namespace Billiards.Base.FilterSets;
 
@@ -15,7 +16,7 @@ public class CaramboleDetector
         PointsFilter = corner.PointsFilter;
     }
 
-    public BallResultFilter BallResultFilter { get; private set; }
+    public BallResultFilter BallResultFilter { get; }
     public IPointsFilter PointsFilter { get; set; }
     public FilterSetCollection FilterSets { get; } = new();
 
@@ -27,5 +28,27 @@ public class CaramboleDetector
         result.WhiteBallPoint = BallResultFilter.WhiteBallPoint;
         result.YellowBallPoint = BallResultFilter.YellowBallPoint;
         result.RedBallPoint = BallResultFilter.RedBallPoint;
+
+        result.Balls.Add(new ResultBall(BallColor.White, 
+            ToRelativePoint(result.Image, BallResultFilter.WhiteBallPoint)));
+        result.Balls.Add(new ResultBall(BallColor.Yellow,
+            ToRelativePoint(result.Image, BallResultFilter.YellowBallPoint)));
+        result.Balls.Add(new ResultBall(BallColor.Red,
+            ToRelativePoint(result.Image, BallResultFilter.RedBallPoint)));
+
+    }
+
+    public Point2f? ToRelativePoint(Mat frame, Point2f? p)
+    {
+        if (!p.HasValue)
+        {
+            return null;
+        }
+
+        if (frame.Height > frame.Width)
+        {
+            return new Point2f(p.Value.Y / frame.Height, 1 - (p.Value.X / frame.Width));
+        }
+        return new Point2f(p.Value.X / frame.Width, p.Value.Y / frame.Height);
     }
 }

@@ -42,7 +42,7 @@ namespace Billiard.viewModels
             VideoDevice = videoDevice;
         }
 
-        public System.Windows.Point ToRelativePoint(Rect frame, System.Windows.Point p)
+/*        public System.Windows.Point ToRelativePoint(Rect frame, System.Windows.Point p)
         {
             if (p.X == 0 && p.Y == 0)
             {
@@ -55,7 +55,7 @@ namespace Billiard.viewModels
             }
             return new System.Windows.Point(p.X / frame.Width, p.Y / frame.Height);
         }
-
+*/
         public void CaptureImage(ResultModel result)
         {
             Output = result.Image;

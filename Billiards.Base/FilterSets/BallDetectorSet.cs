@@ -24,8 +24,8 @@ public class BallDetectorSet : FilterSet
         var masked = ToMask();
         var canny = Canny();
         var contours = Contours();
-        contours.MinimumArea = 500;
-        contours.MaximumArea = 2500;
+        contours.MinimumArea = 1000;
+        contours.MaximumArea = 5000;
         contours.Resize = 0.7;
 
         // And(hsv).MaskFilter = masked;

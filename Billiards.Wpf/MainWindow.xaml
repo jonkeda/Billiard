@@ -14,7 +14,7 @@
 
     <TabControl>
         <TabItem Header="Table">
-            
+            <views1:TableView DataContext="{Binding TableViewModel}" />
         </TabItem>
 
         <TabItem Header="Filter view">

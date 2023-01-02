@@ -51,11 +51,11 @@ public class HistogramFilter : AbstractFilter
             FilterValues.Add($"{i} Max", CalculateMax(hists[i]));
         }
 
-        var hist2 = hists[0];
+/*        var hist2 = hists[0];
         for (int i = Start; i < hist2.Size().Height && i < End; i++)
         {
             FilterValues.Add(i.ToString(), hist2.Get<float>(i, 0));
-        }
+        }*/
 
     }
 
