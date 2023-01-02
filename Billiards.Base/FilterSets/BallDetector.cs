@@ -3,6 +3,20 @@ using OpenCvSharp;
 
 namespace Billiards.Base.FilterSets
 {
+    public class ResultModel
+    {
+        public Mat Image { get; set; }
+
+        public List<Point2f> Corners { get; set; }
+        public Rect2f TableSize { get; set; }
+        public Point2f? WhiteBallPoint { get; set; }
+        public Point2f? YellowBallPoint { get; set; }
+        public Point2f? RedBallPoint { get; set; }
+        public CaramboleDetector Detector { get; set; }
+        public DateTime Now { get; set; }
+    }
+
+
     public class CaramboleDetector
     {
         public CaramboleDetector()
@@ -20,16 +34,14 @@ namespace Billiards.Base.FilterSets
         public IPointsFilter PointsFilter { get; set; }
         public FilterSetCollection FilterSets { get; } = new();
 
-        public (List<Point2f> corners, Rect2d tableSize, 
-            Point2f? whiteBallPoint, Point2f? yellowBallPoint, Point2f? redBallPoint) ApplyFilters(Mat image)
+        public void ApplyFilters(ResultModel result)
         {
-            FilterSets.ApplyFilters(image);
+            FilterSets.ApplyFilters(result.Image);
 
-            return (PointsFilter.Points,
-                BallResultFilter.TableSize,
-                BallResultFilter.WhiteBallPoint, 
-                BallResultFilter.YellowBallPoint, 
-                BallResultFilter.RedBallPoint);
+            result.Corners = PointsFilter.Points;
+            result.WhiteBallPoint = BallResultFilter.WhiteBallPoint;
+            result.YellowBallPoint = BallResultFilter.YellowBallPoint;
+            result.RedBallPoint = BallResultFilter.RedBallPoint;
         }
     }
 }

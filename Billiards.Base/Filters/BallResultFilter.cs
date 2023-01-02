@@ -41,13 +41,13 @@ public class BallResultFilter : AbstractFilter
     public Point2f? WhiteBallPoint { get; private set; }
     public Point2f? YellowBallPoint { get; private set; }
     public Point2f? RedBallPoint { get; private set; }
-    public Rect2d TableSize { get; private set; }
+    public Rect2f TableSize { get; private set; }
 
     protected override void ApplyFilter(Mat originalImage)
     {
         ResultMat = GetInputMat();
 
-        TableSize = new Rect2d(new(0, 0), new Size2d(ResultMat.Cols, ResultMat.Rows));
+        TableSize = new Rect2f(new(0, 0), new Size2f(ResultMat.Cols, ResultMat.Rows));
 
         List<BallResult> balls = new ()
         {

@@ -306,14 +306,7 @@ namespace Billiard.viewModels
         {
             ThreadDispatcher.Invoke(() =>
             {
-                if (image.Height > image.Width)
-                {
-                    Cv2.Resize(image, image, new Size(500, 1000));
-                }
-                else
-                {
-                    Cv2.Resize(image, image, new Size(1000, 500));
-                }
+                Resize(image);
 
                 CaptureImage?.Invoke(this, new CaptureEvent(image));
             });
@@ -323,18 +316,26 @@ namespace Billiard.viewModels
         public event EventHandler<CaptureEvent> StreamImage;
         protected void OnStreamImage(Mat image)
         {
-            if (image.Height > image.Width)
-            {
-                Cv2.Resize(image, image, new Size(500, 1000));
-            }
-            else
-            {
-                Cv2.Resize(image, image, new Size(1000, 500));
-            }
+            Resize(image);
             StreamImage?.Invoke(this, new CaptureEvent(image));
         }
 
-        private Timer timer;
+        private static void Resize(Mat image)
+        {
+            if (image.Height > image.Width)
+            {
+                int width = (image.Width * 1000) / image.Height;
+
+                Cv2.Resize(image, image, new Size(width, 1000));
+            }
+            else
+            {
+                int height = (image.Width * 500) / image.Height;
+                Cv2.Resize(image, image, new Size(1000, height));
+            }
+        }
+
+        private readonly Timer timer;
 
         public void Stop()
         {

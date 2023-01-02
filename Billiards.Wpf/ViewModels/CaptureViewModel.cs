@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using Billiard.UI;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -11,10 +10,9 @@ using Point = System.Windows.Point;
 using System;
 using System.Globalization;
 using System.Linq;
-using Billiards.Base.Physics;
-using Billiards.Base.Threading;
+using Billiards.Base.FilterSets;
+using Billiards.Wpf.Extensions;
 using OpenCvSharp;
-using OpenCvSharp.WpfExtensions;
 using Rect = System.Windows.Rect;
 
 namespace Billiard.viewModels
@@ -42,34 +40,7 @@ namespace Billiard.viewModels
         public CaptureViewModel(VideoDeviceViewModel videoDevice)
         {
             VideoDevice = videoDevice;
-            videoDevice.CaptureImage += VideoDevice_CaptureImage;
-            videoDevice.StreamImage += VideoDevice_CaptureImage;
         }
-
-        private volatile bool calculating = false;
-        private void VideoDevice_CaptureImage(object sender, CaptureEvent e)
-        {
-            if (calculating)
-            {
-                return;
-            }
-            try
-            {
-                calculating = true;
-                Mat frame = e.Image;
-                CaptureImage(frame);
-                //OldCaptureImage(frame);
-            }
-            catch
-            {
-                //
-            }
-            finally
-            {
-                calculating = false;
-            }
-        }
-      
 
         public System.Windows.Point ToRelativePoint(Rect frame, System.Windows.Point p)
         {
@@ -85,74 +56,44 @@ namespace Billiard.viewModels
             return new System.Windows.Point(p.X / frame.Width, p.Y / frame.Height);
         }
 
-
-        private void CaptureImage(Mat frame)
+        public void CaptureImage(ResultModel result)
         {
-            ThreadDispatcher.Invoke(
-                () =>
-                {
-                    Output = frame;
-                });
-/*
-            (List<Point> corners, Rect tableSize,
-                    Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint) =
-                FilterViewModel.ApplyFilters(frame);
+            Output = result.Image;
 
-            List<PointF> tableCornerPoints = corners.AsListOfPointF();
-
-            VectorOfPointF dest = new VectorOfPointF(tableCornerPoints.ToArray());
-            VectorOfPointF src = new VectorOfPointF(new[]
+            Mat frame = result.Image;
+            List<Point2f> dest = result.Corners;
+            List<Point2f> src = new List<Point2f>(new[]
                 {
-                    new PointF(0, 0),
-                    new PointF(frame.Width, 0),
-                    new PointF(frame.Width, frame.Height),
-                    new PointF(0, frame.Height)
+                    new Point2f(0, 0),
+                    new Point2f(frame.Width, 0),
+                    new Point2f(frame.Width, frame.Height),
+                    new Point2f(0, frame.Height)
                 }
             );
-            Mat warpingMat = CvInvoke.GetPerspectiveTransform(src, dest);
+            Mat warpingMat = Cv2.GetPerspectiveTransform(src, dest);
 
-            ThreadDispatcher.Invoke(
-                () =>
-                {
-                    Overlay = DrawCaptureOverlay(frame, corners,
-                        WarpPerspective(warpingMat, whiteBallPoint),
-                        WarpPerspective(warpingMat, yellowBallPoint),
-                        WarpPerspective(warpingMat, redBallPoint));
-                });
-            ThreadDispatcher.Invoke(
-                () =>
-                {
-                    if (VideoDevice.Calculate
-                        && whiteBallPoint.HasValue
-                        && yellowBallPoint.HasValue
-                        && redBallPoint.HasValue)
-                    {
-                        PhysicsEngine.SetBalls(
-                            ToRelativePoint(tableSize, whiteBallPoint.Value),
-                            ToRelativePoint(tableSize, yellowBallPoint.Value),
-                            ToRelativePoint(tableSize, redBallPoint.Value));
-                    }
-                });*/
+            Overlay = DrawCaptureOverlay(frame, result.Corners.AsWindowsPoints(),
+                WarpPerspective(warpingMat, result.WhiteBallPoint).AsWindowsPoint(),
+                WarpPerspective(warpingMat, result.YellowBallPoint).AsWindowsPoint(),
+                WarpPerspective(warpingMat, result.RedBallPoint).AsWindowsPoint(),
+                result.Now);
         }
 
-/*        public static Point? WarpPerspective(Mat warpingMat,
-            Point? point)
+        public static Point2f? WarpPerspective(Mat warpingMat,
+            Point2f? point)
         {
             if (!point.HasValue)
             {
                 return null;
             }
 
-            PointF[] points = Cv2.PerspectiveTransform(new[] { point.Value.AsPointF() }, warpingMat);
-            return points[0].AsPoint();
-        }*/
-
+            Point2f[] points = Cv2.PerspectiveTransform(new[] { point.Value }, warpingMat);
+            return points[0];
+        }
 
         private DrawingImage DrawCaptureOverlay(Mat frame, List<Point> tableCornerPoints,
-            Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint)
+            Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint, DateTime now)
         {
-            DateTime now = DateTime.Now;
-
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
@@ -177,7 +118,7 @@ namespace Billiard.viewModels
                 }
 
                 FormattedText formattedText = new(
-                    (DateTime.Now - now).TotalMilliseconds.ToString(),
+                    (DateTime.Now - now).TotalMilliseconds.ToString("F0"),
                     CultureInfo.CurrentUICulture,
                     FlowDirection.LeftToRight,
                     new Typeface("Verdana"),
