@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Billiard.Physics.Events
+﻿namespace Billiard.Physics.Events
 {
 
     public class TriggerEvent : EventArgs

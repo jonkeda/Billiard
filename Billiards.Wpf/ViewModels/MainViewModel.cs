@@ -46,6 +46,11 @@ namespace Billiard.viewModels
 
             Detector.ApplyFilters(result);
 
+            if (VideoDevice.Calculate)
+            {
+                PhysicsEngine.CalculateSolutions(result);
+            }
+
             ThreadDispatcher.Invoke(
                 () =>
                 {

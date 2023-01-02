@@ -1,15 +1,16 @@
 ﻿using System.Numerics;
 using Billiard.Utilities;
 using Billiards.Base.Extensions;
+using Billiards.Base.Filters;
 
 
 namespace Billiard.Physics
 {
     public class PBall 
     {
+        public BallColor BallColor { get; }
         public Vector2 position;
         public Vector2 velocity;
-        //public bool Resting { get; set; } = false;
 
         public PBall(Vector2 _position, Vector2 _velocity)
         {
@@ -33,8 +34,10 @@ namespace Billiard.Physics
         private static readonly Vector2 rest_velocity = new Vector2(0.7f);
         private const float g = 9.81f;
 
-        public PBall(int _index, float _r, Vector2 _position, Vector2 _velocity, float _u0 = 0.2f, float _cr = 0.02f) : this(_position, _velocity)
+        public PBall(int _index, float _r, Vector2 _position, Vector2 _velocity, BallColor ballColor, float _u0 = 0.2f, float _cr = 0.02f) 
+            : this(_position, _velocity)
         {
+            BallColor = ballColor;
             u0 = _u0;
             cr = _cr;
             r = _r;
@@ -58,10 +61,10 @@ namespace Billiard.Physics
             _r = r;
         }
 
-        public bool Simulate(float dt, bool animate)
+        public bool Simulate(float dt)
         {
-            if (velocity.X == Double.NaN
-                || velocity.Y == Double.NaN
+            if (velocity.X == float.NaN
+                || velocity.Y == float.NaN
                 || Vector2.Abs(velocity).SmallerThen(rest_velocity))
             {
                 return true;
@@ -91,7 +94,7 @@ namespace Billiard.Physics
             }
         }
 
-        public void SaveCollision(PBall pBall, CollisionType collisionType)
+        public void SaveCollision(PBall? pBall, CollisionType collisionType)
         {
             if (!position.Equals(lastCollision))
             {

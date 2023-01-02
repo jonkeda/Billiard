@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using OpenCvSharp;
+﻿using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
 

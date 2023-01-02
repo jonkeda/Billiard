@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using System.Numerics;
-using Billiards.Base.Extensions;
+﻿using Billiards.Base.Extensions;
 using OpenCvSharp;
 
 namespace Billiards.Base.Filters;

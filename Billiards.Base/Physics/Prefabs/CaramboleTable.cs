@@ -3,7 +3,7 @@ using Billiard.Physics.Colliders;
 
 namespace Billiard.Physics.Prefabs;
 
-public class BilliartTable : PTable
+public class CaramboleTable : PTable
 {
     public float top;
     public float bottom;
@@ -11,7 +11,7 @@ public class BilliartTable : PTable
     public float right;
 
 
-    public BilliartTable()
+    public CaramboleTable()
     {
         // 970 424 848 132 
         // 547 212 424 123 

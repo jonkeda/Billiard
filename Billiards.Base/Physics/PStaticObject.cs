@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using Billiard.Physics.Colliders;
 
 namespace Billiard.Physics
