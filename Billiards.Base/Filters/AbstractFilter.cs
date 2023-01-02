@@ -34,7 +34,16 @@ public abstract class AbstractFilter : PropertyNotifier
             }
             return InputFilter?.ResultMat;
         }
-        set { SetProperty(ref resultMat, value); }
+        set
+        {
+/*            if (resultMat != value
+                && resultMat != null)
+            {
+                resultMat.Dispose();
+            }*/
+
+            SetProperty(ref resultMat, value);
+        }
     }
 
 /*    public ImageSource ResultImage
@@ -82,7 +91,7 @@ public abstract class AbstractFilter : PropertyNotifier
 
     private void NotifyChanged()
     {
-        // NotifyPropertyChanged(nameof(ResultImage));
+        NotifyPropertyChanged(nameof(ResultMat));
         // NotifyPropertyChanged(nameof(DrawingImage));
     }
 

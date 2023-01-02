@@ -64,6 +64,24 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             contourList.Clear();
             contourList.Add(new Contour(points));
         }
+        else if (ContourType == ContourType.Ellipse)
+        {
+            foreach (Contour contour in contourList)
+            {
+                var rectangle = Cv2.FitEllipse(contour.Points);
+                rectangle.Size = new Size2f((float)(rectangle.Size.Width * Resize), (float)(rectangle.Size.Height * Resize));
+                contour.RotatedRectangle = rectangle;
+            }
+        }
+        else if (ContourType == ContourType.Rectangle)
+        {
+            foreach (Contour contour in contourList)
+            {
+                var rectangle = Cv2.MinAreaRect(contour.Points);
+                rectangle.Size = new Size2f((float)(rectangle.Size.Width * Resize), (float)(rectangle.Size.Height * Resize));
+                contour.RotatedRectangle = rectangle;
+            }
+        }
 
         /*
                 Draw(dc =>

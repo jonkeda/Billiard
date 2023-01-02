@@ -20,10 +20,14 @@ public class FloodFillCornersFilter : AbstractFilter
         Scalar newColor = new Scalar(FloodFillColor);
         float floodFillDiff = 0;
         Scalar diff = new Scalar(floodFillDiff, floodFillDiff, floodFillDiff);
-
-        Cv2.FloodFill(ResultMat, null, new Point(0, 0), new Scalar(255));
-        Cv2.FloodFill(ResultMat, null, new Point(0, ResultMat.Rows - 1), new Scalar(255));
-        Cv2.FloodFill(ResultMat, null, new Point(ResultMat.Cols - 1, ResultMat.Rows - 1), new Scalar(255));
-        Cv2.FloodFill(ResultMat, null, new Point(ResultMat.Cols - 1, 0), new Scalar(255));
+        Mat mask = new Mat();
+        Cv2.FloodFill(ResultMat, mask, new Point(0, 0), newColor, 
+            out _, diff, diff, FloodFillFlags.FixedRange);
+        Cv2.FloodFill(ResultMat, mask, new Point(0, ResultMat.Rows - 1), newColor, 
+            out _, diff, diff, FloodFillFlags.FixedRange);
+        Cv2.FloodFill(ResultMat, mask, new Point(ResultMat.Cols - 1, ResultMat.Rows - 1), newColor, 
+            out _, diff, diff, FloodFillFlags.FixedRange);
+        Cv2.FloodFill(ResultMat, mask, new Point(ResultMat.Cols - 1, 0), newColor, 
+            out _, diff, diff, FloodFillFlags.FixedRange);
     }
 }

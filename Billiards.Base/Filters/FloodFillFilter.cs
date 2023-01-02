@@ -13,11 +13,14 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         set { SetProperty(ref boundingRect, value); }
     }
 
-    private Mat mask = new ();
-    public Mat Mask
+    private Mat? mask = new ();
+    public Mat? Mask
     {
         get { return mask; }
-        set { SetProperty(ref mask, value); }
+        set
+        {
+            SetProperty(ref mask, value);
+        }
     }
 
     public IPointFilter Point2filter { get; set; }
@@ -58,40 +61,21 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
     {
         Mat input = GetInputMat();
         ResultMat = input.Clone();
-        mask = Mat.Zeros(input.Rows + 2, input.Cols + 2, MatType.CV_8U, 1);
+        using Mat newMask = Mat.Zeros(input.Rows + 2, input.Cols + 2, MatType.CV_8U, 1);
 
-        Scalar newColor = new Scalar(FloodFillColor);
         float floodFillDiff = 1.5f;
-        Scalar diff = new Scalar(floodFillDiff, floodFillDiff, floodFillDiff);
-
-        Point2f mid;
+        Point mid;
         if (Point2filter?.Point2f != null)
         {
-            mid = new Point2f((int)Point2filter.Point2f.X, (int)Point2filter.Point2f.Y);
+            mid = new Point((int)Point2filter.Point2f.X, (int)Point2filter.Point2f.Y);
         }
         else
         {
-            mid = new Point2f(input.Cols / 2, input.Rows / 2 + yStep);
+            mid = new Point(input.Cols / 2, input.Rows / 2 + yStep);
         }
-
-/*
-        Cv2.FloodFill(ResultMat, mask, 
-            mid, 
-            newColor,
-            out boundingRect, diff, diff, Connectivity.FourConnected,
-            (FloodFillType) (4 | (255 << 8)));
-*/
-        Cv2.FloodFill(ResultMat, null, new Point(ResultMat.Cols - 1, 0), new Scalar(255), 
-            out boundingRect, floodFillDiff, floodFillDiff);
-
-
-        Rect roi = new Rect(1, 1, mask.Cols - 2, mask.Rows - 2);
-        Mat srcROI = new Mat(mask, roi);
-
-        //Mat dstROI = new Mat(dst, roi);
-
-        srcROI.CopyTo(mask);
-        // Cv2.BitwiseNot(mask, mask);
+        Cv2.FloodFill(ResultMat, newMask, mid, new Scalar(FloodFillColor), 
+            out boundingRect, floodFillDiff, floodFillDiff, (FloodFillFlags)(4 | (255 << 8)) );
+        Mask = newMask.SubMat(1, newMask.Rows - 2, 1, newMask.Cols - 2);
 
         double area = boundingRect.Width * boundingRect.Height;
         double fullArea = input.Cols * input.Rows;

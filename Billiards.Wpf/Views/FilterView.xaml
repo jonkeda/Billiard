@@ -1,0 +1,99 @@
+﻿<UserControl x:Class="Billiard.views.FilterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Billiard.views"
+             xmlns:viewModel="clr-namespace:Billiard.viewModels"
+             xmlns:converters="clr-namespace:Billiard.UI.Converters"
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=false, Type={x:Type viewModel:FilterViewModel}}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <local:VideoDeviceView Grid.Row="0" DataContext="{Binding VideoDevice}" />
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="100" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ListView Grid.Row="0" Grid.Column="0" Grid.RowSpan="6" ItemsSource="{Binding FilterSets}"
+                      SelectedItem="{Binding SelectedFilterSet}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" 
+                      ItemsSource="{Binding  SelectedFilterSet.Filters}"
+                      SelectedItem="{Binding SelectedFilter}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold" HorizontalAlignment="Center" />
+                            <Grid>
+                                <Image Source="{Binding ResultMat, Converter={x:Static converters:Cv.Mat2ImageSource}}" 
+                                       Height="60" Width="200" Stretch="Uniform" />
+                                <Image  Opacity="0.5" Height="60" Width="200" Stretch="Uniform"
+                                        Source="{Binding DrawingImage}" />
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView Grid.Row="1" Grid.Column="1" Grid.RowSpan="5" Width="225"
+                      ItemsSource="{Binding  SelectedFilter.FilterValues}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" HorizontalAlignment="Left" Width="200" />
+                                <TextBlock Text="{Binding Value}" TextAlignment="Right" HorizontalAlignment="Right"  Width="200"/>
+                            </Grid>
+                            <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Width="200" 
+                                       Visibility="{Binding Text, Converter={x:Static converters:Cv.Visibility}, FallbackValue=Collapsed}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <TabControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="6" >
+                <TabItem Header="Image">
+                    <Grid>
+                        <TextBlock HorizontalAlignment="Center" 
+                                Text="{Binding SelectedFilter.Name}" />
+                        <Image Source="{Binding SelectedFilter.ResultMat, Converter={x:Static converters:Cv.Mat2ImageSource}}"/>
+                        <Image Opacity="0.5" Source="{Binding SelectedFilter.DrawingImage}" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Mask">
+                    <Image Source="{Binding SelectedFilter.Mask, Converter={x:Static converters:Cv.Mat2ImageSource}}"/>
+
+                </TabItem>
+            </TabControl>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

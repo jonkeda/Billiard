@@ -1,4 +1,4 @@
-﻿namespace Billiards.Base.UI
+﻿namespace Billiard.UI
 {
     public interface IWindow
     {

@@ -1,6 +1,8 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
-namespace Billiards.Base.UI
+namespace Billiard.UI
 {
     public class TargetTaskCommand<T> : ICommand
     {

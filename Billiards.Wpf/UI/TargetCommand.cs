@@ -1,7 +1,10 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
+using Billiard.Extensions;
 using Billiards.Base.Exceptions;
+using Billiards.Base.Extensions;
 
-namespace Billiards.Base.UI
+namespace Billiard.UI
 {
     public class TargetCommand<T> : ICommand
     {
@@ -32,8 +35,8 @@ namespace Billiards.Base.UI
         {
             if (_showWaitCursor)
             {
-                //MouseEx.SetCursor(Cursors.Wait, () =>
-                //{
+                MouseEx.SetCursor(Cursors.Wait, () =>
+                {
                     Catch.ShowMessageBox(() =>
                     {
                         if (parameter is T variable)
@@ -45,8 +48,7 @@ namespace Billiards.Base.UI
                             _method.Invoke(default(T));
                         }
                     });
-                //}
-            //);
+                });
             }
             else
             {
@@ -109,8 +111,8 @@ namespace Billiards.Base.UI
 
         public void Execute(object parameter)
         {
-            _method.Invoke();
-/*            if (_showWaitCursor)
+            //_method.Invoke();
+            if (_showWaitCursor)
             {
                 MouseEx.SetCursor(Cursors.Wait, () => { Catch.ShowMessageBox(() => _method.Invoke()); });
             }
@@ -118,7 +120,7 @@ namespace Billiards.Base.UI
             {
                 Catch.ShowMessageBox(() => _method.Invoke());
             }
-*/        }
+        }
 
         public bool CanExecute(object parameter)
         {

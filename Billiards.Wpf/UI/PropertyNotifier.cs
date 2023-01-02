@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Xml.Serialization;
 using Billiards.Base.Threading;
 
 namespace Billiards.Base.UI
 {
-
     public class PropertyNotifier : INotifyPropertyChanged, INotifyPropertyChanging
     {
         public event PropertyChangedEventHandler PropertyChanged;
