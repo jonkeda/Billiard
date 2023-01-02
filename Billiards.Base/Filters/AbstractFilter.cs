@@ -1,4 +1,5 @@
-﻿using Billiards.Base.UI;
+﻿using Billiards.Base.Drawings;
+using Billiards.Base.UI;
 using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
@@ -8,7 +9,7 @@ public abstract class AbstractFilter : PropertyNotifier
     private Mat resultMat = new Mat();
     private string name;
     private bool enabled = true;
-    //private DrawingImage drawingImage;
+    private DrawingImage drawingImage;
     private FilterValueCollection filterValues = new FilterValueCollection();
 
     protected AbstractFilter InputFilter { get; private set; }
@@ -101,7 +102,7 @@ public abstract class AbstractFilter : PropertyNotifier
     {
         return InputFilter.ResultMat;
     }
-/*
+
     public DrawingImage DrawingImage
     {
         get { return drawingImage; }
@@ -111,7 +112,7 @@ public abstract class AbstractFilter : PropertyNotifier
     protected void Draw(Action<DrawingContext> action)
     {
         Mat mat = GetInputMat();
-        if (mat?.GetData() == null)
+        if (mat?.Data == 0)
         {
             return;
         }
@@ -120,9 +121,9 @@ public abstract class AbstractFilter : PropertyNotifier
         using (DrawingContext drawingContext = visual.RenderOpen())
         {
             drawingContext.PushClip(new RectangleGeometry(
-                new Rect(new Point2f(0, 0),
-                    new Point2f(mat.Width, mat.Height))));
-            drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
+                new Rect2f(new Point2f(0, 0),
+                    new Size2f(mat.Width, mat.Height))));
+            drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
                 new Rect(0, 0, mat.Width, mat.Height));
 
             action.Invoke(drawingContext);
@@ -131,5 +132,5 @@ public abstract class AbstractFilter : PropertyNotifier
         }
 
         DrawingImage = new DrawingImage(visual.Drawing);
-    }*/
+    }
 }
