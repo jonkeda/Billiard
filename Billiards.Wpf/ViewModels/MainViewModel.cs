@@ -1,8 +1,8 @@
 ﻿using Billiard.UI;
 using Billiards.Base.FilterSets;
-using Billiards.Base.Physics;
 using Billiards.Base.Threading;
 using System;
+using Billiard.Physics;
 
 namespace Billiard.viewModels
 {
