@@ -7,7 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiard", "Billiards\Billi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiards.Base", "Billiards.Base\Billiards.Base.csproj", "{209429C7-519F-41FA-AA57-D92F588E15AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billiards.Wpf", "Billiards.Wpf\Billiards.Wpf.csproj", "{1EF673FC-FEB8-4ACA-8700-4A94236AA6FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiards.Wpf", "Billiards.Wpf\Billiards.Wpf.csproj", "{1EF673FC-FEB8-4ACA-8700-4A94236AA6FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billiards.Web.Server", "Billiards.Web\Server\Billiards.Web.Server.csproj", "{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billiards.Web.Client", "Billiards.Web\Client\Billiards.Web.Client.csproj", "{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billiards.Web.Shared", "Billiards.Web\Shared\Billiards.Web.Shared.csproj", "{296844A7-79A5-4613-B866-80172976FDB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +47,30 @@ Global
 		{1EF673FC-FEB8-4ACA-8700-4A94236AA6FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EF673FC-FEB8-4ACA-8700-4A94236AA6FB}.Release|x64.ActiveCfg = Release|Any CPU
 		{1EF673FC-FEB8-4ACA-8700-4A94236AA6FB}.Release|x64.Build.0 = Release|Any CPU
+		{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}.Debug|x64.Build.0 = Debug|Any CPU
+		{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}.Release|x64.ActiveCfg = Release|Any CPU
+		{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}.Release|x64.Build.0 = Release|Any CPU
+		{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}.Debug|x64.Build.0 = Debug|Any CPU
+		{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}.Release|x64.ActiveCfg = Release|Any CPU
+		{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}.Release|x64.Build.0 = Release|Any CPU
+		{296844A7-79A5-4613-B866-80172976FDB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{296844A7-79A5-4613-B866-80172976FDB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{296844A7-79A5-4613-B866-80172976FDB8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{296844A7-79A5-4613-B866-80172976FDB8}.Debug|x64.Build.0 = Debug|Any CPU
+		{296844A7-79A5-4613-B866-80172976FDB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{296844A7-79A5-4613-B866-80172976FDB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{296844A7-79A5-4613-B866-80172976FDB8}.Release|x64.ActiveCfg = Release|Any CPU
+		{296844A7-79A5-4613-B866-80172976FDB8}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
