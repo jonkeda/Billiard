@@ -1,4 +1,6 @@
-﻿using Billiards.Base.Extensions;
+﻿using System.Globalization;
+using Billiards.Base.Drawings;
+using Billiards.Base.Extensions;
 using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
@@ -97,57 +99,57 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         List<Point2f> foundPoints = FindCornerPoints(lines);
 
         foundPoints = OrderPoints(foundPoints);
-        /*
+        
         Draw(dc =>
         {
-            System.Windows.Media.Pen pen = new Pen(Brushes.Red, 2);
+            Pen pen = new Pen(Brushes.Red, 2);
 
             foreach (Line line in lines)
             {
-                dc.DrawLine(pen, Point2fExtensions.AsPoint(line.V1), Point2fExtensions.AsPoint(line.V2));
-                dc.DrawEllipse(Brushes.Red, null, Point2fExtensions.AsPoint(line.V1), 5, 5);
-                dc.DrawEllipse(Brushes.Red, null, Point2fExtensions.AsPoint(line.V2), 5, 5);
+                dc.DrawLine(pen, line.V1, line.V2);
+                dc.DrawEllipse(Brushes.Red, null, line.V1.AsPoint2f(), 5, 5);
+                dc.DrawEllipse(Brushes.Red, null, line.V2.AsPoint2f(), 5, 5);
             }
-        */
+        
 /*            DrawLine(dc, top, Brushes.Green);
             DrawLine(dc, left, Brushes.DarkBlue);
             DrawLine(dc, right, Brushes.LightBlue);
             DrawLine(dc, bottom, Brushes.LawnGreen);
 */
-/*
+
             int i = 0;
             foreach (Point2f p in foundPoints)
             {
                 dc.DrawEllipse(Brushes.Blue, null, p, 5, 5);
                 FormattedText formattedText = new(
                     i.ToString(),
-                    CultureInfo.CurrentUICulture,
-                    FlowDirection.LeftToRight,
-                    new Typeface("Verdana"),
+                    //CultureInfo.CurrentUICulture,
+                    //FlowDirection.LeftToRight,
+                    //new Typeface("Verdana"),
                     32,
                     Brushes.GreenYellow, 1.25);
                 dc.DrawText(formattedText, p);
                 i++;
             }
         });
-    */
+    
         Points = foundPoints;
     }
-/*
+
     private void DrawLine(DrawingContext dc, Line line, Brush brush)
     {
         if (line == null)
         {
             return;
         }
-        System.Windows.Media.Pen pen = new Pen(brush, 3);
-        dc.DrawLine(pen, Point2fExtensions.AsPoint(line.V1), Point2fExtensions.AsPoint(line.V2));
+        Pen pen = new Pen(brush, 3);
+        dc.DrawLine(pen, line.V1.AsPoint2f(), line.V2.AsPoint2f());
         const int radius = 10;
-        dc.DrawEllipse(brush, null, Point2fExtensions.AsPoint(line.V1), radius, radius);
-        dc.DrawEllipse(brush, null, Point2fExtensions.AsPoint(line.V2), radius, radius);
+        dc.DrawEllipse(brush, null, line.V1.AsPoint2f(), radius, radius);
+        dc.DrawEllipse(brush, null, line.V2.AsPoint2f(), radius, radius);
 
     }
-*/
+
 
     private Line? FindLine(List<Line> lines, double x1, double x2, double y1, double y2)
     {

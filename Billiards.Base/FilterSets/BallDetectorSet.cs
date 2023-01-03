@@ -6,7 +6,7 @@ public class BallDetectorSet : FilterSet
 {
     public BallResultFilter BallResultFilter { get; private set; }
 
-    public BallDetectorSet(AbstractFilter filter) : base("Find balls")
+    public BallDetectorSet(AbstractFilter? filter) : base("Find balls")
     {
         var original = Clone(filter);
         var hsv = CvtColorBgr2Hsv();

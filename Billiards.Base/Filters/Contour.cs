@@ -20,7 +20,7 @@ public class Contour
         Points = points.ToList();
     }
 
-    public List<Point> Points { get; set; }
+    public List<Point>? Points { get; set; }
     public RotatedRect? RotatedRectangle { get; set; }
 
 /*    public Point2f[] AsArray()

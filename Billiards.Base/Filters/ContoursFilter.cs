@@ -1,7 +1,5 @@
 ﻿using Billiards.Base.Drawings;
 using OpenCvSharp;
-using OpenCvSharp.Flann;
-using OpenCvSharp.Internal.Vectors;
 
 namespace Billiards.Base.Filters;
 
@@ -26,7 +24,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
 
     public double Resize { get; set; } = 1;
 
-    public ContourCollection Contours { get; set; }
+    public ContourCollection? Contours { get; set; }
 
     public RetrievalModes RetrType { get; set; } = RetrievalModes.External;
     public ContourApproximationModes ChainApproxMethod { get; set; } = ContourApproximationModes.ApproxNone;

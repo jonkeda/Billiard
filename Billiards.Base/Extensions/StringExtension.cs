@@ -529,13 +529,10 @@ namespace Billiard.Extensions
                 yield break;
             }
 
-            using (StringReader reader = new StringReader(text))
+            using StringReader reader = new(text);
+            while (reader.ReadLine() is { } line)
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    yield return line;
-                }
+                yield return line;
             }
         }
         

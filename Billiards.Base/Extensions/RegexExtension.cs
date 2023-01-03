@@ -4,7 +4,7 @@ namespace Billiard.Extensions
 {
     public static class RegexExtension
     {
-        public static Regex WildcardToRegex(this string pattern, bool atEnd)
+        public static Regex? WildcardToRegex(this string? pattern, bool atEnd)
         {
             if (pattern == null)
             {

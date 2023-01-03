@@ -4,8 +4,8 @@ namespace Billiards.Base.Filters;
 
 public class NotFilter : AbstractFilter
 {
-    private IMaskFilter maskFilter;
-    public IMaskFilter MaskFilter
+    private IMaskFilter? maskFilter;
+    public IMaskFilter? MaskFilter
     {
         get { return maskFilter; }
         set { SetProperty(ref maskFilter, value); }

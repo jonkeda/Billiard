@@ -6,26 +6,26 @@ namespace Billiards.Base.Filters;
 
 public abstract class AbstractFilter : PropertyNotifier
 {
-    private Mat resultMat = new Mat();
-    private string name;
+    private Mat? resultMat = new Mat();
+    private string? name;
     private bool enabled = true;
-    private DrawingImage drawingImage;
-    private FilterValueCollection filterValues = new FilterValueCollection();
+    private DrawingImage? drawingImage;
+    private FilterValueCollection? filterValues = new FilterValueCollection();
 
-    protected AbstractFilter InputFilter { get; private set; }
+    protected AbstractFilter? InputFilter { get; private set; }
 
-    public FilterValueCollection FilterValues
+    public FilterValueCollection? FilterValues
     {
         get { return filterValues; }
         private set { SetProperty(ref filterValues, value); }
     }
 
-    protected AbstractFilter(AbstractFilter filter)
+    protected AbstractFilter(AbstractFilter? filter)
     {
         InputFilter = filter;
     }
 
-    public Mat ResultMat
+    public Mat? ResultMat
     {
         get
         {
@@ -62,15 +62,15 @@ public abstract class AbstractFilter : PropertyNotifier
         set { SetProperty(ref enabled, value); }
     }
 
-    public string Name
+    public string? Name
     {
         get { return name; }
         set { SetProperty(ref name, value); }
     }
 
-    public void DoApplyFilter(Mat originalImage)
+    public void DoApplyFilter(Mat? originalImage)
     {
-        FilterValues.Clear();
+        FilterValues?.Clear();
         if (!Enabled)
         {
             ResultMat = null;
@@ -84,7 +84,7 @@ public abstract class AbstractFilter : PropertyNotifier
         }
         catch (Exception ex)
         {
-            FilterValues.Add("Exception", ex.Message);
+            FilterValues?.Add("Exception", ex.Message);
         }
         NotifyChanged();
 
@@ -96,23 +96,24 @@ public abstract class AbstractFilter : PropertyNotifier
         // NotifyPropertyChanged(nameof(DrawingImage));
     }
 
-    protected abstract void ApplyFilter(Mat originalImage);
+    protected abstract void ApplyFilter(Mat? originalImage);
 
-    public Mat GetInputMat()
+    public Mat? GetInputMat()
     {
-        return InputFilter.ResultMat;
+        return InputFilter?.ResultMat;
     }
 
-    public DrawingImage DrawingImage
+    public DrawingImage? DrawingImage
     {
         get { return drawingImage; }
-        protected set { drawingImage = value; }
+        protected set { SetProperty(ref drawingImage, value); }
     }
 
     protected void Draw(Action<DrawingContext> action)
     {
-        Mat mat = GetInputMat();
-        if (mat?.Data == 0)
+        Mat? mat = GetInputMat();
+        if (mat == null
+            || mat.Data == 0)
         {
             return;
         }
@@ -124,7 +125,7 @@ public abstract class AbstractFilter : PropertyNotifier
                 new Rect2f(new Point2f(0, 0),
                     new Size2f(mat.Width, mat.Height))));
             drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
-                new Rect(0, 0, mat.Width, mat.Height));
+                new Rect2f(0, 0, mat.Width, mat.Height));
 
             action.Invoke(drawingContext);
 

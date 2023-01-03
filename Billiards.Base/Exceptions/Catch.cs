@@ -21,13 +21,13 @@
             {
                 action.Invoke();
             }
-            catch (Exception e)
+            catch 
                 {
 //                ThreadDispatcher.Invoke(() =>  MessageBox.Show(e.Message));
             }
         }
 
-        public static T Return<T>(Func<T> func)
+        public static T? Return<T>(Func<T> func)
         {
             try
             {

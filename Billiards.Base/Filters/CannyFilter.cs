@@ -14,6 +14,6 @@ public class CannyFilter : AbstractFilter
 
         float cannyThreshold = 180.0f;
         float cannyThresholdLinking = 120.0f;
-        Cv2.Canny(GetInputMat(), ResultMat, cannyThreshold, cannyThresholdLinking);
+        Cv2.Canny(GetInputMat()!, ResultMat!, cannyThreshold, cannyThresholdLinking);
     }
 }

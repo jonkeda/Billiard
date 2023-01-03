@@ -1,13 +1,13 @@
 ﻿namespace Billiards.Base.Threading
-{
+{/*
     public class SerialTaskQueue
     {
         readonly object _locker = new object();
         WeakReference<Task> _lastTask;
 
-        public Task Enqueue(Action action)
+        public Task? Enqueue(Action action)
         {
-            return Enqueue<object>(() => {
+            return Enqueue<object?>(() => {
                 action();
                 return null;
             });
@@ -17,8 +17,8 @@
         {
             lock (_locker)
             {
-                Task lastTask = null;
-                Task<T> resultTask = null;
+                Task? lastTask = null;
+                Task<T>? resultTask = null;
 
                 if (_lastTask != null && _lastTask.TryGetTarget(out lastTask))
                 {
@@ -33,5 +33,5 @@
                 return resultTask;
             }
         }
-    }
+    }*/
 }

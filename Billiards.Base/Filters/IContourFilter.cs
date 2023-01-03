@@ -2,5 +2,5 @@
 
 public interface IContourFilter : IAbstractFilter
 {
-    ContourCollection Contours { get; set; }
+    ContourCollection? Contours { get; set; }
 }

@@ -31,7 +31,7 @@ public class TableDetectorSet : FilterSet
         FloodFilter = flood;
     }
 
-    public AbstractFilter ResultFilter()
+    public AbstractFilter? ResultFilter()
     {
         return Filters.LastOrDefault();
     }

@@ -24,9 +24,9 @@ namespace Billiards.Base.FilterSets
 
     public class ResultModel
     {
-        public Mat Image { get; set; }
+        public Mat? Image { get; set; }
 
-        public List<Point2f> Corners { get; set; }
+        public List<Point2f>? Corners { get; set; }
 
         public ResultBallCollection Balls { get; set; } = new();
 
@@ -34,12 +34,12 @@ namespace Billiards.Base.FilterSets
         public Point2f? YellowBallPoint { get; set; }
         public Point2f? RedBallPoint { get; set; }
 
-        public CaramboleDetector Detector { get; set; }
+        public CaramboleDetector? Detector { get; set; }
         public DateTime Now { get; set; }
 
         public bool OnMainBall { get; set; } = true;
 
         public float Power { get; set; } = 1500;
-        public PhysicsEngine.ProblemCollection Problems { get; set; }
+        public PhysicsEngine.ProblemCollection? Problems { get; set; }
     }
 }

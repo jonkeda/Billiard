@@ -32,7 +32,7 @@ public class CornerDetectorSet : FilterSet
         WarpPerspective(original).PointsFilter = convexConvers;
     }
 
-    public AbstractFilter ResultFilter()
+    public AbstractFilter? ResultFilter()
     {
         return Filters.LastOrDefault();
     }

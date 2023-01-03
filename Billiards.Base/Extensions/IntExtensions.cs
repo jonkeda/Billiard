@@ -85,11 +85,11 @@ namespace Billiard.Extensions
             return result;
         }
 
-        public static string ToString(this int? value, string format)
+        public static string? ToString(this int? value, string format)
         {
             if (value.HasValue)
                 return value.Value.ToString("N0", (IFormatProvider)Culture);
-            return (string)null;
+            return null;
         }
     }
 }

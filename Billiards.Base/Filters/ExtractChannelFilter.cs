@@ -13,7 +13,9 @@ public class ExtractChannelFilter : AbstractFilter
 
     protected override void ApplyFilter(Mat originalImage)
     {
-        Cv2.ExtractChannel(GetInputMat(), ResultMat, Channel);
-
+        if (ResultMat != null)
+        {
+            Cv2.ExtractChannel(GetInputMat()!, ResultMat, Channel);
+        }
     }
 }

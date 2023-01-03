@@ -1,4 +1,5 @@
-﻿using Billiards.Base.Extensions;
+﻿using Billiards.Base.Drawings;
+using Billiards.Base.Extensions;
 using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
@@ -75,21 +76,21 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
             #region draw
 
             int radius = Math.Max(ResultMat.Cols / 100, ResultMat.Rows / 100);
-            /*            Pen blueColor = new Pen(Brushes.Blue, Math.max(ResultMat.Cols / 200, ResultMat.Rows / 200))
-                        {
-                            DashStyle = DashStyles.Solid
-                        };
-                        Pen redColor = new Pen(Brushes.Red, Math.max(ResultMat.Cols / 200, ResultMat.Rows / 200))
-                        {
-                            DashStyle = DashStyles.Solid
-                        };
-            */
+            Pen blueColor = new Pen(Brushes.Blue, Math.Max(ResultMat.Cols / 200, ResultMat.Rows / 200))
+            {
+                DashStyle = DashStyles.Solid
+            };
+            Pen redColor = new Pen(Brushes.Red, Math.Max(ResultMat.Cols / 200, ResultMat.Rows / 200))
+            {
+                DashStyle = DashStyles.Solid
+            };
+
 
             #endregion
 
             #region  Draw
 
-            /*
+            
                         Draw(dc =>
                         {
                             Pen examplePen = new Pen(Brushes.GreenYellow, 5)
@@ -123,8 +124,8 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
 
 
                         });
-            */
-#endregion
+            
+            #endregion
 
         }
     }
@@ -174,25 +175,25 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
         return rectPoints;
     }
 
-/*    private void DrawEllipse(DrawingContext dc, SolidColorBrush brush, Pen pen, Point2f? p1, Point2f? p2, int radius)
-    {
-        DrawEllipse(dc, brush, pen, p1, radius);
-        DrawEllipse(dc, brush, pen, p2, radius);
-
-        if (p1.HasValue && p2.HasValue)
+        private void DrawEllipse(DrawingContext dc, Brush? brush, Pen? pen, Point2f? p1, Point2f? p2, int radius)
         {
-            dc.DrawLine(new Pen(brush, 2), p1.Value, p2.Value);
-        }
-    }
+            DrawEllipse(dc, brush, pen, p1, radius);
+            DrawEllipse(dc, brush, pen, p2, radius);
 
-    private void DrawEllipse(DrawingContext dc, SolidColorBrush brush, Pen pen, Point2f? p, int radius)
-    {
-        if (p.HasValue)
-        {
-            dc.DrawEllipse(brush, pen, p.Value, radius, radius);
+            if (p1.HasValue && p2.HasValue)
+            {
+                dc.DrawLine(new Pen(brush, 2), p1.Value, p2.Value);
+            }
         }
-    }
-*/
+
+        private void DrawEllipse(DrawingContext dc, Brush? brush, Pen? pen, Point2f? p, int radius)
+        {
+            if (p.HasValue)
+            {
+                dc.DrawEllipse(brush, pen, p.Value, radius, radius);
+            }
+        }
+    
     private const int stepDivider = 5;
 
     private Point2f? FindFirstXFromTop(Point2f? p, Rect r, Mat mat)
@@ -251,7 +252,7 @@ public class FindCornersFilter : AbstractFilter, IPointsFilter
         Point2f? p1 = null;
         if (p.Value.X > 1)
         {
-            p1= FindFirstX((int)p.Value.Y + step, r, mat);
+            p1 = FindFirstX((int)p.Value.Y + step, r, mat);
         }
         Point2f? p2 = FindFirstX((int)p.Value.Y - step, r, mat);
         if (!p1.HasValue || p1.Value.X <= 1)

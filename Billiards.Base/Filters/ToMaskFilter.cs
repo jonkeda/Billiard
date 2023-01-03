@@ -4,7 +4,7 @@ namespace Billiards.Base.Filters;
 
 public class ToMaskFilter : AbstractFilter, IMaskFilter
 {
-    private Mat mask;
+    private Mat? mask;
 
     public ToMaskFilter(AbstractFilter filter) : base(filter)
     {
@@ -17,7 +17,7 @@ public class ToMaskFilter : AbstractFilter, IMaskFilter
         Mask = GetInputMat();
     }
 
-    public Mat Mask
+    public Mat? Mask
     {
         get { return mask; }
         set { SetProperty(ref mask, value); }

@@ -19,7 +19,7 @@ public class FilterSet : PropertyNotifier
 
     public FilterCollection Filters { get; } = new();
 
-    public void ApplyFilters(Mat originalImage)
+    public void ApplyFilters(Mat? originalImage)
     {
         foreach (AbstractFilter filter in Filters)
         {
@@ -37,7 +37,7 @@ public class FilterSet : PropertyNotifier
         return Clone(Filters.LastOrDefault());
     }
 
-    protected CloneFilter Clone(AbstractFilter result)
+    protected CloneFilter Clone(AbstractFilter? result)
     {
         return Filters.AddFilter(new CloneFilter(result));
     }
@@ -45,20 +45,20 @@ public class FilterSet : PropertyNotifier
 
     protected CvtColorBgr2HsvFilter CvtColorBgr2Hsv()
     {
-        return CvtColorBgr2Hsv(Filters.LastOrDefault());
+        return CvtColorBgr2Hsv(Filters?.LastOrDefault());
     }
 
-    protected CvtColorBgr2HsvFilter CvtColorBgr2Hsv(AbstractFilter result)
+    protected CvtColorBgr2HsvFilter CvtColorBgr2Hsv(AbstractFilter? result)
     {
         return Filters.AddFilter(new CvtColorBgr2HsvFilter(result));
     }
 
     protected GaussianBlurFilter GaussianBlur()
     {
-        return GaussianBlur(Filters.LastOrDefault());
+        return GaussianBlur(Filters?.LastOrDefault());
     }
 
-    protected GaussianBlurFilter GaussianBlur(AbstractFilter result)
+    protected GaussianBlurFilter GaussianBlur(AbstractFilter? result)
     {
         return Filters.AddFilter(new GaussianBlurFilter(result));
     }

@@ -12,9 +12,9 @@ public class FloodFillCornersFilter : AbstractFilter
         FloodFillColor = floodFillColor;
     }
 
-    protected override void ApplyFilter(Mat originalImage)
+    protected override void ApplyFilter(Mat? originalImage)
     {
-        Mat input = GetInputMat();
+        Mat input = GetInputMat()!;
         ResultMat = input.Clone();
 
         Scalar newColor = new Scalar(FloodFillColor);

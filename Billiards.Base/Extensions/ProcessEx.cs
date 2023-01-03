@@ -22,7 +22,7 @@ namespace Billiard.Extensions
 
         public static void BringMainWindowToFront(string processName)
         {
-            Process bProcess = Process.GetProcessesByName(processName).FirstOrDefault(p => !p.HasExited);
+            Process? bProcess = Process.GetProcessesByName(processName).FirstOrDefault(p => !p.HasExited);
 
             // check if the process is running
             if (bProcess != null)

@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Billiards.Base.Drawings;
+using OpenCvSharp;
 using Point2f = OpenCvSharp.Point2f;
 
 namespace Billiards.Base.Filters;
@@ -76,20 +77,20 @@ public class FindPointByColorFilter : AbstractFilter, IPointFilter
             FilterValues.Add("Point2f", $"{point.X} {point.Y} {point.Count}");
         }
 
-        /*
+        
         Draw(dc =>
         {
-            System.Windows.Media.Brush brush = System.Windows.Media.Brushes.GreenYellow;
+            Brush brush = Brushes.GreenYellow;
             foreach (FoundPoint pair in points.Values.OrderByDescending(p => p.Count))
             {
                 foreach (Point2f p in pair.Points)
                 {
                     dc.DrawEllipse(brush, null, p, 3, 3);
                 }
-                brush = System.Windows.Media.Brushes.DarkRed;
+                brush = Brushes.DarkRed;
             }
         });
-        */
+        
     }
 
     private int GetColorByte(Mat image, int x, int y)

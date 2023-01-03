@@ -287,19 +287,19 @@ namespace Billiard.Physics
         }
         #endregion
 
-        public PBall GetWhiteBall()
+        public PBall? GetWhiteBall()
         {
-            return balls.Find(b => b.BallColor == BallColor.White);
+            return balls?.Find(b => b.BallColor == BallColor.White);
         }
 
-        public PBall GetYellowBall()
+        public PBall? GetYellowBall()
         {
-            return balls.Find(b => b.BallColor == BallColor.Yellow);
+            return balls?.Find(b => b.BallColor == BallColor.Yellow);
         }
 
-        public PBall GetRedBall()
+        public PBall? GetRedBall()
         {
-            return balls.Find(b => b.BallColor == BallColor.Red);
+            return balls?.Find(b => b.BallColor == BallColor.Red);
         }
 
 

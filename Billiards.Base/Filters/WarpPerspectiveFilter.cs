@@ -5,8 +5,8 @@ namespace Billiards.Base.Filters;
 
 public class WarpPerspectiveFilter : AbstractFilter
 {
-    private IPointsFilter pointsFilter;
-    public IPointsFilter PointsFilter
+    private IPointsFilter? pointsFilter;
+    public IPointsFilter? PointsFilter
     {
         get { return pointsFilter; }
         set { SetProperty(ref pointsFilter, value); }

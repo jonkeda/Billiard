@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Billiards.Base.Drawings;
+using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
 
@@ -9,8 +10,8 @@ public class HistogramFilter : AbstractFilter
         Name = "Histogram";
     }
 
-    private IMaskFilter maskFilter;
-    public IMaskFilter MaskFilter
+    private IMaskFilter? maskFilter;
+    public IMaskFilter? MaskFilter
     {
         get { return maskFilter; }
         set { SetProperty(ref maskFilter, value); }
@@ -51,11 +52,11 @@ public class HistogramFilter : AbstractFilter
             FilterValues.Add($"{i} Max", CalculateMax(hists[i]));
         }
 
-/*        var hist2 = hists[0];
-        for (int i = Start; i < hist2.Size().Height && i < End; i++)
-        {
-            FilterValues.Add(i.ToString(), hist2.Get<float>(i, 0));
-        }*/
+        /*        var hist2 = hists[0];
+                for (int i = Start; i < hist2.Size().Height && i < End; i++)
+                {
+                    FilterValues.Add(i.ToString(), hist2.Get<float>(i, 0));
+                }*/
 
     }
 
@@ -93,69 +94,71 @@ public class HistogramFilter : AbstractFilter
 
         return index;
     }
-    /*
-        private DrawingImage DrawHist(List<Mat> hists)
+
+    private DrawingImage DrawHist(List<Mat> hists)
+    {
+        float maximum = 0;
+
+        foreach (Mat hist in hists)
         {
-            double maximum = 0;
+            //hist.SetFloatValue(0, 0, 0);
+            //hist.SetFloatValue(0, 255, 0);
 
-            foreach (Mat hist in hists)
+            double minval;
+            double maxval;
+            Point minp;
+            Point maxp;
+
+            Cv2.MinMaxLoc(hist, out minval, out maxval, out minp, out maxp);
+            maximum = System.MathF.Max((float)maxval, maximum);
+        }
+
+        float histWidth = 256 * hists.Count;
+
+        DrawingVisual visual = new DrawingVisual();
+        using (DrawingContext drawingContext = visual.RenderOpen())
+        {
+            drawingContext.PushClip(new RectangleGeometry(
+                new Rect2f(new Point2f(0, 0),
+                    new Size2f(histWidth, maximum))));
+            drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
+                new Rect2f(0, 0, histWidth, maximum));
+
+            int width = 1;
+            Pen color = null;
+
+            for (int h = 0; h < hists.Count; h++)
             {
-                hist.SetFloatValue(0, 0, 0);
-                hist.SetFloatValue(0, 255, 0);
-
-                double minval = 0;
-                double maxval = 0;
-                Point2f minp = Point2f.Empty;
-                Point2f maxp = Point2f.Empty;
-
-                Cv2.MinMaxLoc(hist, ref minval, ref maxval, ref minp, ref maxp);
-                maximum = System.Math.Max(maxval, maximum);
-            }
-
-            double histWidth = 256 * hists.Count;
-
-            DrawingVisual visual = new DrawingVisual();
-            using (DrawingContext drawingContext = visual.RenderOpen())
-            {
-                drawingContext.PushClip(new RectangleGeometry(
-                    new Rect(new Point2f(0, 0),
-                        new Point2f(histWidth, maximum))));
-                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null,
-                    new Rect(0, 0, histWidth, maximum));
-
-                int width = 1;
-                Pen color = null;
-
-                for (int h = 0; h < hists.Count; h++)
+                if (h == 0)
                 {
-                    if (h == 0)
-                    {
-                        color = new Pen(Brushes.Blue, width);
-                    }
-                    else if (h == 1)
-                    {
-                        color = new Pen(Brushes.Green, width);
-                    }
-                    else if (h == 2)
-                    {
-                        color = new Pen(Brushes.Red, width);
-                    }
-                    else
-                    {
-                        color = new Pen(Brushes.Black, width);
-                    }
-                    var hist = hists[h];
-                    float[,] data = (float[,])hist.GetData();
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        drawingContext.DrawLine(color, new Point2f(i * width + h * 256, maximum), new Point2f(i * width + h * 256, maximum -(int)data[i, 0]));
-                    }
-
+                    color = new Pen(Brushes.Blue, width);
                 }
-                drawingContext.Close();
-            }
+                else if (h == 1)
+                {
+                    color = new Pen(Brushes.Green, width);
+                }
+                else if (h == 2)
+                {
+                    color = new Pen(Brushes.Red, width);
+                }
+                else
+                {
+                    color = new Pen(Brushes.Black, width);
+                }
+                var hist = hists[h];
+                //float[,] data = (float[,])hist.GetData();
+                for (int i = Start; i < hist.Size().Height && i < End; i++)
+                {
+                    drawingContext.DrawLine(color, 
+                        new Point2f(i * width + h * 256, maximum), 
+                        new Point2f(i * width + h * 256, maximum - hist.Get<float>(i, 0)));
+                }
 
-            return new DrawingImage(visual.Drawing);
-        }*/
+            }
+            drawingContext.Close();
+        }
+
+        return new DrawingImage(visual.Drawing);
+    }
 
 }

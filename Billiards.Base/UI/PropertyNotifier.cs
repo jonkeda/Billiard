@@ -8,7 +8,7 @@ namespace Billiards.Base.UI
 
     public class PropertyNotifier : INotifyPropertyChanged, INotifyPropertyChanging
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")

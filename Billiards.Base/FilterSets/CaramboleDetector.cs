@@ -22,7 +22,7 @@ public class CaramboleDetector
 
     public void ApplyFilters(ResultModel result)
     {
-        FilterSets.ApplyFilters(result.Image);
+        FilterSets.ApplyFilters(result?.Image);
 
         result.Corners = PointsFilter.Points;
         result.WhiteBallPoint = BallResultFilter.WhiteBallPoint;

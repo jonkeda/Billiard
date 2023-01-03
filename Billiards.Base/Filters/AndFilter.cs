@@ -36,9 +36,9 @@ public class AndFilter : AbstractFilter, IMaskFilter
 
     public int MaskContour { get; set; }
 
-    protected override void ApplyFilter(Mat originalImage)
+    protected override void ApplyFilter(Mat? originalImage)
     {
-        Mat input = GetInputMat();
+        Mat input = GetInputMat()!;
         ResultMat = new Mat(input.Rows, input.Cols, input.Type());
         if (MaskFilter?.Mask != null)
         {

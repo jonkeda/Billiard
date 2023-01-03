@@ -1,4 +1,6 @@
-﻿using OpenCvSharp;
+﻿using System.Globalization;
+using Billiards.Base.Drawings;
+using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
 
@@ -9,29 +11,29 @@ public class BallResultFilter : AbstractFilter
         Name = "Ball results";
     }
 
-    private IContourFilter contourFilter;
-    public IContourFilter ContourFilter
+    private IContourFilter? contourFilter;
+    public IContourFilter? ContourFilter
     {
         get { return contourFilter; }
         set { SetProperty(ref contourFilter, value); }
     }
 
-    private HistogramFilter histogram0;
-    public HistogramFilter Histogram0
+    private HistogramFilter? histogram0;
+    public HistogramFilter? Histogram0
     {
         get { return histogram0; }
         set { SetProperty(ref histogram0, value); }
     }
 
-    private HistogramFilter histogram1;
-    public HistogramFilter Histogram1
+    private HistogramFilter? histogram1;
+    public HistogramFilter? Histogram1
     {
         get { return histogram1; }
         set { SetProperty(ref histogram1, value); }
     }
 
-    private HistogramFilter histogram2;
-    public HistogramFilter Histogram2
+    private HistogramFilter? histogram2;
+    public HistogramFilter? Histogram2
     {
         get { return histogram2; }
         set { SetProperty(ref histogram2, value); }
@@ -42,11 +44,11 @@ public class BallResultFilter : AbstractFilter
     public Point2f? RedBallPoint { get; private set; }
     public Rect2f TableSize { get; private set; }
 
-    protected override void ApplyFilter(Mat originalImage)
+    protected override void ApplyFilter(Mat? originalImage)
     {
         ResultMat = GetInputMat();
 
-        TableSize = new Rect2f(new(0, 0), new Size2f(ResultMat.Cols, ResultMat.Rows));
+        TableSize = new Rect2f(new(0, 0), new Size2f(ResultMat!.Cols, ResultMat.Rows));
 
         List<BallResult> balls = new ()
         {
@@ -57,11 +59,11 @@ public class BallResultFilter : AbstractFilter
 
         PredictBalls(balls);
 
-        CopyHistogramValues(Histogram0, 0);
-        CopyHistogramValues(Histogram1, 1);
-        CopyHistogramValues(Histogram2, 2);
+        CopyHistogramValues(Histogram0!, 0);
+        CopyHistogramValues(Histogram1!, 1);
+        CopyHistogramValues(Histogram2!, 2);
 
-        /*
+        
         Draw(dc =>
         {
             Pen pen = new Pen(Brushes.Black, 2);
@@ -69,15 +71,12 @@ public class BallResultFilter : AbstractFilter
             {
                 FormattedText formattedText = new(
                     ball.Index.ToString(),
-                    CultureInfo.CurrentUICulture,
-                    FlowDirection.LeftToRight,
-                    new Typeface("Verdana"),
                     32,
                     Brushes.AntiqueWhite, 1.25);
 
                 if (ball.Contour?.RotatedRectangle != null)
                 {
-                    var mid = ball.Contour.RotatedRectangle.Value.Center.AsPoint();
+                    var mid = ball.Contour.RotatedRectangle.Value.Center;
                     dc.DrawText(formattedText, mid);
 
                     Brush color = null;
@@ -98,7 +97,7 @@ public class BallResultFilter : AbstractFilter
                 }
             }
         });
-        */
+        
     }
 
     private void PredictBalls(List<BallResult> balls)
@@ -132,10 +131,12 @@ public class BallResultFilter : AbstractFilter
         }
     }
 
-    private BallResult CreateBall(HistogramFilter histogramFilter, int contourIndex)
+    private BallResult CreateBall(HistogramFilter? histogramFilter, int contourIndex)
     {
-        var b = new BallResult();
-        b.Index = contourIndex;
+        var b = new BallResult
+        {
+            Index = contourIndex
+        };
         if (ContourFilter.Contours.Count > contourIndex)
         {
             Contour contour = ContourFilter.Contours[contourIndex];

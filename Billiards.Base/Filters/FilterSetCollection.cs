@@ -11,7 +11,7 @@ namespace Billiards.Base.Filters
             return set;
         }
 
-        public void ApplyFilters(Mat image)
+        public void ApplyFilters(Mat? image)
         {
             foreach (FilterSet set in this)
             {

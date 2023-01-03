@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Billiards.Base.Drawings;
+using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
 
@@ -30,15 +31,15 @@ public class DrawBoundingRectFilter : AbstractFilter
         if (BoundingRect is IBoundingRectFilter boundingRectFilter)
         {
 
-/*            Draw(dc =>
+            Draw(dc =>
                 {
-                    Pen color = new Pen(Brushes.GreenYellow, Math.max(ResultMat.Cols / 100, ResultMat.Rows / 100))
+                    Pen color = new Pen(Brushes.GreenYellow, Math.Max(ResultMat.Cols / 100, ResultMat.Rows / 100))
                     {
                         DashStyle = DashStyles.Solid
                     };
-                    dc.DrawRectangle(null, color, boundingRectFilter.BoundingRect.AsRect())
+                    dc.DrawRectangle(null, color, boundingRectFilter.BoundingRect);
                 }
             );
-*/        }
+        }
     }
 }

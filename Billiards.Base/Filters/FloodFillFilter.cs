@@ -23,7 +23,7 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         }
     }
 
-    public IPointFilter Point2filter { get; set; }
+    public IPointFilter? Point2filter { get; set; }
     public int MinimumArea { get; set; }
     public int MaximumArea { get; set; } = 100;
 

@@ -11,7 +11,10 @@ public class GaussianBlurFilter : AbstractFilter
 
     protected override void ApplyFilter(Mat originalImage)
     {
-
-        Cv2.GaussianBlur(GetInputMat(), ResultMat, new Size(3, 3), 1);
+        if (ResultMat != null
+            && GetInputMat() != null)
+        {
+            Cv2.GaussianBlur(GetInputMat()!, ResultMat, new Size(3, 3), 1);
+        }
     }
 }
