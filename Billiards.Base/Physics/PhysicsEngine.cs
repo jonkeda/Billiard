@@ -129,7 +129,7 @@ namespace Billiards.Base.Physics
             for (int i = 0; i < balls.Count; i++)
             {
                 ballsClones[i] = new PBall(balls[i]);
-                balls[i].ClearPositions();
+                ballsClones[i].ClearPositions();
             }
 
             return Calculate(force, animate, filter, ballsClones, table);
@@ -307,8 +307,7 @@ namespace Billiards.Base.Physics
         {
             return balls?.Find(b => b.BallColor == BallColor.Red);
         }
-
-
+        
         private SolutionCollection CalculateSolutionsDirectOnBall(PBall cue, PBall other, float power)
         {
             Vector2 line = Vector2.Normalize(cue.position - other.position);

@@ -45,19 +45,14 @@ namespace Billiards.Base.Physics
 
         public PBall(PBall clone) : this(clone.position, clone.velocity)
         {
+            BallColor = clone.BallColor;
             u0 = clone.u0;
             cr = clone.cr;
             r = clone.r;
             index = clone.index;
-            Positions = clone.Positions;
-            Collisions = clone.Collisions;
+            //Positions = clone.Positions;
+            //Collisions = clone.Collisions;
             DrawTrajectory = clone.DrawTrajectory;
-        }
-
-        public void Deconstruct(out Vector2 _position, out float _r)
-        {
-            _position = position;
-            _r = r;
         }
 
         public bool Simulate(float dt)
@@ -104,8 +99,8 @@ namespace Billiards.Base.Physics
 
         public void ClearPositions()
         {
-            Collisions = new ();
-            Positions.Clear();
+            //Collisions = new ();
+            //Positions.Clear();
             Collisions.Add(new Collision(position, null, CollisionType.Start));
         }
         
