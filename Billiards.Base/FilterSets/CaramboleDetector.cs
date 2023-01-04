@@ -20,25 +20,73 @@ public class CaramboleDetector
     public IPointsFilter PointsFilter { get; set; }
     public FilterSetCollection FilterSets { get; } = new();
 
-    public void ApplyFilters(ResultModel result)
+    public ResultModel ApplyFilters(Mat image)
     {
-        FilterSets.ApplyFilters(result.Image);
+        ResultModel result = new ResultModel
+        {
+            Image = image,
+            Detector = this,
+            Now = DateTime.Now
+        };
 
-        result.Corners = PointsFilter.Points;
-        result.WhiteBallPoint = BallResultFilter.WhiteBallPoint;
-        result.YellowBallPoint = BallResultFilter.YellowBallPoint;
-        result.RedBallPoint = BallResultFilter.RedBallPoint;
+        FilterSets.ApplyFilters(image);
 
-        result.Balls.Add(new ResultBall(BallColor.White, 
-            ToRelativePoint(result.Image, BallResultFilter.WhiteBallPoint)));
+        if (BallResultFilter.ResultMat == null)
+        {
+            return result;
+        }
+
+        Mat frame = result.Image;
+        List<Point2f> dest = PointsFilter.Points;
+        List<Point2f> src = new List<Point2f>(new[]
+            {
+                new Point2f(0, 0),
+                new Point2f(frame.Width, 0),
+                new Point2f(frame.Width, frame.Height),
+                new Point2f(0, frame.Height)
+            }
+        );
+        Mat warpingMat = Cv2.GetPerspectiveTransform(src, dest);
+        List<Point2f> relativeCorners = new List<Point2f>();
+        foreach (Point2f point in PointsFilter.Points)
+        {
+            Point2f? newPoint = ToRelativePoint2(BallResultFilter.ResultMat, point);
+            if (newPoint != null)
+            {
+                relativeCorners.Add(newPoint.Value);
+            }
+        }
+
+        result.Corners = relativeCorners;
+
+        result.Balls.Add(new ResultBall(BallColor.White,
+            ToRelativePoint(result.Image, BallResultFilter.WhiteBallPoint),
+             WarpPerspective(result.Image, warpingMat, BallResultFilter.WhiteBallPoint)));
+
         result.Balls.Add(new ResultBall(BallColor.Yellow,
-            ToRelativePoint(result.Image, BallResultFilter.YellowBallPoint)));
-        result.Balls.Add(new ResultBall(BallColor.Red,
-            ToRelativePoint(result.Image, BallResultFilter.RedBallPoint)));
+            ToRelativePoint(result.Image, BallResultFilter.YellowBallPoint),
+            WarpPerspective(result.Image, warpingMat, BallResultFilter.YellowBallPoint)));
 
+        result.Balls.Add(new ResultBall(BallColor.Red,
+            ToRelativePoint(result.Image, BallResultFilter.RedBallPoint),
+            WarpPerspective(result.Image, warpingMat, BallResultFilter.RedBallPoint)));
+
+        return result;
     }
 
-    public Point2f? ToRelativePoint(Mat? frame, Point2f? p)
+    public static Point2f? WarpPerspective(Mat frame, Mat warpingMat,
+        Point2f? point)
+    {
+        if (!point.HasValue)
+        {
+            return null;
+        }
+
+        Point2f[] points = Cv2.PerspectiveTransform(new[] { point.Value }, warpingMat);
+        return ToRelativePoint2(frame, points[0]);
+    }
+
+    public static Point2f? ToRelativePoint(Mat? frame, Point2f? p)
     {
         if (frame == null
             || !p.HasValue)
@@ -52,4 +100,21 @@ public class CaramboleDetector
         }
         return new Point2f(p.Value.X / frame.Width, p.Value.Y / frame.Height);
     }
+
+    public static Point2f? ToRelativePoint2(Mat? frame, Point2f? p)
+    {
+        if (frame == null
+            || !p.HasValue)
+        {
+            return null;
+        }
+
+        /*        if (frame.Height > frame.Width)
+                {
+                    return new Point2f(p.Value.Y / frame.Height, 1 - (p.Value.X / frame.Width));
+                }
+        */
+        return new Point2f(p.Value.X / frame.Width, p.Value.Y / frame.Height);
+    }
+
 }

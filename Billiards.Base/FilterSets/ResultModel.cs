@@ -12,14 +12,19 @@ namespace Billiards.Base.FilterSets
 
     public class ResultBall
     {
-        public ResultBall(BallColor color, Point2f? location)
+        public ResultBall(BallColor color, 
+            Point2f? tableRelativePosition,
+            Point2f? imageRelativePosition)
         {
             Color = color;
-            Location = location;
+            TableRelativePosition = tableRelativePosition;
+            ImageRelativePosition = imageRelativePosition;
         }
 
         public BallColor Color { get; set; }
-        public Point2f? Location { get; set; }
+        public Point2f? TableRelativePosition { get; set; }
+        public Point2f? ImageRelativePosition { get; set; }
+        public Point2f? ImageAbsolutePoint { get; set; }
     }
 
     public class ResultModel
@@ -29,10 +34,6 @@ namespace Billiards.Base.FilterSets
         public List<Point2f>? Corners { get; set; }
 
         public ResultBallCollection Balls { get; set; } = new();
-
-        public Point2f? WhiteBallPoint { get; set; }
-        public Point2f? YellowBallPoint { get; set; }
-        public Point2f? RedBallPoint { get; set; }
 
         public CaramboleDetector? Detector { get; set; }
         public DateTime Now { get; set; }

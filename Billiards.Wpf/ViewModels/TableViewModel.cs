@@ -193,11 +193,10 @@ namespace Billiards.Wpf.ViewModels
             };
             foreach (ResultBall ball in balls)
             {
-                if (ball.Location.HasValue)
+                if (ball.TableRelativePosition.HasValue)
                 {
-
                     drawingContext.DrawEllipse(BrushByBallColor(ball.Color), pen, 
-                        ToAbsolutePoint(ball.Location.Value), Radius, Radius);
+                        ToAbsolutePoint(ball.TableRelativePosition.Value), Radius, Radius);
                 }
             }
         }

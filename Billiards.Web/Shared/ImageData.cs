@@ -16,18 +16,11 @@ namespace Billiards.Web.Shared
 
     public class Table
     {
-        public Table(Point? top, Point? bottom, Point? left, Point? right)
+        public Table(PointCollection corners)
         {
-            Top = top;
-            Bottom = bottom;
-            Left = left;
-            Right = right;
+            Corners = corners;
         }
-
-        public Point? Top { get; set; }
-        public Point? Bottom { get; set; }
-        public Point? Left { get; set; }
-        public Point? Right { get; set; }
+        public PointCollection Corners { get; }
     }
 
     public enum BallColor
@@ -44,16 +37,16 @@ namespace Billiards.Web.Shared
     public class Ball
     {
         public Ball(BallColor color,
-            Point? imagePoint, Point? actualPoint)
+            Point? imagePoint, Point? tablePoint)
         {
             Color = color;
             ImagePoint = imagePoint;
-            ActualPoint = actualPoint;
+            TablePoint = tablePoint;
         }
 
         public BallColor Color { get; }
         public Point? ImagePoint { get; }
-        public Point? ActualPoint { get; }
+        public Point? TablePoint { get; }
     }
 
     public class PointCollection : Collection<Point>
@@ -66,14 +59,14 @@ namespace Billiards.Web.Shared
         public Point()
         { }
 
-        public Point(int x, int y)
+        public Point(float x, float y)
         {
             X = x;
             Y = y;
         }
 
-        public int X { get; set; }
-        public int Y { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
     }
 
     public class TableDetectionResult

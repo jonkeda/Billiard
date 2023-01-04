@@ -2,6 +2,7 @@ using Billiards.Base.FilterSets;
 using Billiards.Web.Shared;
 using Microsoft.AspNetCore.Mvc;
 using OpenCvSharp;
+using Point = Billiards.Web.Shared.Point;
 
 namespace Billiards.Web.Server.Controllers
 {
@@ -12,34 +13,50 @@ namespace Billiards.Web.Server.Controllers
         [HttpPost]
         public TableDetectionResult DetectTable(ImageData image)
         {
-            var bytes = Convert.FromBase64String(image.Data);
+            byte[] bytes = Convert.FromBase64String(image.Data);
 
             CaramboleDetector detector = new();
 
             Mat mat = Mat.ImDecode(bytes);
 
-            ResultModel result = new ResultModel
-            {
-                Image = mat,
-                Detector = detector,
-                Now = DateTime.Now
-            };
+            ResultModel result = detector.ApplyFilters(mat);
 
-            detector.ApplyFilters(result);
-
-            BallCollection balls = new BallCollection();
+            BallCollection balls = new ();
             foreach (ResultBall resultBall in result.Balls)
             {
-                Ball ball = new Ball(ConvertColor(resultBall.Color), null, null);
+                Ball ball = new (ConvertColor(resultBall.Color), 
+                    ConvertPoint(resultBall.ImageRelativePosition), 
+                    ConvertPoint(resultBall.TableRelativePosition));
                 balls.Add(ball);
             }
 
-            Table table = new Table(null, null, null, null);
+            PointCollection corners = new ();
+            if (result.Corners != null)
+            {
+                foreach (Point2f corner in result.Corners)
+                {
+                    Point? point = ConvertPoint(corner);
+                    if (point != null)
+                    {
+                        corners.Add(point);
+                    }
+                }
+            }
+            Table table = new (corners);
 
-            return new TableDetectionResult(null, balls);
+            return new TableDetectionResult(table, balls);
         }
 
-        public Billiards.Web.Shared.BallColor ConvertColor(Billiards.Base.Filters.BallColor color)
+        private static Point? ConvertPoint(Point2f? point)
+        {
+            if (!point.HasValue)
+            {
+                return null;
+            }
+            return new Point(point.Value.X, point.Value.Y);
+        }
+
+        private static Billiards.Web.Shared.BallColor ConvertColor(Billiards.Base.Filters.BallColor color)
         {
             return (Billiards.Web.Shared.BallColor) color;
         }

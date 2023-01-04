@@ -57,17 +57,24 @@ namespace Billiards.Base.Physics
 
         public void CalculateSolutions(ResultModel result)
         {
-            if (!result.WhiteBallPoint.HasValue
-                || !result.YellowBallPoint.HasValue
-                || !result.RedBallPoint.HasValue)
+            if (result.Image == null
+                || result.Balls.Count < 3
+                || result.Balls.Any(b => !b.TableRelativePosition.HasValue))
             {
                 return;
             }
 
-            GetWhiteBall().position = FromRelative(result.Image, result.WhiteBallPoint.Value);
-            GetYellowBall().position = FromRelative(result.Image, result.YellowBallPoint.Value);
-            GetRedBall().position = FromRelative(result.Image, result.RedBallPoint.Value);
-
+            foreach (var ball in result.Balls)
+            {
+                if (ball.TableRelativePosition.HasValue)
+                {
+                    PBall? pBall = this.balls.Find(b => b.BallColor == ball.Color);
+                    if (pBall != null)
+                    {
+                        pBall.position = ToAbsolutePoint(result.Image, ball.TableRelativePosition.Value);
+                    }
+                }
+            }
             result.Problems = CalculateSolutions(result.OnMainBall, result.Power);
         }
 
@@ -96,13 +103,12 @@ namespace Billiards.Base.Physics
                 };
             }
 
-            foreach (Problem problem in problems)
+/*            foreach (Problem problem in problems)
             {
                 problem.Run();
             }
-
-            return problems;
-            /*                Parallel.ForEach(problems, problem =>
+*/
+                            Parallel.ForEach(problems, problem =>
                           {
                               try
                               {
@@ -113,7 +119,7 @@ namespace Billiards.Base.Physics
                                   string a = e.Message;
                               }
                           });
-            */
+            return problems;
 
         }
 
@@ -369,6 +375,16 @@ namespace Billiards.Base.Physics
             }
         }
 
+        private Vector2 ToAbsolutePoint(Mat frame, Point2f p)
+        {
+/*            if (frame.Height > frame.Width)
+            {
+                return new Vector2(p.Y * Length, Width - (p.X * Width));
+            }
+*/            return new Vector2(p.X * Length, p.Y * Width);
+        }
+
+
         private Vector2 FromRelative(Mat frame, Point2f p)
         {
             if (frame.Height > frame.Width)
@@ -376,8 +392,6 @@ namespace Billiards.Base.Physics
                 return new Vector2(p.Y * Length / frame.Height, Width - (p.X * Width / frame.Width));
             }
             return new Vector2(p.X * Length / frame.Width, p.Y * Width / frame.Height);
-
-            //return new Vector2(p.X * Length / image.Width, p.Y * Width / image.Height);
         }
     }
 }

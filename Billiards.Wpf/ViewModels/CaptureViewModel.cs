@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Billiards.Base.Filters;
 using Billiards.Base.FilterSets;
 using Billiards.Wpf.Extensions;
 using Billiards.Wpf.UI;
@@ -42,57 +43,54 @@ namespace Billiards.Wpf.ViewModels
             VideoDevice = videoDevice;
         }
 
-/*        public System.Windows.Point ToRelativePoint(Rect frame, System.Windows.Point p)
-        {
-            if (p.X == 0 && p.Y == 0)
-            {
-                return p;
-            }
-
-            if (frame.Height > frame.Width)
-            {
-                return new System.Windows.Point(p.Y / frame.Height, 1 - (p.X / frame.Width));
-            }
-            return new System.Windows.Point(p.X / frame.Width, p.Y / frame.Height);
-        }
-*/
         public void CaptureImage(ResultModel result)
         {
+            if (result.Image == null)
+            {
+                return;
+            }
             Output = result.Image;
 
-            Mat frame = result.Image;
-            List<Point2f> dest = result.Corners;
-            List<Point2f> src = new List<Point2f>(new[]
+            List<System.Windows.Point> cornerPoints = new List<Point>();
+            if (result.Corners != null)
+            {
+                foreach (var corner in result.Corners)
                 {
-                    new Point2f(0, 0),
-                    new Point2f(frame.Width, 0),
-                    new Point2f(frame.Width, frame.Height),
-                    new Point2f(0, frame.Height)
+                    var p2 = ToAbsolutePoint(result.Image, corner);
+                    cornerPoints.Add(p2);
                 }
-            );
-            Mat warpingMat = Cv2.GetPerspectiveTransform(src, dest);
+            }
 
-            Overlay = DrawCaptureOverlay(frame, result.Corners.AsWindowsPoints(),
-                WarpPerspective(warpingMat, result.WhiteBallPoint).AsWindowsPoint(),
-                WarpPerspective(warpingMat, result.YellowBallPoint).AsWindowsPoint(),
-                WarpPerspective(warpingMat, result.RedBallPoint).AsWindowsPoint(),
+            foreach (ResultBall ball in result.Balls)
+            {
+                ball.ImageAbsolutePoint = ToAbsolutePoint2f(result.Image, ball.ImageRelativePosition);
+            }
+
+            Overlay = DrawCaptureOverlay(result.Image, cornerPoints,
+                result.Balls,
                 result.Now);
         }
 
-        public static Point2f? WarpPerspective(Mat warpingMat,
-            Point2f? point)
+        public Point2f ToAbsolutePoint2f(Mat image, Point2f? p)
         {
-            if (!point.HasValue)
+            if (!p.HasValue)
             {
-                return null;
+                return new Point2f(0, 0);
             }
+            return new Point2f(p.Value.X * image.Width, p.Value.Y * image.Height);
+        }
 
-            Point2f[] points = Cv2.PerspectiveTransform(new[] { point.Value }, warpingMat);
-            return points[0];
+        public System.Windows.Point ToAbsolutePoint(Mat image, Point2f? p)
+        {
+            if (!p.HasValue)
+            {
+                return new Point(0, 0);
+            }
+            return new System.Windows.Point(p.Value.X * image.Width, p.Value.Y * image.Height);
         }
 
         private DrawingImage DrawCaptureOverlay(Mat frame, List<Point> tableCornerPoints,
-            Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint, DateTime now)
+            ResultBallCollection balls, DateTime now)
         {
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext drawingContext = visual.RenderOpen())
@@ -114,7 +112,7 @@ namespace Billiards.Wpf.ViewModels
                 DrawFoundTable(tableCornerPoints, drawingContext);
                 if (tableCornerPoints.Count == 4)
                 {
-                    DrawBalls(whiteBallPoint, yellowBallPoint, redBallPoint, frame, drawingContext);
+                    DrawBalls(balls, frame, drawingContext);
                 }
 
                 FormattedText formattedText = new(
@@ -133,38 +131,38 @@ namespace Billiards.Wpf.ViewModels
             return new DrawingImage(visual.Drawing);
         }
 
-        private void DrawBalls(Point? whiteBallPoint, Point? yellowBallPoint, Point? redBallPoint, Mat frame,
+        private void DrawBalls(ResultBallCollection balls, Mat frame,
             DrawingContext drawingContext)
         {
             double radius = System.Math.Max(frame.Height / 50, frame.Width / 50);
 
-            if (whiteBallPoint.HasValue)
+            foreach (ResultBall ball in balls)
             {
-                Pen whiteColor = new Pen(Brushes.White, 5)
+                if (ball.ImageAbsolutePoint != null)
                 {
-                    DashStyle = DashStyles.Solid
-                };
-                drawingContext.DrawEllipse(null, whiteColor, whiteBallPoint.Value, radius, radius);
+                    //GetColor()
+                    Pen color = new Pen(GetColor(ball.Color), 5)
+                    {
+                        DashStyle = DashStyles.Solid
+                    };
+                    drawingContext.DrawEllipse(null, color, 
+                        ball.ImageAbsolutePoint.AsWindowsPoint().Value,
+                        radius, radius);
+                }
             }
+        }
 
-            if (yellowBallPoint.HasValue)
+        private Brush GetColor(BallColor color)
+        {
+            if (color == BallColor.White)
             {
-                Pen yellowColor = new Pen(Brushes.Yellow, 5)
-                {
-                    DashStyle = DashStyles.Solid
-                };
-                drawingContext.DrawEllipse(null, yellowColor, yellowBallPoint.Value, radius, radius);
+                return Brushes.White;
             }
-
-            if (redBallPoint.HasValue)
+            if (color == BallColor.Yellow)
             {
-                Pen redColor = new Pen(Brushes.DarkRed, 5)
-                {
-                    DashStyle = DashStyles.Solid
-                };
-
-                drawingContext.DrawEllipse(null, redColor, redBallPoint.Value, radius, radius);
+                return Brushes.Yellow;
             }
+            return Brushes.DarkRed;
         }
 
         private static void DrawFoundTable(List<Point> tableCornerPoints,
