@@ -1,10 +1,10 @@
-﻿using Billiard.UI;
+﻿using System;
 using Billiards.Base.FilterSets;
+using Billiards.Base.Physics;
 using Billiards.Base.Threading;
-using System;
-using Billiard.Physics;
+using Billiards.Wpf.UI;
 
-namespace Billiard.viewModels
+namespace Billiards.Wpf.ViewModels
 {
     public class MainViewModel : ViewModel
     {

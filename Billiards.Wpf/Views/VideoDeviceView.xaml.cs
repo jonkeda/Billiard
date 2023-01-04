@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Billiard.views
+namespace Billiards.Wpf.Views
 {
     /// <summary>
     /// Interaction logic for VideoDeviceView.xaml

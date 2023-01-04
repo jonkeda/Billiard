@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
-using Billiard.UI;
+using System.Linq;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Billiards.Base.Filters;
+using Billiards.Base.FilterSets;
+using Billiards.Base.Physics;
+using Billiards.Wpf.UI;
+using OpenCvSharp;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
-using System.Linq;
-using Billiards.Base.FilterSets;
-using OpenCvSharp;
 using Rect = System.Windows.Rect;
-using System.Windows.Media.Imaging;
-using Billiard.Physics;
-using Billiards.Base.Filters;
 
-namespace Billiard.viewModels
+namespace Billiards.Wpf.ViewModels
 {
     public class TableViewModel : ViewModel
     {

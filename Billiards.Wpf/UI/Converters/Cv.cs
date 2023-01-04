@@ -1,6 +1,6 @@
 ﻿using System.Windows.Data;
 
-namespace Billiard.UI.Converters
+namespace Billiards.Wpf.UI.Converters
 {
     public static class Cv
     {

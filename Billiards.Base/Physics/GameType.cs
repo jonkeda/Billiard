@@ -1,4 +1,4 @@
-﻿namespace Billiard.Physics;
+﻿namespace Billiards.Base.Physics;
 
 public enum GameType
 {

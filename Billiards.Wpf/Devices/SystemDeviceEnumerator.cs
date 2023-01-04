@@ -4,8 +4,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
-
-namespace Billiard.Camera.Devices
+namespace Billiards.Wpf.Devices
 {
     public class VideoDeviceCollection : Collection<VideoDevice>
     {

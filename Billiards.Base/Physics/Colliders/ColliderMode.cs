@@ -1,4 +1,4 @@
-﻿namespace Billiard.Physics.Colliders
+﻿namespace Billiards.Base.Physics.Colliders
 {
 
     public enum ColliderMode

@@ -1,4 +1,4 @@
-﻿namespace Billiard.Physics.Prefabs
+﻿namespace Billiards.Base.Physics.Prefabs
 {
     public class PTable : PStaticObject
     {

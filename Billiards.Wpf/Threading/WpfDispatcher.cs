@@ -2,7 +2,7 @@
 using System.Windows;
 using Billiards.Base.Threading;
 
-namespace Billiard.Threading
+namespace Billiards.Wpf.Threading
 {
     public class WpfDispatcher
         : IThreadDispatcher

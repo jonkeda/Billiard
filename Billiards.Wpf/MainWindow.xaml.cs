@@ -1,4 +1,4 @@
-﻿using Billiard.viewModels;
+﻿using Billiards.Wpf.ViewModels;
 
 namespace Billiards.Wpf
 {

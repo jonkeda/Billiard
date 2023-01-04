@@ -1,8 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Billiard.UI;
 
-namespace Billiards.UI
+namespace Billiards.Wpf.UI
 {
     public abstract class ObservableViewModelCollection<TVm, TM> : ObservableCollection<TVm>
         where TVm : ModelViewModel<TM>

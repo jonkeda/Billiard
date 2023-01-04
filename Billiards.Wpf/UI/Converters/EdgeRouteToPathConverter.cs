@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Billiard.UI.Converters
+namespace Billiards.Wpf.UI.Converters
 {
     /// <summary>
 	/// Converts the position and sizes of the source and target points, and the route informations

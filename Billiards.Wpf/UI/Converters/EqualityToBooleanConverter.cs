@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Billiard.UI.Converters
+namespace Billiards.Wpf.UI.Converters
 {
     public class EqualityToBooleanConverter : IValueConverter
     {

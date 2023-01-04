@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Billiard.Extensions
+namespace Billiards.Base.Extensions
 {
     public static class EnumExtension
     {

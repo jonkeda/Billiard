@@ -1,4 +1,4 @@
-﻿namespace Billiard.UI.Controls;
+﻿namespace Billiards.Wpf.UI.Controls;
 
 public enum GroupSeparatorType : byte
 {

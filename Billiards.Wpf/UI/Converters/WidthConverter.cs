@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using OpenCvSharp;
 
-namespace Billiard.UI.Converters;
+namespace Billiards.Wpf.UI.Converters;
 
 public class WidthConverter : BaseConverter, IValueConverter
 {

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Billiard.UI.Interfaces
+namespace Billiards.Wpf.UI.Interfaces
 {
     public interface IDialog
     {

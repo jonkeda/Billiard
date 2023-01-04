@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Billiard.UI.Converters
+namespace Billiards.Wpf.UI.Converters
 {
     public class HiddenConverter : BaseConverter, IValueConverter
     {

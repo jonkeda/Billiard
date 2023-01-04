@@ -1,10 +1,9 @@
 ﻿using System.Numerics;
-using Billiard.Utilities;
 using Billiards.Base.Extensions;
 using Billiards.Base.Filters;
+using Billiards.Base.Utilities;
 
-
-namespace Billiard.Physics
+namespace Billiards.Base.Physics
 {
     public class PBall 
     {

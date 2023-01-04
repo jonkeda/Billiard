@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Billiard.Physics.Colliders
+namespace Billiards.Base.Physics.Colliders
 {
 
     public abstract class Collider

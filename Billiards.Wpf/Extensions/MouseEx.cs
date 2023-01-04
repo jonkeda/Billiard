@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Billiard.Extensions
+namespace Billiards.Wpf.Extensions
 {
     public static class MouseEx
     {

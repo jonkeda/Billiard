@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
-using Billiard.Utilities;
+using Billiards.Base.Utilities;
 
-namespace Billiard.Physics.Colliders
+namespace Billiards.Base.Physics.Colliders
 {
     public class BoxCollider : Collider
     {

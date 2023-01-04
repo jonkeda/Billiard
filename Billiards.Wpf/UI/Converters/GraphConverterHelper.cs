@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace Billiard.UI.Converters
+namespace Billiards.Wpf.UI.Converters
 {
     static class GraphConverterHelper
     {

@@ -1,4 +1,4 @@
-﻿namespace Billiard.UI
+﻿namespace Billiards.Wpf.UI
 {
     public abstract class ModelViewModel<T> 
         : ViewModel where T : class, new()

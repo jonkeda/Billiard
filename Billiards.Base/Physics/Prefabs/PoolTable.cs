@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
-using Billiard.Physics.Colliders;
+using Billiards.Base.Physics.Colliders;
 
-namespace Billiard.Physics.Prefabs;
+namespace Billiards.Base.Physics.Prefabs;
 
 public class PoolTable : PTable
 {

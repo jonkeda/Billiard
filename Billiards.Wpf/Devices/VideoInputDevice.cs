@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
-namespace Billiard.Camera.Devices;
+namespace Billiards.Wpf.Devices;
 
 /// <summary>
 /// A video input device that is detected in the system.

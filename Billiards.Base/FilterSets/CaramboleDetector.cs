@@ -22,7 +22,7 @@ public class CaramboleDetector
 
     public void ApplyFilters(ResultModel result)
     {
-        FilterSets.ApplyFilters(result?.Image);
+        FilterSets.ApplyFilters(result.Image);
 
         result.Corners = PointsFilter.Points;
         result.WhiteBallPoint = BallResultFilter.WhiteBallPoint;
@@ -38,9 +38,10 @@ public class CaramboleDetector
 
     }
 
-    public Point2f? ToRelativePoint(Mat frame, Point2f? p)
+    public Point2f? ToRelativePoint(Mat? frame, Point2f? p)
     {
-        if (!p.HasValue)
+        if (frame == null
+            || !p.HasValue)
         {
             return null;
         }

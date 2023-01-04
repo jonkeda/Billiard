@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 
-namespace Billiard.UI.Converters
+namespace Billiards.Wpf.UI.Converters
 {
     public abstract class BaseConverter
     {

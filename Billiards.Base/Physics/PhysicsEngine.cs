@@ -1,13 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Numerics;
-using Billiard.Physics.Prefabs;
-using Billiard.Utilities;
 using Billiards.Base.Extensions;
 using Billiards.Base.Filters;
 using Billiards.Base.FilterSets;
+using Billiards.Base.Physics.Prefabs;
+using Billiards.Base.Utilities;
 using OpenCvSharp;
 
-namespace Billiard.Physics
+namespace Billiards.Base.Physics
 {
     public class PhysicsEngine
     {

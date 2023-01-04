@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Billiards.Base.Threading;
 
-namespace Billiards.Base.UI
+namespace Billiards.Wpf.UI
 {
     public class PropertyNotifier : INotifyPropertyChanged, INotifyPropertyChanging
     {

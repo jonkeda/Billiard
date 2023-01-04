@@ -1,17 +1,17 @@
-﻿using Billiard.Camera.Devices;
-using Billiard.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Timers;
 using System.Windows.Input;
+using Billiards.Base.Threading;
+using Billiards.Wpf.Devices;
+using Billiards.Wpf.UI;
+using OpenCvSharp;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
-using Billiards.Base.Threading;
-using OpenCvSharp;
 
-namespace Billiard.viewModels
+namespace Billiards.Wpf.ViewModels
 {
     public class VideoDeviceViewModel : ViewModel
     {

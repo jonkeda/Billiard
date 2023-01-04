@@ -1,74 +1,84 @@
 ﻿@page "/camera"
-@inject IJSRuntime JSRuntime
 @inject HttpClient Http
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Processing;
-@using SixLabors.ImageSharp.Formats.Jpeg
-@using System.IO
+@using Billiards.Web.Client.Components
+@using Billiards.Web.Client.Models
+@using Billiards.Web.Shared
 
-<h1>Blazor Webcam</h1>
-<video id="videoFeed" width="320" height="240" ></video>
-<canvas class="d-none" id="currentFrame" width="320" height="240" ></canvas>
-<br />
-<input class="form-control mb-3" style="width:320px;" type="text" @bind="captionText" placeholder="Enter caption" />
-<button class="btn btn-primary mb-3" @onclick="CaptureFrame">Capture Frame</button>
-<br />
-@if (!string.IsNullOrEmpty(frameUri))
-{
-    <img src="@frameUri" />
+<h1>Streaming the world!</h1>
+
+                
+<div id="canvas" style="position: relative; width: 480px; height: 270px; background-color: antiquewhite;">
+    <div style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 1">
+    <CameraStreamer id="videoContainer"
+                        Style="width: 480px; height: 270px;"
+                        @ref="CameraStreamerReference"
+                    Width="1920"
+                    Height="1080"
+                    OnRendered="OnRenderedHandler"
+                    OnFrame="OnFrameHandler"
+                    CameraID="@cameraId"
+                    Autostart/>
+    </div>
+    <svg id="svgContainer" style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 2">
+        <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/>
+        Sorry, your browser does not support inline SVG.
+    </svg>
+</div>
+
+
+@{
+    if (mediaDevices != null)
+    {
+        foreach (var mediaDevice in mediaDevices)
+        {
+            <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))">@mediaDevice.Label</button>
+        }
+    }
 }
 
-
 @code {
-    private string captionText;
-    private string frameUri;
+    CameraStreamer CameraStreamerReference;
 
-    //FontCollection collection = new FontCollection();
-    //FontFamily sansFamily;
-    //Font captionFont;
+    string cameraId = null;
+    MediaDeviceInfoModel[]? mediaDevices;
 
-    protected override async Task OnInitializedAsync()
+    private async void OnRenderedHandler()
     {
-        await JSRuntime.InvokeVoidAsync("startVideo", "videoFeed");
-
-        //Font stored in wwwroot. Fetch it as byte array, and use it
-        //var fontBytes = await Http.GetByteArrayAsync("OpenSans-Regular.ttf");
-        //collection.Install(new MemoryStream(fontBytes));
-        //collection.TryFind("Open Sans", out sansFamily);
-        //captionFont = sansFamily.CreateFont(16, FontStyle.Regular);
-    }
-
-    private async Task CaptureFrame()
-    {
-        await JSRuntime.InvokeAsync<String>("getFrame", "videoFeed", "currentFrame", DotNetObjectReference.Create(this));
-    }
-
-
-    [JSInvokable]
-    public void ProcessImage(string imageString)
-    {
-        byte[] imageData = Convert.FromBase64String(imageString.Split(',')[1]);
-
-        //Do image processing here
-
-        //DrawingOptions alignCenter = new DrawingOptions()
-        //    {
-        //        TextOptions = new TextOptions()
-        //        {
-        //            VerticalAlignment = VerticalAlignment.Center,
-        //            WrapTextWidth = 304, //Image is 320px wide. This will center with 8px margin on left and right
-        //            HorizontalAlignment = HorizontalAlignment.Center
-        //        }
-        //    };
-
-        using (var image = Image.Load(imageData))
+        // Check camera-access or ask user, if it's not allowed currently
+        if (await CameraStreamerReference.GetCameraAccessAsync())
         {
-            image.Mutate(x => x
-                .Flip(FlipMode.Horizontal) //To match mirrored webcam image
-                //.Fill(Color.ParseHex("0008"), new RectangularPolygon(0, 220, 320, 20)) //Set footer bar for caption
-                //.DrawText(alignCenter, captionText, captionFont, Color.White, new PointF(8, 230)) //center in footer bar)
-            );
-            frameUri = image.ToBase64String(JpegFormat.Instance);
+            // Reloading re-initializes the stream and starts the
+            // stream automatically if the Autostart parameter is set
+            await CameraStreamerReference.ReloadAsync();
+
+            // If Autostart is not set, you have to manually start the stream again
+            /* await CameraStreamerReference.StartAsync(); */
+            mediaDevices = await CameraStreamerReference.GetCameraDevicesAsync();
+        }
+    }
+
+    private async void OnSelectMedia(string mediaDeviceId)
+    {
+        await CameraStreamerReference.ChangeCameraAsync(mediaDeviceId);
+    }
+
+    private volatile bool sending;
+    private async void OnFrameHandler(string data)
+    {
+        if (sending)
+        {
+            return;
+        }
+        try
+        {
+            data = data[(data.IndexOf(',') + 1)..];
+
+            var addItem = new ImageData(data) ;
+            var result = await Http.PostAsJsonAsync("ImageData", addItem);
+        }
+        finally
+        {
+            sending = false;
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using Billiard.UI;
 using Billiards.Base.Filters;
 using Billiards.Base.FilterSets;
+using Billiards.Wpf.UI;
 
-namespace Billiard.viewModels
+namespace Billiards.Wpf.ViewModels
 {
     public class FilterViewModel : ViewModel
     {

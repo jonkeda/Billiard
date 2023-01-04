@@ -1,21 +1,21 @@
-﻿using System.Collections.Generic;
-using Billiard.UI;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows;
+using Billiards.Base.FilterSets;
+using Billiards.Wpf.Extensions;
+using Billiards.Wpf.UI;
+using OpenCvSharp;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
-using System;
-using System.Globalization;
-using System.Linq;
-using Billiards.Base.FilterSets;
-using Billiards.Wpf.Extensions;
-using OpenCvSharp;
 using Rect = System.Windows.Rect;
 
-namespace Billiard.viewModels
+namespace Billiards.Wpf.ViewModels
 {
     public class CaptureViewModel : ViewModel
     {

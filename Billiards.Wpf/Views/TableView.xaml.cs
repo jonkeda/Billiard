@@ -1,4 +1,4 @@
-﻿namespace Billiard.views
+﻿namespace Billiards.Wpf.Views
 {
     public partial class TableView
     {

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Billiard.UI.Converters;
+namespace Billiards.Wpf.UI.Converters;
 
 public class PassFailConverter : BaseConverter, IValueConverter
 {

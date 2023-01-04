@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Billiard.UI
+namespace Billiards.Wpf.UI
 {
     public delegate Task CommandTaskDelegate();
 

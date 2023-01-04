@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Windows.Input;
-using Billiard.Extensions;
 using Billiards.Base.Exceptions;
-using Billiards.Base.Extensions;
+using Billiards.Wpf.Extensions;
 
-namespace Billiard.UI
+namespace Billiards.Wpf.UI
 {
     public class TargetCommand<T> : ICommand
     {

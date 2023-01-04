@@ -1,7 +1,6 @@
 ﻿using System.Xml.Serialization;
-using Billiard.UI;
 
-namespace Billiards.Base.UI;
+namespace Billiards.Wpf.UI;
 
 public abstract class TreeViewItemModel : PropertyNotifier, ITreeViewItem
 {

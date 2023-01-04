@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Billiard.Physics
+namespace Billiards.Base.Physics
 {
     struct Trajectory
     {

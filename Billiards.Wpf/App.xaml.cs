@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using Billiard.Physics;
-using Billiard.Threading;
-using Billiard.viewModels;
+using Billiards.Base.Physics;
 using Billiards.Base.Threading;
+using Billiards.Wpf.Threading;
+using Billiards.Wpf.ViewModels;
 
 namespace Billiards.Wpf
 {

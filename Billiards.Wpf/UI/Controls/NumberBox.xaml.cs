@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Billiard.UI.Controls
+namespace Billiards.Wpf.UI.Controls
 {
     /// <summary>
     /// Interaction logic for NumericEditCtrl.xaml

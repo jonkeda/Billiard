@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
-using Billiard.Utilities;
+using Billiards.Base.Utilities;
 
-namespace Billiard.Physics
+namespace Billiards.Base.Physics
 {
     public class Force
     {

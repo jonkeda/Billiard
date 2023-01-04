@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace Billiard.Physics;
+namespace Billiards.Base.Physics;
 
 public class SolutionCollection : Collection<Solution>
 {

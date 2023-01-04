@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Billiard.UI
+namespace Billiards.Wpf.UI
 {
     public class TargetTaskCommand<T> : ICommand
     {

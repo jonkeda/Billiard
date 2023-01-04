@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Billiard.Extensions
+namespace Billiards.Base.Extensions
 {
     public class ProcessEx
     {
