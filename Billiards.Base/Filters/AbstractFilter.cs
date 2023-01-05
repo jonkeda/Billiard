@@ -10,11 +10,11 @@ public abstract class AbstractFilter : PropertyNotifier
     private string? name;
     private bool enabled = true;
     private DrawingImage? drawingImage;
-    private FilterValueCollection? filterValues = new FilterValueCollection();
+    private FilterValueCollection filterValues = new FilterValueCollection();
 
     protected AbstractFilter? InputFilter { get; private set; }
 
-    public FilterValueCollection? FilterValues
+    public FilterValueCollection FilterValues
     {
         get { return filterValues; }
         private set { SetProperty(ref filterValues, value); }

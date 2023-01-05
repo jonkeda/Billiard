@@ -81,14 +81,14 @@ public class CaramboleDetector
     {
         if (image.Height > image.Width)
         {
-            int width = (image.Width * 1000) / image.Height;
+            int width = (image.Width * 960) / image.Height;
 
-            Cv2.Resize(image, image, new Size(width, 1000));
+            Cv2.Resize(image, image, new Size(width, 960));
         }
         else
         {
-            int height = (image.Width * 500) / image.Height;
-            Cv2.Resize(image, image, new Size(1000, height));
+            int height = (image.Width * 540) / image.Height;
+            Cv2.Resize(image, image, new Size(960, height));
         }
     }
 

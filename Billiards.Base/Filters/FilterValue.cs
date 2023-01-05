@@ -8,7 +8,7 @@ public class FilterValue
         Value = value;
     }
 
-    public FilterValue(string name, string text)
+    public FilterValue(string name, string? text)
     {
         Name = name;
         Text = text;

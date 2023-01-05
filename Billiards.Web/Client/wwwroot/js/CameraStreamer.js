@@ -28,9 +28,9 @@ var BlazorCameraStreamer;
                 return new CameraStreamerInterop();
             }
             /**
-             * Initializes the camera streamer - wihtout initializing the stream wont work
+             * Initializes the camera streamer - without initializing the stream wont work
              * @param video ElementReference of the video
-             * @param api Reference to the dotnet object that should recieve callbacks
+             * @param api Reference to the dotnet object that should receive callbacks
              * @param camera Device-string (id) of the camera that should be used for the stream
              */
             init(video, callOnFrameInvoke, api = null, onFrameInvokeName = null, width = 640, height = 360) {
@@ -61,7 +61,7 @@ var BlazorCameraStreamer;
                     this._stream = mediaStream;
                     // Add the stream of the chosen camera as src on the video element
                     this._video.srcObject = this._stream;
-                    // Add with anonymous function, not assigning directly (neccesarry, otherwise the method isn't in the scope anymore, e.g. can't access properties etc.)
+                    // Add with anonymous function, not assigning directly (necessary, otherwise the method isn't in the scope anymore, e.g. can't access properties etc.)
                     this._video.ontimeupdate = (ev) => this.onFrame(ev);
                 });
                 // Start the video element as soon as all metadata is loaded (this is needed as we get the mediastream object asynchronously in the code above)
@@ -95,21 +95,6 @@ var BlazorCameraStreamer;
                 this.start(newId);
             }
             /**
-             * Checks if the site has access to the camera(s) and asks for it if the access is currently denied
-             * @returns whether the site can access the camera
-             */
-            static getCameraAccess() {
-                return __awaiter(this, void 0, void 0, function* () {
-                    try {
-                        yield navigator.mediaDevices.getUserMedia({ video: true });
-                    }
-                    catch (_a) {
-                        return false;
-                    }
-                    return true;
-                });
-            }
-            /**
              * Gets all media-devices of kind 'videoinput' and returns them as a MediaDeviceInfo array
              */
             static getCameraDeviceList() {
@@ -132,7 +117,7 @@ var BlazorCameraStreamer;
             }
             /**
              * Invokes the dotnet object on the provided method with the given data
-             * @param data The string the dotnet method recieves
+             * @param data The string the dotnet method receives
              */
             invokeDotnetObject(data) {
                 if (this._callInvoke)
@@ -149,9 +134,24 @@ var BlazorCameraStreamer;
                 canvas.height = this._constraints.video["height"];
                 // Draw the current image of the stream on the canvas
                 canvas.getContext("2d").drawImage(this._video, 0, 0);
-                // Get the iamge as 64base string
-                let img = canvas.toDataURL("image/png");
+                // Get the image as 64 base string
+                let img = canvas.toDataURL("image/jpeg", 1);
                 this.invokeDotnetObject(img);
+            }
+            /**
+             * Checks if the site has access to the camera(s) and asks for it if the access is currently denied
+             * @returns whether the site can access the camera
+             */
+            static getCameraAccess() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        yield navigator.mediaDevices.getUserMedia({ video: true });
+                    }
+                    catch (_a) {
+                        return false;
+                    }
+                    return true;
+                });
             }
         }
         Scripts.CameraStreamerInterop = CameraStreamerInterop;

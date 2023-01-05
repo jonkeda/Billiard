@@ -1,4 +1,5 @@
 ﻿using Billiards.Base.Filters;
+using OpenCvSharp;
 
 namespace Billiards.Base.FilterSets;
 
@@ -21,7 +22,8 @@ public class TableDetectorSet : FilterSet
         MorphOpen();
         var flood = FloodFill(255);
         flood.MinimumArea = 14;
-        flood.MaximumArea = 99;
+        flood.MaximumArea = 80;
+        flood.SecondaryFloodFillFlags = FloodFillFlags.FixedRange;
 
         //flood.PointFilter = findPoint;
         var asMask = Mask();

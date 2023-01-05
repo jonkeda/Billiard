@@ -27,6 +27,9 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
     public int MinimumArea { get; set; }
     public int MaximumArea { get; set; } = 100;
 
+    public FloodFillFlags FloodFillFlags { get; set; } = FloodFillFlags.Link4;
+    public FloodFillFlags? SecondaryFloodFillFlags { get; set; } 
+
     public FloodFillFilter(AbstractFilter filter, int floodFillColor) : base(filter)
     {
         Name = "FloodFill";
@@ -35,29 +38,50 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
 
     protected override void ApplyFilter(Mat originalImage)
     {
-        if (FindArea(originalImage, 0))
+        FilterValues.Add("Minimumarea", MinimumArea);
+        FilterValues.Add("MaximumArea", MaximumArea);
+        FilterValues.Add("FloodFillFlags", FloodFillFlags.ToString());
+        FilterValues.Add("SecondaryFloodFillFlags", SecondaryFloodFillFlags?.ToString());
+
+
+        if (ApplyFilterArea(originalImage, FloodFillFlags))
         {
             return;
         }
-        if (FindArea(originalImage, 50))
+
+        if (SecondaryFloodFillFlags != null)
         {
-            return;
-        }
-        if (FindArea(originalImage, -50))
-        {
-            return;
-        }
-        if (FindArea(originalImage, 100))
-        {
-            return;
-        }
-        if (FindArea(originalImage, -100))
-        {
-            return;
+            ApplyFilterArea(originalImage, SecondaryFloodFillFlags.Value);
         }
     }
 
-    protected bool FindArea(Mat originalImage, int yStep)
+    protected bool ApplyFilterArea(Mat originalImage, FloodFillFlags floodFillFlags)
+    {
+        if (FindArea(originalImage, 0, floodFillFlags))
+        {
+            return true;
+        }
+        if (FindArea(originalImage, 50, floodFillFlags))
+        {
+            return true;
+        }
+        if (FindArea(originalImage, -50, floodFillFlags))
+        {
+            return true;
+        }
+        if (FindArea(originalImage, 100, floodFillFlags))
+        {
+            return true;
+        }
+        if (FindArea(originalImage, -100, floodFillFlags))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected bool FindArea(Mat originalImage, int yStep, FloodFillFlags floodFillFlags)
     {
         Mat input = GetInputMat();
         ResultMat = input.Clone();
@@ -74,7 +98,8 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
             mid = new Point(input.Cols / 2, input.Rows / 2 + yStep);
         }
         Cv2.FloodFill(ResultMat, newMask, mid, new Scalar(FloodFillColor), 
-            out boundingRect, floodFillDiff, floodFillDiff, (FloodFillFlags)(4 | (255 << 8)) );
+            out boundingRect, floodFillDiff, floodFillDiff, 
+            (FloodFillFlags)((int)floodFillFlags | (255 << 8)) );
         Mask = newMask.SubMat(1, newMask.Rows - 2, 1, newMask.Cols - 2);
 
         double area = boundingRect.Width * boundingRect.Height;
