@@ -306,8 +306,6 @@ namespace Billiards.Wpf.ViewModels
         {
             ThreadDispatcher.Invoke(() =>
             {
-                Resize(image);
-
                 CaptureImage?.Invoke(this, new CaptureEvent(image));
             });
         }
@@ -316,24 +314,9 @@ namespace Billiards.Wpf.ViewModels
         public event EventHandler<CaptureEvent> StreamImage;
         protected void OnStreamImage(Mat image)
         {
-            Resize(image);
             StreamImage?.Invoke(this, new CaptureEvent(image));
         }
 
-        private static void Resize(Mat image)
-        {
-            if (image.Height > image.Width)
-            {
-                int width = (image.Width * 1000) / image.Height;
-
-                Cv2.Resize(image, image, new Size(width, 1000));
-            }
-            else
-            {
-                int height = (image.Width * 500) / image.Height;
-                Cv2.Resize(image, image, new Size(1000, height));
-            }
-        }
 
         private readonly Timer timer;
 

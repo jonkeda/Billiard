@@ -22,6 +22,8 @@ public class CaramboleDetector
 
     public ResultModel ApplyFilters(Mat image)
     {
+        Resize(image);
+
         ResultModel result = new ResultModel
         {
             Image = image,
@@ -31,7 +33,8 @@ public class CaramboleDetector
 
         FilterSets.ApplyFilters(image);
 
-        if (BallResultFilter.ResultMat == null)
+        if (BallResultFilter.ResultMat == null
+            || PointsFilter.Points == null)
         {
             return result;
         }
@@ -72,6 +75,21 @@ public class CaramboleDetector
             WarpPerspective(result.Image, warpingMat, BallResultFilter.RedBallPoint)));
 
         return result;
+    }
+
+    private static void Resize(Mat image)
+    {
+        if (image.Height > image.Width)
+        {
+            int width = (image.Width * 1000) / image.Height;
+
+            Cv2.Resize(image, image, new Size(width, 1000));
+        }
+        else
+        {
+            int height = (image.Width * 500) / image.Height;
+            Cv2.Resize(image, image, new Size(1000, height));
+        }
     }
 
     public static Point2f? WarpPerspective(Mat frame, Mat warpingMat,

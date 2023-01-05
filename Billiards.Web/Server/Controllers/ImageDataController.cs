@@ -19,6 +19,8 @@ namespace Billiards.Web.Server.Controllers
 
             Mat mat = Mat.ImDecode(bytes);
 
+            //Mat mat = Cv2.ImRead(@"C:\Temp\Billiards\Ok\Ok\Ok\20221222_215004_HDR.jpg");
+
             ResultModel result = detector.ApplyFilters(mat);
 
             BallCollection balls = new ();
@@ -60,5 +62,8 @@ namespace Billiards.Web.Server.Controllers
         {
             return (Billiards.Web.Shared.BallColor) color;
         }
+
+
+
     }
 }

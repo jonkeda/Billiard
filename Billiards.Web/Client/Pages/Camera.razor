@@ -5,9 +5,8 @@
 @using Billiards.Web.Shared
 
 <div id="canvas" style="position: relative; width: 480px; height: 270px; background-color: antiquewhite;">
-    <div style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 1">
     <CameraStreamer id="videoContainer"
-                        Style="width: 480px; height: 270px;"
+                    Style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 1"
                         @ref="CameraStreamerReference"
                     Width="1920"
                     Height="1080"
@@ -15,9 +14,23 @@
                     OnFrame="OnFrameHandler"
                     CameraID="@cameraId"
                     Autostart/>
-    </div>
-    <svg id="svgContainer" style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 2">
-        <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/>
+    <svg id="svgContainer" viewBox="0 0 1920 1080" style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 2">
+        
+        @{
+            if (balls != null)
+            {
+                foreach (var ball in balls)
+                {
+                    if (ball.ImageAbsolutePoint != null)
+                    {
+                        <circle cx="@ball.ImageAbsolutePoint.X" cy="@ball.ImageAbsolutePoint.Y" r="60" stroke="@ball.Color" stroke-width="20" fill-opacity="0" />
+                    }
+                }
+            }
+        }
+        
+        <polygon points="@tableCorners" stroke="green" stroke-width="15" fill-opacity="0" />
+
         Sorry, your browser does not support inline SVG.
     </svg>
 </div>
@@ -38,6 +51,16 @@
 
     string cameraId = null;
     MediaDeviceInfoModel[]? mediaDevices;
+
+    int Width = 1920;
+    int Height = 1080;
+
+    BallCollection? balls;
+
+    int redY = 50;
+    int redX = 50;
+
+    string? tableCorners;
 
     private async void OnRenderedHandler()
     {
@@ -71,11 +94,51 @@
             data = data[(data.IndexOf(',') + 1)..];
 
             var addItem = new ImageData(data) ;
-            var result = await Http.PostAsJsonAsync("ImageData", addItem);
+            HttpResponseMessage response = await Http.PostAsJsonAsync("ImageData", addItem);
+            TableDetectionResult? result = await response.Content.ReadFromJsonAsync<TableDetectionResult>();
+
+            if (result?.Table == null)
+            {
+                // hide svg
+            }
+            else
+            {
+                if (result.Table.Corners.Count < 4)
+                {
+                    // hide table
+                }
+                else
+                {
+                    string corners = "";
+                    foreach (Point point in result.Table.Corners)
+                    {
+                        corners += ToAbsolutePoint(point).ToString();
+                        corners += " ";
+                    }
+                    tableCorners = corners;
+                }
+                if (result.Balls != null)
+                {
+                    foreach (Ball ball in result.Balls)
+                    {
+                        if (ball.ImagePoint != null)
+                        {
+                            ball.ImageAbsolutePoint = ToAbsolutePoint(ball.ImagePoint);
+                        }
+                    }
+                    balls = result.Balls;
+                }
+            }
         }
         finally
         {
             sending = false;
         }
     }
+
+    public Point ToAbsolutePoint(Point p)
+    {
+        return new Point(p.X * Width, p.Y * Height);
+    }
+
 }

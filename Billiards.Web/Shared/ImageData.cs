@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace Billiards.Web.Shared
 {
@@ -11,9 +12,7 @@ namespace Billiards.Web.Shared
 
         public string Data { get; set; }
     }
-
-
-
+    
     public class Table
     {
         public Table(PointCollection corners)
@@ -46,6 +45,7 @@ namespace Billiards.Web.Shared
 
         public BallColor Color { get; }
         public Point? ImagePoint { get; }
+        public Point? ImageAbsolutePoint { get; set; }
         public Point? TablePoint { get; }
     }
 
@@ -67,11 +67,17 @@ namespace Billiards.Web.Shared
 
         public float X { get; set; }
         public float Y { get; set; }
+
+        public override string ToString()
+        {
+            return X.ToString("F1", CultureInfo.InvariantCulture) + "," +
+                   Y.ToString("F1", CultureInfo.InvariantCulture);
+        }
     }
 
     public class TableDetectionResult
     {
-        public TableDetectionResult(Table? table, BallCollection balls)
+        public TableDetectionResult(Table? table, BallCollection? balls)
         {
             Table = table;
             Balls = balls;
@@ -79,7 +85,7 @@ namespace Billiards.Web.Shared
 
         public Table? Table { get; set; }
 
-        public BallCollection Balls { get; set; }
+        public BallCollection? Balls { get; set; }
     }
 
 }
