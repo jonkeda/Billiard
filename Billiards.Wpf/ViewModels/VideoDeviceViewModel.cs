@@ -54,7 +54,7 @@ namespace Billiards.Wpf.ViewModels
             {
                 if (camera == null && SelectedVideoDevice != null)
                 {
-                    camera = new VideoCapture(SelectedVideoDevice.Index);
+                    camera = new VideoCapture(SelectedVideoDevice.Index, VideoCaptureAPIs.DSHOW );
                 }
 
                 return camera;

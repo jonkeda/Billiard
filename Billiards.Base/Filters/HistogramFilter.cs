@@ -48,6 +48,11 @@ public class HistogramFilter : AbstractFilter
 
         for (int i = 0; i < hists.Count; i++)
         {
+            float mean = CalculateMean(hists[i]);
+            if (mean == float.NaN)
+            {
+                string a = "?";
+            }
             FilterValues.Add($"{i} Mean", System.Math.Round(CalculateMean(hists[i]), 0));
             FilterValues.Add($"{i} Max", CalculateMax(hists[i]));
         }

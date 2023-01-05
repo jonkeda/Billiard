@@ -19,8 +19,11 @@ namespace Billiards.Wpf.ViewModels
     {
         public VideoDeviceViewModel VideoDevice { get; }
 
-        public float Length { get; } = 2100 * 0.9f; // 1800; // 1200;
-        public float Width { get; } = 1050 * 0.9f; // 900;
+        public float ImageLength { get; } = 2100 * 0.9f; // 1800; // 1200;
+        public float ImageWidth { get; } = 1050 * 0.9f; // 900;
+
+        public float Length { get; } = 2000; // * 0.9f; // 1800; // 1200;
+        public float Width { get; } = 1000; // * 0.9f; // 900;
         public float Radius { get; } 
 
         private ImageSource? output;

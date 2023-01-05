@@ -1,4 +1,5 @@
 ﻿using Billiards.Base.Filters;
+using OpenCvSharp;
 
 namespace Billiards.Base.FilterSets;
 

@@ -9,19 +9,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        
-        <Canvas Width="{Binding Length}" Height="{Binding Width}">
-            <Image Width="{Binding Length}" Height="{Binding Width}" 
+
+        <Canvas Width="{Binding ImageLength}" Height="{Binding ImageWidth}" VerticalAlignment="Bottom" >
+            <Image Width="{Binding ImageLength}" Height="{Binding ImageWidth}" 
                    Source="{Binding BackGroundImage}"
-                   Stretch="None" />
+                   Stretch="Uniform" />
 
-            <Image Width="{Binding Length}" Height="{Binding Width}" 
+            <Image Width="{Binding ImageLength}" Height="{Binding ImageWidth}" 
                    Source="{Binding SolutionsImage}"
-                   Stretch="None" />
+                   Stretch="Uniform" />
 
-            <Image Width="{Binding Length}" Height="{Binding Width}" 
+            <Image Width="{Binding ImageLength}" Height="{Binding ImageWidth}" 
                    Source="{Binding Output}"
-                   Stretch="None" />
+                   Stretch="Uniform" />
         </Canvas>
 
         <views:VideoDeviceView DataContext="{Binding VideoDevice}" />
