@@ -6,29 +6,24 @@
 @using Billiards.Web.Client.Models
 @using Billiards.Web.Shared
 
-@* <p>@screenHeight @screenWidth @screenOrientation</p> *@
-
-@if (mode == CameraMode.Camera)
+@if (mode == CameraMode.Start)
 {
-    if (mediaDevices != null)
-    {
-        foreach (var mediaDevice in mediaDevices)
-        {
-            <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))">
-                <span class="oi oi-camera-slr" aria-hidden="true"></span>
-            </button>
-        }
-    }
+    <button @onclick="Start">
+        Start
+    </button>
+}
+else if (mode == CameraMode.Camera)
+{
     <div id="canvas" style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
         <CameraStreamer id="videoContainer"
                     Style=@cameraStyle
-                        @ref="CameraStreamerReference"
-                        Width="@VideoWidth"
-                        Height="@VideoHeight"
-                        OnRendered="OnRenderedHandler"
-                        OnFrame="OnFrameHandler"
-                        CameraID="@cameraId"
-                        Autostart/>
+                    @ref="CameraStreamerReference"
+                    Width="@VideoWidth"
+                    Height="@VideoHeight"
+                    OnRendered="OnRenderedHandler"
+                    OnFrame="OnFrameHandler"
+                    CameraID="@cameraId"
+                    Autostart />
         <svg id="svgContainer" viewBox="0 0 @screenWidth @screenHeight"
          style="position: absolute; top: 0px; left: 0px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2">
 
@@ -52,10 +47,26 @@
             Sorry, your browser does not support inline SVG.
         </svg>
 
-        <button style="position: absolute; bottom: 10px; width: @screenWidthPx; height: 30px; z-index: 3; border: none; background: none; "
+        <button style="position: absolute; bottom: 20px; width: @screenWidthPx; height: 30px; z-index: 3; border: none; background: none; border-radius: 50%;"
             @onclick="MakePrediction">
             <span class="oi oi-circle-check" style="background: lightgray; color: green;font-size: 40px; text-align: center" aria-hidden="true"></span>
         </button>
+
+        <div style="position: absolute; top: 5px; z-index: 4">
+            <p style="background: white">@screenWidth @screenHeight @screenOrientation</p>
+
+            @if (mediaDevices != null)
+            {
+                foreach (var mediaDevice in mediaDevices)
+                {
+                    <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))"
+                            style="margin-left: 40px">
+                        <span class="oi oi-camera-slr" aria-hidden="true"></span>
+                    </button>
+                }
+            }
+
+        </div>
 
     </div>
 }
@@ -83,7 +94,7 @@ else if (mode == CameraMode.Prediction)
                         if (ball.TableAbsolutePoint != null)
                         {
                             <circle cx="@ball.TableAbsolutePoint.X" cy="@ball.TableAbsolutePoint.Y"
-                                r="@ballRadius" fill="@ball.Color" />
+                    r="@ballRadius" fill="@ball.Color" />
                         }
                     }
                 }
@@ -92,7 +103,7 @@ else if (mode == CameraMode.Prediction)
             Sorry, your browser does not support inline SVG.
         </svg>
 
-        <button style="position: absolute; bottom: 10px; width: @screenWidthPx; height: 30px; z-index: 3; border: none; background: none; "
+        <button style="position: absolute; bottom: 10px; width: @screenWidthPx; height: 30px; z-index: 3; border: none; background: none; border-radius: 50%;"
             @onclick="OpenCamera">
             <span class="oi oi-camera-slr" style="background: lightgray; color: green;font-size: 40px; text-align: center" aria-hidden="true"></span>
         </button>
@@ -105,7 +116,7 @@ else if (mode == CameraMode.Prediction)
     string cameraId = null;
     MediaDeviceInfoModel[]? mediaDevices;
 
-    CameraMode mode = CameraMode.Camera;
+    CameraMode mode = CameraMode.Start;
 
     const int VideoWidth = 960;
     const int VideoHeight = 540;
@@ -136,9 +147,7 @@ else if (mode == CameraMode.Prediction)
     private async void OnRenderedHandler()
     {
         await SetSize();
-
-
-        // Check camera-access or ask user, if it's not allowed currently
+    // Check camera-access or ask user, if it's not allowed currently
         if (await CameraStreamerReference.GetCameraAccessAsync())
         {
             // Reloading re-initializes the stream and starts the
@@ -167,7 +176,15 @@ else if (mode == CameraMode.Prediction)
         {
             screenWidth = screenWidth * 9 / 10;
         }
-        screenHeight = screenWidth * 9 / 16;
+        if (dimension.Orientation == ScreenOrientation.Portrait)
+        {
+            screenHeight = screenWidth * 16 / 9;
+
+        }
+        else
+        {
+            screenHeight = screenWidth * 9 / 16;
+        }
 
         finderRadius = Math.Max(screenWidth, screenHeight) / 60;
         finderStroke = Math.Max(screenWidth, screenHeight) / 120;
@@ -197,7 +214,7 @@ else if (mode == CameraMode.Prediction)
         {
             data = data[(data.IndexOf(',') + 1)..];
 
-            var addItem = new TableRecognitionRequest(data) ;
+            var addItem = new TableRecognitionRequest(data);
             HttpResponseMessage response = await Http.PostAsJsonAsync("Recognition", addItem);
             if (!response.IsSuccessStatusCode)
             {
@@ -283,4 +300,9 @@ else if (mode == CameraMode.Prediction)
         mode = CameraMode.Camera;
     }
 
+    public async Task Start()
+    {
+        await JsRuntime.OpenFullscreen();
+        mode = CameraMode.Camera;
+    }
 }

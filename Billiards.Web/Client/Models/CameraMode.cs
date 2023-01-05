@@ -2,6 +2,7 @@
 
 public enum CameraMode
 {
-    Camera,
-    Prediction
+    Start = 0,
+    Camera = 1,
+    Prediction = 2
 }
