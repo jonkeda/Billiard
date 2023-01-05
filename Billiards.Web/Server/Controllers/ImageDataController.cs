@@ -8,10 +8,10 @@ namespace Billiards.Web.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ImageDataController : ControllerBase
+    public class RecognitionController : ControllerBase
     {
         [HttpPost]
-        public TableDetectionResult DetectTable(ImageData image)
+        public TableRecognitionResponse DetectTable(TableRecognitionRequest image)
         {
             byte[] bytes = Convert.FromBase64String(image.Data);
 
@@ -46,7 +46,7 @@ namespace Billiards.Web.Server.Controllers
             }
             Table table = new (corners);
 
-            return new TableDetectionResult(table, balls);
+            return new TableRecognitionResponse(table, balls);
         }
 
         private static Point? ConvertPoint(Point2f? point)

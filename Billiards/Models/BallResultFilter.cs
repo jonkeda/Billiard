@@ -10,22 +10,6 @@ using Emgu.CV;
 
 namespace Billiard.Models;
 
-public enum BallColor
-{
-    Red = 0,
-    Yellow = 1,
-    White  = 2
-}
-
-public class BallResult
-{
-    public Contour Contour { get; set; }
-    public double Mean { get; set; }
-    public double Max { get; set; }
-    public int Index { get; set; }
-    public BallColor Color { get; set; }
-}
-
 public class BallResultFilter : AbstractFilter
 {
     public BallResultFilter(AbstractFilter filter) : base(filter)

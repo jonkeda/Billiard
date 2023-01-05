@@ -12,16 +12,6 @@ using Pen = System.Windows.Media.Pen;
 
 namespace Billiard.Models;
 
-public enum ContourType
-{
-    Points,
-    Rectangle,
-    Circle,
-    Ellipse,
-    ConvexHulls,
-    ConvexHull
-}
-
 public class ContoursFilter : AbstractFilter, IContourFilter
 {
     private ContourType contourType = ContourType.Ellipse;

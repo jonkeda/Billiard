@@ -1,49 +1,91 @@
 ﻿@page "/camera"
+@inject IJSRuntime JsRuntime
 @inject HttpClient Http
 @using Billiards.Web.Client.Components
+@using Billiards.Web.Client.Extensions
 @using Billiards.Web.Client.Models
 @using Billiards.Web.Shared
 
-<div id="canvas" style="position: relative; width: 480px; height: 270px; background-color: antiquewhite;">
-    <CameraStreamer id="videoContainer"
-                    Style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 1"
-                        @ref="CameraStreamerReference"
-                    Width="960"
-                    Height="540"
-                    OnRendered="OnRenderedHandler"
-                    OnFrame="OnFrameHandler"
-                    CameraID="@cameraId"
-                    Autostart/>
-    <svg id="svgContainer" viewBox="0 0 1920 1080" style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 2">
-        
-        @{
-            if (balls != null)
-            {
-                foreach (var ball in balls)
-                {
-                    if (ball.ImageAbsolutePoint != null)
-                    {
-                        <circle cx="@ball.ImageAbsolutePoint.X" cy="@ball.ImageAbsolutePoint.Y" r="60" stroke="@ball.Color" stroke-width="20" fill-opacity="0" />
-                    }
-                }
-            }
-        }
-        
-        <polygon points="@tableCorners" stroke="green" stroke-width="15" fill-opacity="0" />
+@* <p>@screenHeight @screenWidth @screenOrientation</p> *@
 
-        Sorry, your browser does not support inline SVG.
-    </svg>
-</div>
-
-
-@{
+@if (mode == CameraMode.Camera)
+{
     if (mediaDevices != null)
     {
         foreach (var mediaDevice in mediaDevices)
         {
-            <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))">@mediaDevice.Label</button>
+            <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))">
+                <span class="oi oi-camera-slr" aria-hidden="true"></span>
+            </button>
         }
     }
+    <div id="canvas" style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
+        <CameraStreamer id="videoContainer"
+                    Style=@cameraStyle
+                        @ref="CameraStreamerReference"
+                        Width="@VideoWidth"
+                        Height="@VideoHeight"
+                        OnRendered="OnRenderedHandler"
+                        OnFrame="OnFrameHandler"
+                        CameraID="@cameraId"
+                        Autostart/>
+        <svg id="svgContainer" viewBox="0 0 @screenWidth @screenHeight"
+         style="position: absolute; top: 0px; left: 0px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2">
+
+            @{
+                if (balls != null)
+                {
+                    foreach (var ball in balls)
+                    {
+                        if (ball.ImageAbsolutePoint != null)
+                        {
+                            <circle cx="@ball.ImageAbsolutePoint.X" cy="@ball.ImageAbsolutePoint.Y" r="@finderRadius"
+                    stroke="@ball.Color" stroke-width="@finderStroke" fill-opacity="0" stroke-opacity="0.5" />
+                        }
+                    }
+                }
+            }
+
+            <polygon points="@tableCorners" stroke="green"
+                 stroke-width="@finderStroke" stroke-opacity="0.8" fill-opacity="0" />
+
+            Sorry, your browser does not support inline SVG.
+        </svg>
+
+        <button style="position: absolute; bottom: 10px; width: @screenWidthPx; height: 30px; z-index: 3; border: none; background: none; "
+            @onclick="MakePrediction">
+            <span class="oi oi-circle-check" style="background: lightgray; color: green;font-size: 40px; text-align: center" aria-hidden="true"></span>
+        </button>
+
+    </div>
+}
+else if (mode == CameraMode.Prediction)
+{
+    <div id="canvas" style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
+        <svg id="svgContainer" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid meet"
+         style="position: absolute; top: 1px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2; background-color:green">
+            @{
+                if (balls != null)
+                {
+                    foreach (var ball in balls)
+                    {
+                        if (ball.TableAbsolutePoint != null)
+                        {
+                            <circle cx="@ball.TableAbsolutePoint.X" cy="@ball.TableAbsolutePoint.Y"
+                                r="@ballRadius" fill="@ball.Color" />
+                        }
+                    }
+                }
+            }
+
+            Sorry, your browser does not support inline SVG.
+        </svg>
+
+        <button style="position: absolute; bottom: 10px; width: @screenWidthPx; height: 30px; z-index: 3; border: none; background: none; "
+            @onclick="OpenCamera">
+            <span class="oi oi-camera-slr" style="background: lightgray; color: green;font-size: 40px; text-align: center" aria-hidden="true"></span>
+        </button>
+    </div>
 }
 
 @code {
@@ -52,18 +94,38 @@
     string cameraId = null;
     MediaDeviceInfoModel[]? mediaDevices;
 
-    int Width = 1920;
-    int Height = 1080;
+    CameraMode mode = CameraMode.Camera;
+
+    const int VideoWidth = 960;
+    const int VideoHeight = 540;
+
+    const int TableWidth = 2000;
+    const int TableHeight = 1000;
+
+    int screenWidth = 480;
+    int screenHeight = 270;
+
+    string screenWidthPx = "480px";
+    string screenHeightPx = "270px";
+
+    int finderStroke = 8;
+    int finderRadius = 16;
+
+    int ballRadius = 16;
+
+    string cameraStyle;
+
+    ScreenOrientation screenOrientation;
 
     BallCollection? balls;
-
-    int redY = 50;
-    int redX = 50;
 
     string? tableCorners;
 
     private async void OnRenderedHandler()
     {
+        await SetSize();
+
+
         // Check camera-access or ask user, if it's not allowed currently
         if (await CameraStreamerReference.GetCameraAccessAsync())
         {
@@ -75,6 +137,36 @@
             /* await CameraStreamerReference.StartAsync(); */
             mediaDevices = await CameraStreamerReference.GetCameraDevicesAsync();
         }
+    }
+
+    private async Task SetSize()
+    {
+        var dimension = await JsRuntime.GetWindowDimension();
+        screenWidth = dimension.Width;
+        if (screenWidth > 3 * 480)
+        {
+            screenWidth = Math.Min(screenWidth, 3 * 480);
+        }
+        else if (screenWidth > 2 * 480)
+        {
+            screenWidth = Math.Min(screenWidth, 2 * 480);
+        }
+        else
+        {
+            screenWidth = screenWidth * 9 / 10;
+        }
+        screenHeight = screenWidth * 9 / 16;
+
+        finderRadius = Math.Max(screenWidth, screenHeight) / 60;
+        finderStroke = Math.Max(screenWidth, screenHeight) / 120;
+        ballRadius = Math.Max(screenWidth, screenHeight) / 30;
+
+        screenHeightPx = $"{screenHeight}px";
+        screenWidthPx = $"{screenWidth}px";
+        screenOrientation = dimension.Orientation;
+
+        cameraStyle = $"position: absolute; top: 0px; left: 0px; width: {screenWidthPx}; height: {screenHeightPx}; z-index: 1";
+
     }
 
     private async void OnSelectMedia(string mediaDeviceId)
@@ -93,9 +185,9 @@
         {
             data = data[(data.IndexOf(',') + 1)..];
 
-            var addItem = new ImageData(data) ;
-            HttpResponseMessage response = await Http.PostAsJsonAsync("ImageData", addItem);
-            TableDetectionResult? result = await response.Content.ReadFromJsonAsync<TableDetectionResult>();
+            var addItem = new TableRecognitionRequest(data) ;
+            HttpResponseMessage response = await Http.PostAsJsonAsync("Recognition", addItem);
+            TableRecognitionResponse? result = await response.Content.ReadFromJsonAsync<TableRecognitionResponse>();
 
             if (result?.Table == null)
             {
@@ -112,7 +204,7 @@
                     string corners = "";
                     foreach (Point point in result.Table.Corners)
                     {
-                        corners += ToAbsolutePoint(point).ToString();
+                        corners += ToImageAbsolutePoint(point).ToString();
                         corners += " ";
                     }
                     tableCorners = corners;
@@ -123,7 +215,11 @@
                     {
                         if (ball.ImagePoint != null)
                         {
-                            ball.ImageAbsolutePoint = ToAbsolutePoint(ball.ImagePoint);
+                            ball.ImageAbsolutePoint = ToImageAbsolutePoint(ball.ImagePoint);
+                        }
+                        if (ball.TablePoint != null)
+                        {
+                            ball.TableAbsolutePoint = ToTableAbsolutePoint(ball.TablePoint);
                         }
                     }
                     balls = result.Balls;
@@ -136,9 +232,35 @@
         }
     }
 
-    public Point ToAbsolutePoint(Point p)
+    public Point ToTableAbsolutePoint(Point p)
     {
-        return new Point(p.X * Width, p.Y * Height);
+        return new Point(p.X * TableWidth, p.Y * TableHeight);
+    }
+
+    public Point ToImageAbsolutePoint(Point p)
+    {
+        return new Point(p.X * screenWidth, p.Y * screenHeight);
+    }
+
+    public void MakePrediction()
+    {
+        mode = CameraMode.Prediction;
+    }
+
+    public async Task OpenCamera()
+    {
+        if (balls == null
+            || balls.Count < 3)
+        {
+            return;
+        }
+
+        mode = CameraMode.Camera;
+
+        var request = new PredictionRequest(balls) ;
+        HttpResponseMessage response = await Http.PostAsJsonAsync("Prediction", request);
+        // TableDetectionResult? result = await response.Content.ReadFromJsonAsync<TableDetectionResult>();
+
     }
 
 }

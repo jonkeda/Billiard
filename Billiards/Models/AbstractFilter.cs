@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 using Billiard.Camera.vision.Geometries;
@@ -7,41 +6,6 @@ using Billiard.UI;
 using Emgu.CV;
 
 namespace Billiard.Models;
-
-public class FilterValueCollection : ObservableCollection<FilterValue>
-{
-    public void Add(string name, double value)
-    {
-        Add(new FilterValue(name, value));
-    }
-
-    public void Add(string name, string text)
-    {
-        Add(new FilterValue(name, text));
-    }
-
-}
-
-public class FilterValue
-{
-    public FilterValue(string name, double value)
-    {
-        Name = name;
-        Value = value;
-    }
-
-    public FilterValue(string name, string text)
-    {
-        Name = name;
-        Text = text;
-    }
-
-    public string Name { get; set; }
-    public double Value { get; set; }
-
-    public string Text { get; set; }
-
-}
 
 public abstract class AbstractFilter : PropertyNotifier
 {

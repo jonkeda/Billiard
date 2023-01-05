@@ -633,18 +633,4 @@ namespace Billiard.Physics
             return new Point(p.X * LengthD, p.Y * WidthD);
         }
     }
-
-    public class SolutionCollection : Collection<Solution>
-    {
-    }
-
-    public class Solution
-    {
-        public CollisionCollection Collections { get; }
-
-        public Solution(CollisionCollection collections)
-        {
-            Collections = collections;
-        }
-    }
 }

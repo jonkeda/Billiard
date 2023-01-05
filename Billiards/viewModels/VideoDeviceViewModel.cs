@@ -356,15 +356,4 @@ namespace Billiard.viewModels
             OnStreamImage(Camera.QueryFrame());
         }
     }
-
-    public class CaptureEvent : EventArgs
-    {
-        public CaptureEvent(Mat image)
-        {
-            Image = image;
-        }
-
-        public Mat Image { get; }
-    }
-
 }

@@ -3,11 +3,6 @@ using System.Globalization;
 
 namespace Billiard.Extensions
 {
-    public static class DecimalExtension
-    {
-
-    }
-
     public static class IntExtensions
     {
         public static CultureInfo Culture = new CultureInfo("nl-NL");
