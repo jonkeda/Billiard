@@ -55,13 +55,12 @@ namespace Billiards.Base.Physics
 
         #region Physic Simulation
 
-        public void CalculateSolutions(ResultModel result)
+        public bool CalculateSolutions(ResultModel result)
         {
-            if (result.Image == null
-                || result.Balls.Count < 3
+            if (result.Balls.Count < 3
                 || result.Balls.Any(b => !b.TableRelativePosition.HasValue))
             {
-                return;
+                return false;
             }
 
             foreach (var ball in result.Balls)
@@ -71,11 +70,12 @@ namespace Billiards.Base.Physics
                     PBall? pBall = this.balls.Find(b => b.BallColor == ball.Color);
                     if (pBall != null)
                     {
-                        pBall.position = ToAbsolutePoint(result.Image, ball.TableRelativePosition.Value);
+                        pBall.position = ToAbsolutePoint(ball.TableRelativePosition.Value);
                     }
                 }
             }
             result.Problems = CalculateSolutions(result.OnMainBall, result.Power);
+            return true;
         }
 
         public ProblemCollection CalculateSolutions(bool onMainBall, float power)
@@ -374,13 +374,9 @@ namespace Billiards.Base.Physics
             }
         }
 
-        private Vector2 ToAbsolutePoint(Mat frame, Point2f p)
+        private Vector2 ToAbsolutePoint(Point2f p)
         {
-/*            if (frame.Height > frame.Width)
-            {
-                return new Vector2(p.Y * Length, Width - (p.X * Width));
-            }
-*/            return new Vector2(p.X * Length, p.Y * Width);
+            return new Vector2(p.X * Length, p.Y * Width);
         }
 
 

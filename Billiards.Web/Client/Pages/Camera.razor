@@ -65,6 +65,17 @@ else if (mode == CameraMode.Prediction)
         <svg id="svgContainer" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid meet"
          style="position: absolute; top: 1px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2; background-color:green">
             @{
+                if (problems != null)
+                {
+                    foreach (Problem problem in problems)
+                    {
+                        foreach (Solution solution in problem.Solutions)
+                        {
+                            <polyline points="@solution.PointsAsString()"
+                      style="fill:none;stroke:@problem.Color;stroke-width:3" />
+                        }
+                    }
+                }
                 if (balls != null)
                 {
                     foreach (var ball in balls)
@@ -118,6 +129,7 @@ else if (mode == CameraMode.Prediction)
     ScreenOrientation screenOrientation;
 
     BallCollection? balls;
+    ProblemCollection? problems;
 
     string? tableCorners;
 
@@ -187,9 +199,15 @@ else if (mode == CameraMode.Prediction)
 
             var addItem = new TableRecognitionRequest(data) ;
             HttpResponseMessage response = await Http.PostAsJsonAsync("Recognition", addItem);
+            if (!response.IsSuccessStatusCode)
+            {
+                return;
+            }
+
             TableRecognitionResponse? result = await response.Content.ReadFromJsonAsync<TableRecognitionResponse>();
 
-            if (result?.Table == null)
+            if (mode != CameraMode.Camera
+                || result?.Table == null)
             {
                 // hide svg
             }
@@ -242,25 +260,27 @@ else if (mode == CameraMode.Prediction)
         return new Point(p.X * screenWidth, p.Y * screenHeight);
     }
 
-    public void MakePrediction()
-    {
-        mode = CameraMode.Prediction;
-    }
-
-    public async Task OpenCamera()
+    public async Task MakePrediction()
     {
         if (balls == null
             || balls.Count < 3)
         {
             return;
         }
-
-        mode = CameraMode.Camera;
-
-        var request = new PredictionRequest(balls) ;
+        mode = CameraMode.Prediction;
+        var request = new PredictionRequest(balls);
         HttpResponseMessage response = await Http.PostAsJsonAsync("Prediction", request);
-        // TableDetectionResult? result = await response.Content.ReadFromJsonAsync<TableDetectionResult>();
+        if (!response.IsSuccessStatusCode)
+        {
+            return;
+        }
+        PredictionResponse? result = await response.Content.ReadFromJsonAsync<PredictionResponse>();
+        problems = result?.Problems;
+    }
 
+    public void OpenCamera()
+    {
+        mode = CameraMode.Camera;
     }
 
 }

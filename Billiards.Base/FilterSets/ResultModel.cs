@@ -5,6 +5,11 @@ namespace Billiards.Base.FilterSets
 {
     public class ResultModel
     {
+        public ResultModel()
+        {
+            Now = DateTime.Now;
+        }
+
         public Mat? Image { get; set; }
 
         public List<Point2f>? Corners { get; set; }
@@ -12,7 +17,7 @@ namespace Billiards.Base.FilterSets
         public ResultBallCollection Balls { get; set; } = new();
 
         public CaramboleDetector? Detector { get; set; }
-        public DateTime Now { get; set; }
+        public DateTime Now { get; }
 
         public bool OnMainBall { get; set; } = true;
 

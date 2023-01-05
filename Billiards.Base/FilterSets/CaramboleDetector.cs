@@ -27,8 +27,7 @@ public class CaramboleDetector
         ResultModel result = new ResultModel
         {
             Image = image,
-            Detector = this,
-            Now = DateTime.Now
+            Detector = this
         };
 
         FilterSets.ApplyFilters(image);
