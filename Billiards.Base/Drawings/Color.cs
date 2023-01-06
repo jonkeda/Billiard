@@ -2,12 +2,12 @@
 
 public class Color
 {
-    public int A { get; }
-    public int R { get; }
-    public int G { get; }
-    public int B { get; }
+    public byte A { get; }
+    public byte R { get; }
+    public byte G { get; }
+    public byte B { get; }
 
-    public Color(int a, int r, int g, int b)
+    public Color(byte a, byte r, byte g, byte b)
     {
         A = a;
         R = r;
@@ -15,12 +15,12 @@ public class Color
         B = b;
     }
 
-    public static Color FromRgb(int r, int g, int b)
+    public static Color FromRgb(byte r, byte g, byte b)
     {
         return new Color(255, r, g, b);
     }
 
-    public static Color FromArgb(int a, int r, int g, int b)
+    public static Color FromArgb(byte a, byte r, byte g, byte b)
     {
         return new Color(a, r, g, b);
     }

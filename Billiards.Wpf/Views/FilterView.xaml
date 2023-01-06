@@ -6,6 +6,7 @@
              xmlns:viewModel="clr-namespace:Billiards.Wpf.ViewModels"
              xmlns:views="clr-namespace:Billiards.Wpf.Views"
              xmlns:converters="clr-namespace:Billiards.Wpf.UI.Converters"
+             xmlns:drawings="clr-namespace:Billiards.Wpf.Drawings"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=false, Type={x:Type viewModel:FilterViewModel}}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -55,7 +56,7 @@
                                 <Image Source="{Binding ResultMat, Converter={x:Static converters:Cv.Mat2ImageSource}}" 
                                        Height="60" Width="200" Stretch="Uniform" />
                                 <Image  Opacity="0.5" Height="60" Width="200" Stretch="Uniform"
-                                        Source="{Binding DrawingImage}" />
+                                        Source="{Binding DrawingImage, Converter={x:Static drawings:DrawingImageConverter.Instance}}" />
                             </Grid>
                         </StackPanel>
                     </DataTemplate>
@@ -83,7 +84,7 @@
                         <TextBlock HorizontalAlignment="Center" 
                                 Text="{Binding SelectedFilter.Name}" />
                         <Image Source="{Binding SelectedFilter.ResultMat, Converter={x:Static converters:Cv.Mat2ImageSource}}"/>
-                        <Image Opacity="0.5" Source="{Binding SelectedFilter.DrawingImage}" />
+                        <Image Opacity="0.5" Source="{Binding SelectedFilter.DrawingImage, Converter={x:Static drawings:DrawingImageConverter.Instance}}" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Mask">

@@ -12,4 +12,9 @@ public class TextShape : AbstractShape
         FormattedText = formattedText;
         Position = position;
     }
+
+    public override void Render(IRenderer wpfRenderer)
+    {
+        wpfRenderer.DrawText(FormattedText, Position);
+    }
 }

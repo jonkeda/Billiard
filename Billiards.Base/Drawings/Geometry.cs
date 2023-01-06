@@ -2,5 +2,5 @@
 
 public abstract class Geometry
 {
-
+    public IPlatformGeometry PlatformGeometry { get; set; }
 }

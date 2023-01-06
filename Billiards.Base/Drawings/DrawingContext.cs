@@ -16,7 +16,7 @@ public class DrawingContext : IDisposable
         drawingVisual.Shapes.Add(shape);
     }
 
-    public void DrawGeometry(Brush brush, Pen pen, Geometry geometry)
+    public void DrawGeometry(Brush? brush, Pen? pen, Geometry geometry)
     {
         AddShape(new GeometryShape(brush, pen, geometry));
     }

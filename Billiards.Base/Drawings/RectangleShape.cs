@@ -10,4 +10,9 @@ public class RectangleShape : AbstractShape
     {
         Rect = rect;
     }
+
+    public override void Render(IRenderer wpfRenderer)
+    {
+        wpfRenderer.DrawRectangle(Brush, Pen, Rect);
+    }
 }

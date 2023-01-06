@@ -93,7 +93,7 @@ public abstract class AbstractFilter : PropertyNotifier
     private void NotifyChanged()
     {
         NotifyPropertyChanged(nameof(ResultMat));
-        // NotifyPropertyChanged(nameof(DrawingImage));
+        NotifyPropertyChanged(nameof(DrawingImage));
     }
 
     protected abstract void ApplyFilter(Mat? originalImage);

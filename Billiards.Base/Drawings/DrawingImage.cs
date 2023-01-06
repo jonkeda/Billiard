@@ -2,12 +2,12 @@
 
 public class DrawingImage
 {
-    public DrawingVisual VisualDrawing { get; }
-
     public DrawingImage(DrawingVisual visualDrawing)
     {
-        VisualDrawing = visualDrawing;
+        Shapes = visualDrawing.Shapes;
     }
 
-    public ShapeCollection Shapes { get; set; } = new ShapeCollection();
+    public ShapeCollection Shapes { get; set; }
+
+    public IPlatformDrawingImage? PlatformDrawingImage { get; set; }
 }

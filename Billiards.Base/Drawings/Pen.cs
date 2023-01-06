@@ -10,7 +10,7 @@
 
         public int Thickness { get; set; }
 
-        public Brush? Brush { get; set; }
+        public Brush Brush { get; set; }
 
         public DashStyles DashStyle { get; set; }
         public IPlatformPen? PlatformPen { get; set; }

@@ -8,4 +8,9 @@ public class ClipShape : AbstractShape
     {
         RectangleGeometry = rectangleGeometry;
     }
+
+    public override void Render(IRenderer wpfRenderer)
+    {
+        wpfRenderer.PushClip(RectangleGeometry);
+    }
 }

@@ -4,3 +4,13 @@ public interface IPlatformPen
 {
 
 }
+
+public interface IPlatformGeometry
+{
+
+}
+
+public interface IPlatformFormattedText
+{
+
+}

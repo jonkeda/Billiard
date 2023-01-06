@@ -60,7 +60,7 @@ else if (mode == CameraMode.Camera)
                 foreach (var mediaDevice in mediaDevices)
                 {
                     <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))"
-                            style="margin-left: 40px">
+                style="margin-left: 40px">
                         <span class="oi oi-camera-slr" aria-hidden="true"></span>
                     </button>
                 }
@@ -147,7 +147,7 @@ else if (mode == CameraMode.Prediction)
     private async void OnRenderedHandler()
     {
         await SetSize();
-    // Check camera-access or ask user, if it's not allowed currently
+        // Check camera-access or ask user, if it's not allowed currently
         if (await CameraStreamerReference.GetCameraAccessAsync())
         {
             // Reloading re-initializes the stream and starts the
@@ -179,11 +179,23 @@ else if (mode == CameraMode.Prediction)
         if (dimension.Orientation == ScreenOrientation.Portrait)
         {
             screenHeight = screenWidth * 16 / 9;
-
         }
         else
         {
             screenHeight = screenWidth * 9 / 16;
+        }
+
+        if (screenHeight > (dimension.Height * 9 / 10))
+        {
+            if (dimension.Orientation == ScreenOrientation.Portrait)
+            {
+                screenWidth = screenHeight * 9 / 16;
+
+            }
+            else
+            {
+                screenWidth = screenHeight * 16 / 9;
+            }
         }
 
         finderRadius = Math.Max(screenWidth, screenHeight) / 60;
@@ -198,9 +210,12 @@ else if (mode == CameraMode.Prediction)
 
     }
 
-    private async void OnSelectMedia(string mediaDeviceId)
+    string? selectedMediaDeviceId = null;
+
+    private async Task OnSelectMedia(string mediaDeviceId)
     {
         await CameraStreamerReference.ChangeCameraAsync(mediaDeviceId);
+        selectedMediaDeviceId = mediaDeviceId;
     }
 
     private volatile bool sending;
@@ -295,9 +310,13 @@ else if (mode == CameraMode.Prediction)
         problems = result?.Problems;
     }
 
-    public void OpenCamera()
+    public async Task OpenCamera()
     {
         mode = CameraMode.Camera;
+        if (selectedMediaDeviceId != null)
+        {
+            await OnSelectMedia(selectedMediaDeviceId);
+        }
     }
 
     public async Task Start()

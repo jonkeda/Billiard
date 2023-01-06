@@ -13,8 +13,5 @@ public abstract class AbstractShape
     public Brush? Brush { get; }
     public Pen? Pen { get; }
 
-    public virtual void Render(IRenderer wpfRenderer)
-    {
-            
-    }
+    public abstract void Render(IRenderer wpfRenderer);
 }

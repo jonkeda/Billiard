@@ -102,13 +102,16 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         
         Draw(dc =>
         {
-            Pen pen = new Pen(Brushes.Red, 2);
+            float radius = Math.Max(ResultMat.Cols, ResultMat.Rows) / 50;
+
+            Pen pen = new Pen(Brushes.Red, (int)(radius / 2));
+
 
             foreach (Line line in lines)
             {
                 dc.DrawLine(pen, line.V1, line.V2);
-                dc.DrawEllipse(Brushes.Red, null, line.V1.AsPoint2f(), 5, 5);
-                dc.DrawEllipse(Brushes.Red, null, line.V2.AsPoint2f(), 5, 5);
+                dc.DrawEllipse(Brushes.Red, null, line.V1.AsPoint2f(), radius, radius);
+                dc.DrawEllipse(Brushes.Red, null, line.V2.AsPoint2f(), radius, radius);
             }
         
 /*            DrawLine(dc, top, Brushes.Green);
@@ -120,7 +123,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
             int i = 0;
             foreach (Point2f p in foundPoints)
             {
-                dc.DrawEllipse(Brushes.Blue, null, p, 5, 5);
+                dc.DrawEllipse(Brushes.Blue, null, p, radius, radius);
                 FormattedText formattedText = new(
                     i.ToString(),
                     //CultureInfo.CurrentUICulture,

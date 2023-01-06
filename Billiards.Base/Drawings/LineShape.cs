@@ -13,4 +13,9 @@ public class LineShape : AbstractShape
         P1 = p1;
         P2 = p2;
     }
+
+    public override void Render(IRenderer wpfRenderer)
+    {
+        wpfRenderer.DrawLine(Pen, P1, P2);
+    }
 }

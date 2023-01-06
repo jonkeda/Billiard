@@ -90,44 +90,40 @@ public class ContoursFilter : AbstractFilter, IContourFilter
                 contour.RotatedRectangle = rectangle;
             }
         }
-
-
+        int radius = Math.Max(ResultMat.Cols, ResultMat.Rows) / 50;
         Draw(dc =>
         {
             if (ContourType == ContourType.Points)
             {
-                DrawAsPoints(contourList, dc);
+                DrawAsPoints(contourList, dc, radius);
             }
             else if (ContourType == ContourType.Circle)
             {
-                DrawAsCircles(contourList, dc);
+                DrawAsCircles(contourList, dc, radius);
             }
             else if (ContourType == ContourType.Rectangle)
             {
-                DrawAsRectangles(contourList, dc);
+                DrawAsRectangles(contourList, dc, radius);
             }
             else if (ContourType == ContourType.Ellipse)
             {
-                DrawAsEllipse(contourList, dc);
+                DrawAsEllipse(contourList, dc, radius);
             }
             else if (ContourType == ContourType.ConvexHull)
             {
-                DrawAsConvexHull(contourList, dc);
+                DrawAsConvexHull(contourList, dc, radius);
             }
             else if (ContourType == ContourType.ConvexHulls)
             {
-                DrawAsConvexHulls(contourList, dc);
+                DrawAsConvexHulls(contourList, dc, radius);
             }
-
         });
-
-
         Contours = contourList;
     }
     
-    private static void DrawAsConvexHull(ContourCollection contours, DrawingContext dc)
+    private static void DrawAsConvexHull(ContourCollection contours, DrawingContext dc, int radius)
     {
-        Pen examplePen = new Pen(Brushes.GreenYellow, 2)
+        Pen examplePen = new Pen(Brushes.GreenYellow, radius / 2)
         {
             DashStyle = DashStyles.Solid
         };
@@ -153,14 +149,14 @@ public class ContoursFilter : AbstractFilter, IContourFilter
         dc.DrawGeometry(null, examplePen, geometry);
         for (int j = 0; j < points.Length; j++)
         {
-            dc.DrawEllipse(Brushes.Red, null, points[j], 5, 5);
+            dc.DrawEllipse(Brushes.Red, null, points[j], radius, radius);
         }
     }
 
 
-    private static void DrawAsConvexHulls(ContourCollection contours, DrawingContext dc)
+    private static void DrawAsConvexHulls(ContourCollection contours, DrawingContext dc, int radius)
     {
-        Pen examplePen = new Pen(Brushes.GreenYellow, 2)
+        Pen examplePen = new Pen(Brushes.GreenYellow, radius / 2)
         {
             DashStyle = DashStyles.Solid
         };
@@ -182,15 +178,15 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             dc.DrawGeometry(null, examplePen, geometry);
             for (int j = 0; j < points.Length; j++)
             {
-                dc.DrawEllipse(Brushes.Red, null, points[j], 5, 5);
+                dc.DrawEllipse(Brushes.Red, null, points[j], radius, radius);
             }
         }
     }
 
 
-    private static void DrawAsPoints(ContourCollection contours, DrawingContext dc)
+    private static void DrawAsPoints(ContourCollection contours, DrawingContext dc, int radius)
     {
-        Pen examplePen = new Pen(Brushes.GreenYellow, 2)
+        Pen examplePen = new Pen(Brushes.GreenYellow, radius / 2)
         {
             DashStyle = DashStyles.Solid
         };
@@ -210,14 +206,14 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             dc.DrawGeometry(null, examplePen, geometry);
             foreach (var point in contour.Points)
             {
-                dc.DrawEllipse(Brushes.Red, null, point, 5, 5);
+                dc.DrawEllipse(Brushes.Red, null, point, radius, radius);
             }
         }
     }
 
-    private static void DrawAsCircles(ContourCollection contours, DrawingContext dc)
+    private static void DrawAsCircles(ContourCollection contours, DrawingContext dc, int penRadius)
     {
-        Pen pen = new Pen(Brushes.GreenYellow, 5)
+        Pen pen = new Pen(Brushes.GreenYellow, penRadius / 2)
         {
             DashStyle = DashStyles.Solid
         };
@@ -231,9 +227,9 @@ public class ContoursFilter : AbstractFilter, IContourFilter
         }
     }
 
-    private void DrawAsRectangles(ContourCollection contours, DrawingContext dc)
+    private void DrawAsRectangles(ContourCollection contours, DrawingContext dc, int radius)
     {
-        Pen pen = new Pen(Brushes.GreenYellow, 5)
+        Pen pen = new Pen(Brushes.GreenYellow, radius/2)
         {
             DashStyle = DashStyles.Solid
         };
@@ -267,9 +263,9 @@ public class ContoursFilter : AbstractFilter, IContourFilter
     }
 
 
-    private void DrawAsEllipse(ContourCollection contours, DrawingContext dc)
+    private void DrawAsEllipse(ContourCollection contours, DrawingContext dc, int radius)
     {
-        Pen pen = new Pen(Brushes.GreenYellow, 5)
+        Pen pen = new Pen(Brushes.GreenYellow, radius/2)
         {
             DashStyle = DashStyles.Solid
         };
