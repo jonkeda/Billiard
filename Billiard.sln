@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiards.Base", "Billiards
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiards.Wpf", "Billiards.Wpf\Billiards.Wpf.csproj", "{1EF673FC-FEB8-4ACA-8700-4A94236AA6FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billiards.Web.Server", "Billiards.Web\Server\Billiards.Web.Server.csproj", "{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiards.Web.Server", "Billiards.Web\Server\Billiards.Web.Server.csproj", "{E0F6CD40-8841-46A5-B67D-AEDBF5362EB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billiards.Web.Client", "Billiards.Web\Client\Billiards.Web.Client.csproj", "{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiards.Web.Client", "Billiards.Web\Client\Billiards.Web.Client.csproj", "{394AEB45-F7DA-48D0-8BDD-F261ACAAE1BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billiards.Web.Shared", "Billiards.Web\Shared\Billiards.Web.Shared.csproj", "{296844A7-79A5-4613-B866-80172976FDB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billiards.Web.Shared", "Billiards.Web\Shared\Billiards.Web.Shared.csproj", "{296844A7-79A5-4613-B866-80172976FDB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,15 +10,36 @@ namespace Billiards.Web.Server.Controllers
     [Route("[controller]")]
     public class RecognitionController : ControllerBase
     {
-        [HttpPost]
-        public TableRecognitionResponse DetectTable(TableRecognitionRequest image)
+        [HttpPost("Image")]
+        public TableRecognitionResponse DetectTableImage(TableRecognitionRequest image)
         {
             byte[] bytes = Convert.FromBase64String(image.Data);
+            MemoryStream stream = new MemoryStream(bytes);
+            return DetectTable(stream);
+        }
 
+        [HttpPost("Stream")]
+        public TableRecognitionResponse DetectTableStream([FromForm] IEnumerable<IFormFile> files)
+        {
+            if (files != null)
+            {
+                IFormFile? file = files.FirstOrDefault();
+                if (file == null)
+                {
+                    return new TableRecognitionResponse(null, null);
+                }
+                return DetectTable(file.OpenReadStream());
+            }
+
+            return new TableRecognitionResponse(null, null);
+        }
+
+        private TableRecognitionResponse DetectTable(Stream stream)
+        {
             CaramboleDetector detector = new();
 
-            Mat mat = Mat.ImDecode(bytes);
-
+            Mat mat = Mat.FromStream(stream, ImreadModes.AnyColor);
+            //Mat mat = Mat.ImDecode(bytes);
             //Mat mat = Cv2.ImRead(@"C:\Temp\Billiards\Ok\Ok\Ok\20221222_215004_HDR.jpg");
 
             ResultModel result = detector.ApplyFilters(mat);

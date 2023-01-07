@@ -7,6 +7,13 @@ namespace Billiards.Web.Shared
             Data = data;
         }
 
-        public string Data { get; set; }
+/*        public TableRecognitionRequest(byte[]? bytes)
+        {
+            Bytes = bytes;
+        }
+
+        public byte[]? Bytes { get; set; }
+*/        public string Data { get; set; }
     }
+
 }
