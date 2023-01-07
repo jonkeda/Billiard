@@ -27,6 +27,8 @@ namespace Billiards.Web.Client.Pages
         protected int screenWidth { get; set; }= 480;
         protected int screenHeight { get; set; } = 270;
 
+        protected int rotated { get; set; } = 0;
+
         protected string screenWidthPx { get; set; } = "480px";
         protected string screenHeightPx { get; set; } = "270px";
 
@@ -88,9 +90,14 @@ namespace Billiards.Web.Client.Pages
                 }
             }
 
+            if (dimension.Orientation == ScreenOrientation.Portrait)
+            {
+                rotated = 90;
+            }
+
             finderRadius = Math.Max(screenWidth, screenHeight) / 60;
             finderStroke = Math.Max(screenWidth, screenHeight) / 120;
-            ballRadius = Math.Max(screenWidth, screenHeight) / 30;
+            ballRadius = Math.Max(screenWidth, screenHeight) / 60;
 
             screenHeightPx = $"{screenHeight}px";
             screenWidthPx = $"{screenWidth}px";

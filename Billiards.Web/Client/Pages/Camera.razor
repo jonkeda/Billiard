@@ -5,15 +5,19 @@
 @using Billiards.Web.Client.Extensions
 @inject IJSRuntime JsRuntime
 @inject HttpClient Http
-<div style="margin: auto; width: 100%">
-    <InputFile accept="image/*" capture="environment" OnChange="@PictureTaken"></InputFile>
-    <br />
-    @Busy Size1: @imageSize1 Size2: @imageSize2 Orientation: @screenOrientation
-    <br />
+<InputFile accept="image/*" capture="environment" OnChange="@PictureTaken"></InputFile>
+<br />
+    Width: @screenWidthPx Height: @screenHeightPx
+<br />
+@Busy Size1: @imageSize1 Size2: @imageSize2 Orientation: @screenOrientation
+<br />
     Resize: @resizeTime Recognize: @recognizeTime time: @time
-    <div id="canvas" style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
-        <svg id="svgContainer" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid meet"
-             style="position: absolute; top: 1px; width: 100%; height: 100%; z-index: 2; background-color:green">
+<div id="canvas" style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
+    <svg id="svgContainer" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid meet"
+         style="position: absolute; top: 1px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2;">
+        <g transform="rotate(@rotated, 1000, 500)">
+
+            <rect width="2000" height="1000" style="stroke: brown; stroke-width: 16; fill: green" />
             @{
                 if (problems != null)
                 {
@@ -22,7 +26,7 @@
                         foreach (Solution solution in problem.Solutions)
                         {
                             <polyline points="@solution.PointsAsString()"
-                          style="fill:none;stroke:@problem.Color;stroke-width:3" />
+                          style="fill: none; stroke: @problem.Color; stroke-width: 3" />
                         }
                     }
                 }
@@ -38,22 +42,22 @@
                     }
                 }
             }
+        </g>
 
-            Sorry, your browser does not support inline SVG.
-        </svg>
-        @if (Busy)
-        {
-            <div class="spinner"></div>
-        }
-    </div>
+        Sorry, your browser does not support inline SVG.
+    </svg>
+    @if (Busy)
+    {
+        <div class="spinner"></div>
+    }
 </div>
 
 @code {
     protected override async Task OnInitializedAsync()
     {
+        await JsRuntime.OpenFullscreen();
         await base.OnInitializedAsync();
 
-        await JsRuntime.OpenFullscreen();
     }
 
     bool Busy { get; set; } = false;
