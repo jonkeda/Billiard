@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Billiards.Base.Drawings;
+﻿using Billiards.Base.Drawings;
 using Billiards.Base.Extensions;
 using OpenCvSharp;
 
@@ -52,46 +51,28 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         ResultMat = GetInputMat();
 
         if (ContourFilter?.Contours == null
-            || ContourFilter.Contours.Count == 0
-            || ContourFilter.Contours[0].Points.Count < 4)
+            || ContourFilter.Contours.Count == 0)
         {
             return;
         }
 
-        //Rectangle bounds =  Cv2.BoundingRectangle(contourFilter.Contours[0].Points.AsPointArray());
-        var lines = CreateLines();
-
-        //List<Line> foundLines = new();
-
-/*        var top = FindLine(lines, bounds.Left, bounds.Right, 
-            bounds.Top, bounds.Top + bounds.Height * 0.25d);
-        if (top != null)
+        var contour = ContourFilter.Contours[0];
+        if (contour.Points == null)
         {
-            foundLines.Add(top);
-        }
-        var right = FindLine(lines, 
-            bounds.Right - bounds.Width * 0.5d, bounds.Right,
-            bounds.Top, bounds.Bottom);
-        if (right != null)
-        {
-            foundLines.Add(right);
+            return;
         }
 
-        var bottom = FindLine(lines, 
-            bounds.Left, bounds.Right, 
-            bounds.Bottom - bounds.Height * 0.25d, bounds.Bottom);
-        if (bottom != null)
-        {
-            foundLines.Add(bottom);
-        }
-        var left = FindLine(lines, bounds.Left, bounds.Left + bounds.Width * 0.5d,
-            bounds.Top, bounds.Bottom);
-        if (left != null)
-        {
-            foundLines.Add(left);
-        }
-*/
+        List<Point> newPoints = StraightenLines(contour.Points);
+        var lines = CreateLines(newPoints);
 
+        int i = 0;
+        foreach (Line line in lines)
+        {
+            FilterValues.Add(i.ToString(), Math.Round(line.Angle));
+            i++;
+        }
+
+        var allLines = lines.ToList();
 
         lines = lines.OrderByDescending(l => l.Length).Take(4).ToList();
         lines = lines.OrderBy(l => l.Angle).ToList();
@@ -104,21 +85,21 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         {
             float radius = Math.Max(ResultMat.Cols, ResultMat.Rows) / 50;
 
+            Pen penAll = new Pen(Brushes.GreenYellow, (int)(radius / 2));
+            foreach (Line line in allLines)
+            {
+                dc.DrawLine(penAll, line.V1, line.V2);
+                dc.DrawEllipse(Brushes.GreenYellow, null, line.V1.AsPoint2f(), radius, radius);
+                dc.DrawEllipse(Brushes.GreenYellow, null, line.V2.AsPoint2f(), radius, radius);
+            }
+
             Pen pen = new Pen(Brushes.Red, (int)(radius / 2));
-
-
             foreach (Line line in lines)
             {
                 dc.DrawLine(pen, line.V1, line.V2);
                 dc.DrawEllipse(Brushes.Red, null, line.V1.AsPoint2f(), radius, radius);
                 dc.DrawEllipse(Brushes.Red, null, line.V2.AsPoint2f(), radius, radius);
             }
-        
-/*            DrawLine(dc, top, Brushes.Green);
-            DrawLine(dc, left, Brushes.DarkBlue);
-            DrawLine(dc, right, Brushes.LightBlue);
-            DrawLine(dc, bottom, Brushes.LawnGreen);
-*/
 
             int i = 0;
             foreach (Point2f p in foundPoints)
@@ -137,37 +118,6 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         });
     
         Points = foundPoints;
-    }
-
-    private void DrawLine(DrawingContext dc, Line line, Brush brush)
-    {
-        if (line == null)
-        {
-            return;
-        }
-        Pen pen = new Pen(brush, 3);
-        dc.DrawLine(pen, line.V1.AsPoint2f(), line.V2.AsPoint2f());
-        const int radius = 10;
-        dc.DrawEllipse(brush, null, line.V1.AsPoint2f(), radius, radius);
-        dc.DrawEllipse(brush, null, line.V2.AsPoint2f(), radius, radius);
-
-    }
-
-
-    private Line? FindLine(List<Line> lines, double x1, double x2, double y1, double y2)
-    {
-        return lines.Where(p =>
-            Between(p.V1.X(), x1, x2)
-            && Between(p.V2.X(), x1, x2)
-            && Between(p.V1.Y(), y1, y2)
-            && Between(p.V2.Y(), y1, y2)
-
-        ).MaxBy(p => p.Length);
-    }
-
-    private bool Between(double value, double a1, double a2)
-    {
-        return value >= a1 && value <= a2;
     }
 
 
@@ -213,18 +163,38 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         return foundPoints;
     }
 
-    private List<Line> CreateLines()
+    private List<Point> StraightenLines(List<Point> points)
+    {
+        List<Point> newPoints = new();
+        Point previousPoint = points[0];
+        float angle = float.MaxValue;
+        newPoints.Add(previousPoint);
+        foreach (var point in points.Skip(1))
+        {
+            var line = new Line(previousPoint.AsVec2f(), point.AsVec2f());
+            if (Math.Abs(angle - line.Angle) > 2)
+            {
+                newPoints.Add(previousPoint);
+                angle = line.Angle;
+            }
+            previousPoint = point;
+        }
+        newPoints.Add(previousPoint);
+
+        return newPoints;
+    }
+
+    private List<Line> CreateLines(List<Point> points)
     {
         List<Line> lines = new();
-        Point2f previousPoint = ContourFilter.Contours[0].Points[0];
-        foreach (var point in ContourFilter.Contours[0].Points.Skip(1))
+        Point previousPoint = points[0];
+        foreach (var point in points.Skip(1))
         {
             lines.Add(new Line(previousPoint.AsVec2f(), point.AsVec2f()));
             previousPoint = point;
         }
-
-        lines.Add(new Line(ContourFilter.Contours[0].Points.Last().AsVec2f(),
-            ContourFilter.Contours[0].Points.First().AsVec2f()));
+        lines.Add(new Line(points.Last().AsVec2f(),
+            points.First().AsVec2f()));
         return lines;
     }
 }

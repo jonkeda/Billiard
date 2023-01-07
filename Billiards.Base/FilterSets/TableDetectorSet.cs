@@ -23,7 +23,7 @@ public class TableDetectorSet : FilterSet
         var flood = FloodFill(255);
         flood.MinimumArea = 14;
         flood.MaximumArea = 80;
-        flood.FloodFillDiff = 3;
+        flood.FloodFillDiff = 5;
         flood.FloodFillFlags = FloodFillFlags.FixedRange;
 
         //flood.PointFilter = findPoint;

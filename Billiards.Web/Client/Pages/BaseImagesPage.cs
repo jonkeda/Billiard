@@ -27,7 +27,8 @@ namespace Billiards.Web.Client.Pages
         protected int screenWidth { get; set; }= 480;
         protected int screenHeight { get; set; } = 270;
 
-        protected int rotated { get; set; } = 0;
+        protected string transform { get; set; }
+        protected string viewbox { get; set; } = "0 0 2000 1000";
 
         protected string screenWidthPx { get; set; } = "480px";
         protected string screenHeightPx { get; set; } = "270px";
@@ -35,7 +36,7 @@ namespace Billiards.Web.Client.Pages
         protected int finderStroke { get; set; } = 8;
         protected int finderRadius { get; set; } = 16;
 
-        protected int ballRadius { get; set; } = 16;
+        protected int ballRadius { get; set; } = 31;
 
         protected string cameraStyle { get; set; }
 
@@ -55,6 +56,7 @@ namespace Billiards.Web.Client.Pages
         private async Task SetSize()
         {
             var dimension = await JsRuntime.GetWindowDimension();
+            //dimension.Orientation = ScreenOrientation.Portrait;
             screenWidth = dimension.Width;
             if (screenWidth > 3 * 480)
             {
@@ -92,12 +94,12 @@ namespace Billiards.Web.Client.Pages
 
             if (dimension.Orientation == ScreenOrientation.Portrait)
             {
-                rotated = 90;
+                viewbox = "0 0 1000 2000";
+                transform = "rotate(90, 500, 1000) translate(-500, 500)";
             }
 
             finderRadius = Math.Max(screenWidth, screenHeight) / 60;
             finderStroke = Math.Max(screenWidth, screenHeight) / 120;
-            ballRadius = Math.Max(screenWidth, screenHeight) / 60;
 
             screenHeightPx = $"{screenHeight}px";
             screenWidthPx = $"{screenWidth}px";

@@ -6,18 +6,23 @@
 @inject IJSRuntime JsRuntime
 @inject HttpClient Http
 <InputFile accept="image/*" capture="environment" OnChange="@PictureTaken"></InputFile>
-<br />
-    Width: @screenWidthPx Height: @screenHeightPx
-<br />
-@Busy Size1: @imageSize1 Size2: @imageSize2 Orientation: @screenOrientation
-<br />
-    Resize: @resizeTime Recognize: @recognizeTime time: @time
-<div id="canvas" style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
-    <svg id="svgContainer" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid meet"
-         style="position: absolute; top: 1px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2;">
-        <g transform="rotate(@rotated, 1000, 500)">
+Resize: @resizeTime Recognize: @recognizeTime time: @time
+<div id="canvas" style="width: 100%; height: 100%">
+    <svg id="svgContainer" viewBox="@viewbox" preserveAspectRatio="xMidYMid meet"
+         style="width: 100%; height: 100%">
+        <g transform="@transform">
+            <rect width="2000" height="1000" style="fill: green" />
+            @for (int y = 250; y <= 750; y += 250)
+            {
+                <line x1="0" y1="@y" x2="2000" y2="@y" style="stroke: lightgreen" />
+            }
+            @for (int x = 250; x <= 1750; x += 250)
+            {
+                <line x1="@x" y1="0" x2="@x" y2="1000" style="stroke: lightgreen" />
+            }
 
-            <rect width="2000" height="1000" style="stroke: brown; stroke-width: 16; fill: green" />
+            <rect width="2000" height="1000" style="stroke: brown; stroke-width: 32; fill-opacity: 0;" />
+
             @{
                 if (problems != null)
                 {
@@ -26,7 +31,7 @@
                         foreach (Solution solution in problem.Solutions)
                         {
                             <polyline points="@solution.PointsAsString()"
-                          style="fill: none; stroke: @problem.Color; stroke-width: 3" />
+                          style="fill: none; stroke: @problem.Color; stroke-width: 3; stroke-opacity: 0.5" />
                         }
                     }
                 }

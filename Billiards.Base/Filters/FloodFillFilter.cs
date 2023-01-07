@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Billiards.Base.Drawings;
+using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
 
@@ -45,37 +46,63 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         FilterValues.Add("SecondaryFloodFillFlags", FloodFillFlagsSecondary?.ToString());
         FilterValues.Add("FloodFillDiff", FloodFillDiff);
 
-
-        if (ApplyFilterArea(originalImage, FloodFillFlags))
+        Mat? input = GetInputMat();
+        if (input == null)
         {
             return;
         }
 
-        if (FloodFillFlagsSecondary != null)
+        if (!ApplyFilterArea(input, FloodFillFlags))
         {
-            ApplyFilterArea(originalImage, FloodFillFlagsSecondary.Value);
+            if (FloodFillFlagsSecondary != null)
+            {
+                ApplyFilterArea(input, FloodFillFlagsSecondary.Value);
+            }
         }
+
+
+        Draw(dc =>
+        {
+            float radius = Math.Max(input.Cols, input.Rows) / 100f;
+            int yStep = input.Rows / 20;
+
+            float x = input.Cols / 2f;
+            float y = input.Rows / 2f;
+
+            dc.DrawEllipse(Brushes.GreenYellow, null, new Point2f(x, y), radius, radius);
+
+            dc.DrawEllipse(Brushes.Blue, null, new Point2f(x, y + yStep), radius, radius);
+
+            dc.DrawEllipse(Brushes.LightBlue, null, new Point2f(x, y + 2 * yStep), radius, radius);
+
+            dc.DrawEllipse(Brushes.DarkRed, null, new Point2f(x, y - yStep), radius, radius);
+
+            dc.DrawEllipse(Brushes.Red, null, new Point2f(x, y - 2 * yStep), radius, radius);
+
+        });
     }
 
-    protected bool ApplyFilterArea(Mat originalImage, FloodFillFlags floodFillFlags)
+    protected bool ApplyFilterArea(Mat input, FloodFillFlags floodFillFlags)
     {
-        if (FindArea(originalImage, 0, floodFillFlags))
+        int yStep = input.Rows / 20;
+
+        if (FindArea(input, yStep, floodFillFlags))
         {
             return true;
         }
-        if (FindArea(originalImage, 50, floodFillFlags))
+        if (FindArea(input, 0, floodFillFlags))
         {
             return true;
         }
-        if (FindArea(originalImage, -50, floodFillFlags))
+        if (FindArea(input, -yStep, floodFillFlags))
         {
             return true;
         }
-        if (FindArea(originalImage, 100, floodFillFlags))
+        if (FindArea(input, 2 * yStep, floodFillFlags))
         {
             return true;
         }
-        if (FindArea(originalImage, -100, floodFillFlags))
+        if (FindArea(input, - 2 * yStep, floodFillFlags))
         {
             return true;
         }
@@ -83,9 +110,8 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         return false;
     }
 
-    protected bool FindArea(Mat originalImage, int yStep, FloodFillFlags floodFillFlags)
+    protected bool FindArea(Mat input, int yStep, FloodFillFlags floodFillFlags)
     {
-        Mat input = GetInputMat();
         ResultMat = input.Clone();
         using Mat newMask = Mat.Zeros(input.Rows + 2, input.Cols + 2, MatType.CV_8U, 1);
 
