@@ -26,6 +26,7 @@ public class CornerDetectorSet : FilterSet
              
         var convexConvers = Filters.AddFilter(new FindCornersConvexHullFilter(contour));
         convexConvers.ContourFilter = contour;
+        convexConvers.StraigthenAngle = 5;
 
         PointsFilter = convexConvers;
 

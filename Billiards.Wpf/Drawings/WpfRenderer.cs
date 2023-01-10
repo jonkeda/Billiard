@@ -6,7 +6,6 @@ using System.Windows.Media;
 using Billiards.Base.Drawings;
 using OpenCvSharp;
 using Brush = Billiards.Base.Drawings.Brush;
-using Brushes = Billiards.Base.Drawings.Brushes;
 using Color = Billiards.Base.Drawings.Color;
 using DashStyles = Billiards.Base.Drawings.DashStyles;
 using FormattedText = Billiards.Base.Drawings.FormattedText;

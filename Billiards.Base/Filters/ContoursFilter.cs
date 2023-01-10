@@ -1,5 +1,6 @@
 ﻿using Billiards.Base.Drawings;
 using OpenCvSharp;
+using System.Security.Cryptography;
 
 namespace Billiards.Base.Filters;
 
@@ -21,6 +22,10 @@ public class ContoursFilter : AbstractFilter, IContourFilter
     public double MinimumArea { get; set; } = -1;
 
     public double MaximumArea { get; set; } = -1;
+
+    public double MinimumRatio { get; set; } = -1;
+
+    public double MaximumRatio { get; set; } = -1;
 
     public double Resize { get; set; } = 1;
 
@@ -45,18 +50,23 @@ public class ContoursFilter : AbstractFilter, IContourFilter
         for (int i = 0; i < contours.Length; i++)
         {
             Point[] contour = contours[i];
-            double area = Cv2.ContourArea(contour);
+            //double area = Cv2.ContourArea(contour);
+            //FilterValues.Add($"Area {i}", area);
+            //FilterValues.Add($"Area {i} %", Math.Round( area * 100 * 100 / imageArea) / 100);
 
-            FilterValues.Add($"Area {i}", area);
-            FilterValues.Add($"Area {i} %", Math.Round( area * 100 * 100 / imageArea) / 100);
+            RotatedRect rectangle = Cv2.MinAreaRect(contour);
 
-            var rectangle = Cv2.MinAreaRect(contour);
-
-            FilterValues.Add($"Area {i} R", Math.Round(rectangle.Size.Height * rectangle.Size.Width));
-            if ((MinimumArea <= 0 || area > MinimumArea)
-                && (MaximumArea <= 0 || area < MaximumArea))
+            float rectArea = rectangle.Size.Height * rectangle.Size.Width;
+            float ratio = CalculateRatio(rectangle);
+            FilterValues.Add($"{i} Area", Math.Round(rectArea));
+            FilterValues.Add($"{i} Ratio", Math.Round(ratio, 3));
+            //FilterValues.Add($"Area {i} R%", Math.Round(rectArea * 100f * 100f / imageArea) / 100);
+            if ((MinimumArea <= 0 || rectArea > MinimumArea)
+                && (MaximumArea <= 0 || rectArea < MaximumArea)
+                && (MinimumRatio <= 0 || ratio >= MinimumRatio)
+                && (MaximumRatio <= 0 || ratio <= MaximumRatio))
             {
-                contourList.Add(new Contour(contour));
+                contourList.Add(new Contour(contour, i));
             }
         }
         FilterValues.Add("Contours found", contourList.Count);
@@ -70,7 +80,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             var points = Cv2.ConvexHull(allPoints);
 
             contourList.Clear();
-            contourList.Add(new Contour(points));
+            contourList.Add(new Contour(points, 0));
         }
         else if (ContourType == ContourType.Ellipse)
         {
@@ -120,7 +130,16 @@ public class ContoursFilter : AbstractFilter, IContourFilter
         });
         Contours = contourList;
     }
-    
+
+    private float CalculateRatio(RotatedRect r)
+    {
+        if (r.Size.Height > r.Size.Width)
+        {
+            return r.Size.Width / r.Size.Height;
+        }
+        return r.Size.Height / r.Size.Width;
+    }
+
     private static void DrawAsConvexHull(ContourCollection contours, DrawingContext dc, int radius)
     {
         Pen examplePen = new Pen(Brushes.GreenYellow, radius / 2)
@@ -223,6 +242,12 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             {
                 Cv2.MinEnclosingCircle(contour.Points, out Point2f center, out float radius);
                 dc.DrawEllipse(null, pen, center, radius, radius);
+
+                FormattedText formattedText = new(
+                    contour.Index.ToString(),
+                    32,
+                    Brushes.AntiqueWhite, 1.25);
+                dc.DrawText(formattedText, center);
             }
         }
     }
@@ -271,7 +296,6 @@ public class ContoursFilter : AbstractFilter, IContourFilter
         };
         foreach (Contour contour in contours)
         {
-
             if (contour.Points.Count > 5)
             {
                 RotatedRect rectangle = Cv2.FitEllipse(contour.Points);
@@ -294,6 +318,12 @@ public class ContoursFilter : AbstractFilter, IContourFilter
                 rectangle.Size = new Size2f((float)(rectangle.Size.Width * Resize),
                     (float)(rectangle.Size.Height * Resize));
                 contour.RotatedRectangle = rectangle;
+
+                FormattedText formattedText = new(
+                    contour.Index.ToString(),
+                    32,
+                    Brushes.AntiqueWhite, 1.25);
+                dc.DrawText(formattedText, rectangle.Center);
             }
         }
     }

@@ -1,0 +1,38 @@
+﻿@using Billiards.Web.Shared
+
+<svg viewBox="@ViewBox"
+     style="position: absolute; top: 0px; left: 0px; width: @ScreenWidthPx; height: @ScreenHeightPx; z-index: 2">
+    @{
+        if (Balls != null)
+        {
+            foreach (var ball in Balls)
+            {
+                if (ball.ImageAbsolutePoint != null)
+                {
+                    <circle cx="@ball.ImageAbsolutePoint.X" cy="@ball.ImageAbsolutePoint.Y" r="@FinderRadius"
+                        stroke="@ball.Color" stroke-width="@FinderStroke" fill-opacity="0" stroke-opacity="0.5" />
+                }
+            }
+        }
+    }
+    <polygon points="@TableCorners" stroke="green"
+             stroke-width="@FinderStroke" stroke-opacity="0.8" fill-opacity="0" />
+    Sorry, your browser does not support inline SVG.
+</svg>
+
+
+@code {
+
+    public string ScreenWidthPx { get; set; } = "480px";
+    public string ScreenHeightPx { get; set; } = "270px";
+
+    public string ViewBox { get; set; } = "0 0 2000 1000";
+
+    public int FinderStroke { get; set; } = 8;
+    public int FinderRadius { get; set; } = 16;
+
+    public BallCollection? Balls { get; set; }
+
+    public string? TableCorners { get; set; }
+
+}

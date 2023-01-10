@@ -56,7 +56,6 @@ namespace Billiards.Web.Client.Pages
         private async Task SetSize()
         {
             var dimension = await JsRuntime.GetWindowDimension();
-            //dimension.Orientation = ScreenOrientation.Portrait;
             screenWidth = dimension.Width;
             if (screenWidth > 3 * 480)
             {

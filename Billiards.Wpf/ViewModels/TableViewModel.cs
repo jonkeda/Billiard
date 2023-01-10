@@ -11,7 +11,6 @@ using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
-using Rect = System.Windows.Rect;
 
 namespace Billiards.Wpf.ViewModels
 {
@@ -69,57 +68,57 @@ namespace Billiards.Wpf.ViewModels
                 return null;
             }
 
-            DrawingVisual visual = new DrawingVisual();
+            DrawingVisual visual = new();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
                 float width = this.Length;
                 float height = this.Width;
 
                 drawingContext.PushClip(new RectangleGeometry(
-                    new Rect(new Point(0, 0),
+                    new(new(0, 0),
                         new Point(width, height))));
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
-                    new Rect(0, 0, width, height));
+                    new(0, 0, width, height));
 
                 foreach (PhysicsEngine.Problem problem in problems)
                 {
-                    Pen color = new Pen(LineBrushByBallColor(problem.Color), 3);
-                    color.DashStyle = DashStyles.Dot;
-
-                    foreach (Solution solution in problem.Solutions)
+                    Pen color = new(LineBrushByBallColor(problem.Color), 3)
                     {
-                        Geometry geometry = CollisionsAsGeometry(solution.Collisions);
-                        drawingContext.DrawGeometry(null, color, geometry);
+                        DashStyle = DashStyles.Dot
+                    };
+
+                    if (problem.Solutions != null)
+                    {
+                        foreach (Solution solution in problem.Solutions)
+                        {
+                            Geometry geometry = CollisionsAsGeometry(solution.Collisions);
+                            drawingContext.DrawGeometry(null, color, geometry);
+                        }
                     }
                 }
 
                 drawingContext.Close();
             }
 
-            return new DrawingImage(visual.Drawing);
+            return new(visual.Drawing);
         }
 
-        private void DrawSolution(DrawingContext drawingContext, Solution solution)
-        {
-            
-        }
-
-        public Geometry CollisionsAsGeometry(CollisionCollection collisions)
+        public Geometry? CollisionsAsGeometry(CollisionCollection collisions)
         {
             if (collisions.Count <= 2)
             {
                 return null;
             }
 
-            StreamGeometry geometry = new StreamGeometry();
+            StreamGeometry geometry = new();
 
             using var ctx = geometry.Open();
 
             Collision s = collisions[0];
-            ctx.BeginFigure(new Point(s.Position.X, s.Position.Y), false, false);
+            ctx.BeginFigure(new(s.Position.X, s.Position.Y), false, false);
             foreach (Collision v in collisions.Skip(1))
             {
-                ctx.LineTo(new Point(v.Position.X, v.Position.Y), true, false);
+                ctx.LineTo(new(v.Position.X, v.Position.Y), true, false);
             }
 
             return geometry;
@@ -128,17 +127,17 @@ namespace Billiards.Wpf.ViewModels
 
         private DrawingImage DrawBalls(ResultBallCollection balls)
         {
-            DrawingVisual visual = new DrawingVisual();
+            DrawingVisual visual = new();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
                 float width = this.Length;
                 float height = this.Width;
 
                 drawingContext.PushClip(new RectangleGeometry(
-                    new Rect(new Point(0, 0),
+                    new(new(0, 0),
                         new Point(width, height))));
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
-                    new Rect(0, 0, width, height));
+                    new(0, 0, width, height));
 
                 DrawBalls(balls, 
                     drawingContext);
@@ -146,7 +145,7 @@ namespace Billiards.Wpf.ViewModels
                 drawingContext.Close();
             }
 
-            return new DrawingImage(visual.Drawing);
+            return new(visual.Drawing);
         }
 
         private Brush BrushByBallColor(BallColor color)
@@ -182,15 +181,15 @@ namespace Billiards.Wpf.ViewModels
         {
             if (!p.HasValue)
             {
-                return new Point(0, 0);
+                return new(0, 0);
             }
-            return new System.Windows.Point(p.Value.X * Length, p.Value.Y * Width);
+            return new(p.Value.X * Length, p.Value.Y * Width);
         }
 
         private void DrawBalls(ResultBallCollection balls, 
             DrawingContext drawingContext)
         {
-            Pen pen = new Pen(Brushes.Black, 3)
+            Pen pen = new(Brushes.Black, 3)
             {
                 DashStyle = DashStyles.Solid
             };
@@ -212,11 +211,11 @@ namespace Billiards.Wpf.ViewModels
                 return;
             }
 
-            Pen examplePen = new Pen(Brushes.GreenYellow, 5)
+            Pen examplePen = new(Brushes.GreenYellow, 5)
             {
                 DashStyle = DashStyles.Solid
             };
-            PathFigure figure = new PathFigure
+            PathFigure figure = new()
             {
                 IsClosed = true,
                 StartPoint = tableCornerPoints[0]
@@ -233,25 +232,25 @@ namespace Billiards.Wpf.ViewModels
 
         private void DrawBackground()
         {
-            DrawingVisual visual = new DrawingVisual();
+            DrawingVisual visual = new();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
-                drawingContext.PushClip(new RectangleGeometry(new Rect(new Point(0, 0), new Point(Length, Width))));
+                drawingContext.PushClip(new RectangleGeometry(new(new(0, 0), new Point(Length, Width))));
 
                 DrawLines(drawingContext);
 
                 drawingContext.Close();
             }
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)Length, (int)Width, 96, 96, PixelFormats.Pbgra32);
+            RenderTargetBitmap bitmap = new((int)Length, (int)Width, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(visual);
             BackGroundImage = bitmap;
         }
 
         private void DrawLines(DrawingContext drawingContext)
         {
-            drawingContext.DrawRectangle(Brushes.Green, null, new Rect(0, 0, Length, Width));
+            drawingContext.DrawRectangle(Brushes.Green, null, new(0, 0, Length, Width));
 
-            Pen pen = new Pen(Brushes.SaddleBrown, 2)
+            Pen pen = new(Brushes.SaddleBrown, 2)
             {
                 DashStyle = DashStyles.Dot
             };
@@ -260,13 +259,13 @@ namespace Billiards.Wpf.ViewModels
             float width4 = Width / 4;
             for (int i = 1; i < 4; i++)
             {
-                drawingContext.DrawLine(pen, new Point(0, i * width4), new Point(Length, i * width4));
+                drawingContext.DrawLine(pen, new(0, i * width4), new(Length, i * width4));
             }
 
             float length8 = Length / 8;
             for (int i = 1; i < 8; i++)
             {
-                drawingContext.DrawLine(pen, new Point(i * length8, 0), new Point(i * length8, Width));
+                drawingContext.DrawLine(pen, new(i * length8, 0), new(i * length8, Width));
             }
         }
 

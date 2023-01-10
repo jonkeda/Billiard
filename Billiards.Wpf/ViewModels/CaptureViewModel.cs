@@ -14,7 +14,6 @@ using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;
-using Rect = System.Windows.Rect;
 
 namespace Billiards.Wpf.ViewModels
 {
@@ -51,7 +50,7 @@ namespace Billiards.Wpf.ViewModels
             }
             Output = result.Image;
 
-            List<System.Windows.Point> cornerPoints = new List<Point>();
+            List<System.Windows.Point> cornerPoints = new();
             if (result.Corners != null)
             {
                 foreach (var corner in result.Corners)
@@ -75,24 +74,24 @@ namespace Billiards.Wpf.ViewModels
         {
             if (!p.HasValue)
             {
-                return new Point2f(0, 0);
+                return new(0, 0);
             }
-            return new Point2f(p.Value.X * image.Width, p.Value.Y * image.Height);
+            return new(p.Value.X * image.Width, p.Value.Y * image.Height);
         }
 
         public System.Windows.Point ToAbsolutePoint(Mat image, Point2f? p)
         {
             if (!p.HasValue)
             {
-                return new Point(0, 0);
+                return new(0, 0);
             }
-            return new System.Windows.Point(p.Value.X * image.Width, p.Value.Y * image.Height);
+            return new(p.Value.X * image.Width, p.Value.Y * image.Height);
         }
 
         private DrawingImage DrawCaptureOverlay(Mat frame, List<Point> tableCornerPoints,
             ResultBallCollection balls, DateTime now)
         {
-            DrawingVisual visual = new DrawingVisual();
+            DrawingVisual visual = new();
             using (DrawingContext drawingContext = visual.RenderOpen())
             {
                 int width = frame.Width;
@@ -102,10 +101,10 @@ namespace Billiards.Wpf.ViewModels
                 int heightSep = frame.Width / 20;
 
                 drawingContext.PushClip(new RectangleGeometry(
-                    new Rect(new Point(0, 0),
+                    new(new(0, 0),
                         new Point(width, height))));
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
-                    new Rect(0, 0, width, height));
+                    new(0, 0, width, height));
 
                 DrawExample(widthSepTop, heightSep, width, widthSepBottom, height, drawingContext);
 
@@ -119,16 +118,16 @@ namespace Billiards.Wpf.ViewModels
                     (DateTime.Now - now).TotalMilliseconds.ToString("F0"),
                     CultureInfo.CurrentUICulture,
                     FlowDirection.LeftToRight,
-                    new Typeface("Verdana"),
+                    new("Verdana"),
                     32,
                     Brushes.AntiqueWhite, 1.25);
 
-                drawingContext.DrawText(formattedText, new Point(0, 0));
+                drawingContext.DrawText(formattedText, new(0, 0));
 
                 drawingContext.Close();
             }
 
-            return new DrawingImage(visual.Drawing);
+            return new(visual.Drawing);
         }
 
         private void DrawBalls(ResultBallCollection balls, Mat frame,
@@ -141,7 +140,7 @@ namespace Billiards.Wpf.ViewModels
                 if (ball.ImageAbsolutePoint != null)
                 {
                     //GetColor()
-                    Pen color = new Pen(GetColor(ball.Color), 5)
+                    Pen color = new(GetColor(ball.Color), 5)
                     {
                         DashStyle = DashStyles.Solid
                     };
@@ -173,11 +172,11 @@ namespace Billiards.Wpf.ViewModels
                 return;
             }
 
-            Pen examplePen = new Pen(Brushes.GreenYellow, 5)
+            Pen examplePen = new(Brushes.GreenYellow, 5)
             {
                 DashStyle = DashStyles.Solid
             };
-            PathFigure figure = new PathFigure
+            PathFigure figure = new()
             {
                 IsClosed = true,
                 StartPoint = tableCornerPoints[0]
@@ -195,18 +194,18 @@ namespace Billiards.Wpf.ViewModels
         private static void DrawExample(int widthSepTop, int heightSep, int width, int widthSepBottom, int height,
             DrawingContext drawingContext)
         {
-            Pen examplePen = new Pen(Brushes.Gray, 5)
+            Pen examplePen = new(Brushes.Gray, 5)
             {
                 DashStyle = DashStyles.Dash
             };
             Geometry geometry = new PathGeometry(new List<PathFigure>()
             {
-                new PathFigure(new Point(widthSepTop, heightSep),
+                new(new(widthSepTop, heightSep),
                     new List<PathSegment>
                     {
-                        new LineSegment(new Point(width - widthSepTop, heightSep), true),
-                        new LineSegment(new Point(width - widthSepBottom, height - heightSep), true),
-                        new LineSegment(new Point(widthSepBottom, height - heightSep), true),
+                        new LineSegment(new(width - widthSepTop, heightSep), true),
+                        new LineSegment(new(width - widthSepBottom, height - heightSep), true),
+                        new LineSegment(new(widthSepBottom, height - heightSep), true),
                     }, true)
             });
             drawingContext.DrawGeometry(null, examplePen, geometry);

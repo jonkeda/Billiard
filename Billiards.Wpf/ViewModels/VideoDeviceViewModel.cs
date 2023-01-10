@@ -17,7 +17,7 @@ namespace Billiards.Wpf.ViewModels
     {
         public VideoDeviceViewModel()
         {
-            timer = new Timer(new TimeSpan(0, 0, 0, 0, 1000 / 30));
+            timer = new(new TimeSpan(0, 0, 0, 0, 1000 / 30));
             timer.Elapsed += TimerOnElapsed;
         }
 
@@ -28,7 +28,7 @@ namespace Billiards.Wpf.ViewModels
         {
             get
             {
-                using SystemDevices systemDevice = new SystemDevices();
+                using SystemDevices systemDevice = new();
                 IReadOnlyList<VideoDevice> devices = systemDevice.VideoDevices();
                 SelectedVideoDevice = devices.LastOrDefault();
                 return devices;
@@ -54,7 +54,7 @@ namespace Billiards.Wpf.ViewModels
             {
                 if (camera == null && SelectedVideoDevice != null)
                 {
-                    camera = new VideoCapture(SelectedVideoDevice.Index, VideoCaptureAPIs.DSHOW );
+                    camera = new(SelectedVideoDevice.Index, VideoCaptureAPIs.DSHOW );
                 }
 
                 return camera;
@@ -99,7 +99,7 @@ namespace Billiards.Wpf.ViewModels
                     FolderWatcher?.Dispose();
                     if (!String.IsNullOrEmpty(SelectedFolder))
                     {
-                        FolderWatcher = new FileSystemWatcher(SelectedFolder, "*.jpg");
+                        FolderWatcher = new(SelectedFolder, "*.jpg");
                         FolderWatcher.IncludeSubdirectories = true;
                         FolderWatcher.EnableRaisingEvents = true;
                         FolderWatcher.Created += FolderWatcher_Created;
@@ -144,7 +144,7 @@ namespace Billiards.Wpf.ViewModels
 
         private void SelectFolder()
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            OpenFileDialog ofd = new();
             if (ofd.ShowDialog() == true)
             {
                 SelectedFolder = Path.GetDirectoryName(ofd.FileName);
@@ -163,7 +163,7 @@ namespace Billiards.Wpf.ViewModels
 
         private void Load()
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            OpenFileDialog ofd = new();
             if (ofd.ShowDialog() == true)
             {
                 try
@@ -306,7 +306,7 @@ namespace Billiards.Wpf.ViewModels
         {
             ThreadDispatcher.Invoke(() =>
             {
-                CaptureImage?.Invoke(this, new CaptureEvent(image));
+                CaptureImage?.Invoke(this, new(image));
             });
         }
 
@@ -314,7 +314,7 @@ namespace Billiards.Wpf.ViewModels
         public event EventHandler<CaptureEvent> StreamImage;
         protected void OnStreamImage(Mat image)
         {
-            StreamImage?.Invoke(this, new CaptureEvent(image));
+            StreamImage?.Invoke(this, new(image));
         }
 
 

@@ -26,6 +26,8 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         set { SetProperty(ref contourFilter, value); }
     }
 
+    public int StraigthenAngle { get; set; }
+
     public class Line
     {
         public Line(Vec2f v1, Vec2f v2)
@@ -107,9 +109,6 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
                 dc.DrawEllipse(Brushes.Blue, null, p, radius, radius);
                 FormattedText formattedText = new(
                     i.ToString(),
-                    //CultureInfo.CurrentUICulture,
-                    //FlowDirection.LeftToRight,
-                    //new Typeface("Verdana"),
                     32,
                     Brushes.GreenYellow, 1.25);
                 dc.DrawText(formattedText, p);
@@ -121,7 +120,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
     }
 
 
-    private List<Point2f> OrderPoints(List<Point2f> foundPoints)
+    private static List<Point2f> OrderPoints(List<Point2f> foundPoints)
     {
         Point2f point = foundPoints.OrderBy(p => p.X).Take(2).OrderBy(p => p.Y).FirstOrDefault();
         int index = foundPoints.IndexOf(point);
@@ -172,7 +171,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         foreach (var point in points.Skip(1))
         {
             var line = new Line(previousPoint.AsVec2f(), point.AsVec2f());
-            if (Math.Abs(angle - line.Angle) > 2)
+            if (Math.Abs(angle - line.Angle) > StraigthenAngle)
             {
                 newPoints.Add(previousPoint);
                 angle = line.Angle;
@@ -184,7 +183,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         return newPoints;
     }
 
-    private List<Line> CreateLines(List<Point> points)
+    private static List<Line> CreateLines(IReadOnlyList<Point> points)
     {
         List<Line> lines = new();
         Point previousPoint = points[0];

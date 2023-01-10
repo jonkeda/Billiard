@@ -1,5 +1,4 @@
-﻿using System;
-using Billiards.Base.FilterSets;
+﻿using Billiards.Base.FilterSets;
 using Billiards.Base.Physics;
 using Billiards.Base.Threading;
 using Billiards.Wpf.UI;
@@ -27,7 +26,7 @@ namespace Billiards.Wpf.ViewModels
             FilterViewModel = filterViewModel;
             VideoDevice = videoDevice;
 
-            Detector = new CaramboleDetector();
+            Detector = new();
 
             videoDevice.CaptureImage += VideoDeviceCaptureImage;
             videoDevice.StreamImage += VideoDeviceStreamImage;

@@ -243,7 +243,7 @@ else if (mode == VideoMode.Prediction)
         try
         {
             var addItem = new TableRecognitionRequest(data);
-            HttpResponseMessage response = await Http.PostAsJsonAsync("Recognition", addItem);
+            HttpResponseMessage response = await Http.PostAsJsonAsync("Recognition/Image", addItem);
             if (!response.IsSuccessStatusCode)
             {
                 return;

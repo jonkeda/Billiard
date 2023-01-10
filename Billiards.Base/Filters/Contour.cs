@@ -5,21 +5,24 @@ namespace Billiards.Base.Filters;
 
 public class Contour
 {
-    public Contour(VectorOfPoint contour)
+    public Contour(VectorOfPoint contour, int index)
     {
         List<Point> points = new List<Point>();
         points.AddRange(contour.ToArray());
         Points = points;
+        Index = index;
     }
 
     public Contour()
     { }
 
-    public Contour(IEnumerable<Point> points)
+    public Contour(IEnumerable<Point> points, int index)
     {
         Points = points.ToList();
+        Index = index;
     }
 
+    public int Index { get; set; }
     public List<Point>? Points { get; set; }
     public RotatedRect? RotatedRectangle { get; set; }
 
