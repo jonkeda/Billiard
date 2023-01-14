@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Timers;
 using System.Windows.Input;
+using System.Xml.Linq;
+using Billiards.Base.Filters;
 using Billiards.Base.Threading;
 using Billiards.Wpf.Devices;
 using Billiards.Wpf.UI;
@@ -23,6 +25,31 @@ namespace Billiards.Wpf.ViewModels
 
         private VideoDevice selectedVideoDevice;
         private VideoCapture camera;
+
+        public bool IsWhiteCueBall
+        {
+            get { return isWhiteCueBall; }
+            set
+            {
+                if (SetProperty(ref isWhiteCueBall, value))
+                {
+                    NotifyPropertyChanged(nameof(IsYellowCueBall));
+                }
+            }
+        }
+
+        public bool IsYellowCueBall
+        {
+            get { return !isWhiteCueBall; }
+            set
+            {
+                if (SetProperty(ref isWhiteCueBall, !value))
+                {
+                    NotifyPropertyChanged(nameof(IsWhiteCueBall));
+                }
+
+            }
+        }
 
         public IReadOnlyList<VideoDevice> VideoDevices
         {
@@ -179,6 +206,21 @@ namespace Billiards.Wpf.ViewModels
             }
         }
 
+        public ICommand CalculateCommand
+        {
+            get { return new TargetCommand(DoCalculate); }
+        }
+
+        private void DoCalculate()
+        {
+            if (pathName == null)
+            {
+                return;
+            }
+            Mat image = Cv2.ImRead(pathName, ImreadModes.Color);
+            OnCaptureImage(image);
+        }
+
         public ICommand NextCommand
         {
             get { return new TargetCommand(Next); }
@@ -304,11 +346,21 @@ namespace Billiards.Wpf.ViewModels
 
         public event EventHandler<CaptureEvent> CaptureImage;
 
+        private BallColor CueBall()
+        {
+            if (IsWhiteCueBall)
+            {
+                return BallColor.White;
+            }
+
+            return BallColor.Yellow;
+        }
+
         protected void OnCaptureImage(Mat image)
         {
             ThreadDispatcher.Invoke(() =>
             {
-                CaptureImage?.Invoke(this, new(image));
+                CaptureImage?.Invoke(this, new(image, CueBall()));
             });
         }
 
@@ -316,11 +368,12 @@ namespace Billiards.Wpf.ViewModels
         public event EventHandler<CaptureEvent> StreamImage;
         protected void OnStreamImage(Mat image)
         {
-            StreamImage?.Invoke(this, new(image));
+            StreamImage?.Invoke(this, new(image, CueBall()));
         }
 
 
         private readonly Timer timer;
+        private bool isWhiteCueBall;
 
         public void Stop()
         {

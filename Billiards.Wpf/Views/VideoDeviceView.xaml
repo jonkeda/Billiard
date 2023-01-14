@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModel="clr-namespace:Billiards.Wpf.ViewModels"
+             xmlns:converters="clr-namespace:Billiards.Wpf.UI.Converters"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=false, Type={x:Type viewModel:VideoDeviceViewModel}}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -26,6 +27,11 @@
             <Button Command="{Binding OkCommand}">Ok</Button>
             <Button Command="{Binding NotOkCommand}">Not</Button>
             <CheckBox IsChecked="{Binding Calculate}">Calculate</CheckBox>
+
+            <Button Command="{Binding CalculateCommand}">Calculate</Button>
+
+            <RadioButton IsChecked="{Binding IsWhiteCueBall}" Content="White"/>
+            <RadioButton IsChecked="{Binding IsYellowCueBall}" Content="Yellow"/>
 
         </StackPanel>
 

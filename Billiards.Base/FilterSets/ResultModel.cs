@@ -1,4 +1,5 @@
-﻿using Billiards.Base.Physics;
+﻿using Billiards.Base.Filters;
+using Billiards.Base.Physics;
 using OpenCvSharp;
 
 namespace Billiards.Base.FilterSets
@@ -19,7 +20,7 @@ namespace Billiards.Base.FilterSets
         public CaramboleDetector? Detector { get; set; }
         public DateTime Now { get; }
 
-        public bool OnMainBall { get; set; } = true;
+        public BallColor CueBallColor { get; set; } = BallColor.White;
 
         public float Power { get; set; } = 1500;
         public PhysicsEngine.ProblemCollection? Problems { get; set; }

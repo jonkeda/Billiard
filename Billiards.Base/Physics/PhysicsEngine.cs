@@ -74,11 +74,11 @@ namespace Billiards.Base.Physics
                     }
                 }
             }
-            result.Problems = CalculateSolutions(result.OnMainBall, result.Power);
+            result.Problems = CalculateSolutions(result.CueBallColor, result.Power);
             return true;
         }
 
-        public ProblemCollection CalculateSolutions(bool onMainBall, float power)
+        public ProblemCollection CalculateSolutions(BallColor cueBallColor, float power)
         {
             PBall white = GetWhiteBall();
             PBall yellow = GetYellowBall();
@@ -86,7 +86,7 @@ namespace Billiards.Base.Physics
 
             ProblemCollection problems;
 
-            if (onMainBall)
+            if (cueBallColor == BallColor.White)
             {
                 problems = new ProblemCollection
                 {
@@ -103,12 +103,12 @@ namespace Billiards.Base.Physics
                 };
             }
 
-/*            foreach (Problem problem in problems)
+            foreach (Problem problem in problems)
             {
                 problem.Run();
             }
-*/
-                            Parallel.ForEach(problems, problem =>
+
+/*                            Parallel.ForEach(problems, problem =>
                           {
                               try
                               {
@@ -118,12 +118,12 @@ namespace Billiards.Base.Physics
                               {
                                   string a = e.Message;
                               }
-                          });
+                          });*/
             return problems;
 
         }
 
-        private PBall? Calculate(Vector2 force, bool animate, bool filter)
+        private PBall? Calculate(Vector2 force, bool animate, bool filter, BallColor cueBallColor, BallColor otherBallColor)
         {
             PBall[] ballsClones = new PBall[balls.Count];
             for (int i = 0; i < balls.Count; i++)
@@ -132,12 +132,13 @@ namespace Billiards.Base.Physics
                 ballsClones[i].ClearPositions();
             }
 
-            return Calculate(force, animate, filter, ballsClones, table);
+            return Calculate(force, animate, filter, ballsClones, table, cueBallColor, otherBallColor);
         }
 
-        private static PBall? Calculate(Vector2 force, bool animate, bool filter, PBall[] ballsClones, PTable table)
+        private static PBall? Calculate(Vector2 force, bool animate, bool filter, PBall[] ballsClones, PTable table, 
+            BallColor cueBallColor, BallColor otherBallColor)
         {
-            PBall cueBall = ballsClones[0];
+            PBall cueBall = ballsClones.First(b => b.BallColor == cueBallColor);
             cueBall.velocity += force;
 
             bool isResting = false;
@@ -161,9 +162,9 @@ namespace Billiards.Base.Physics
                             return null;
                         }
 
-                        if (ballsClones[1].Collisions.Count(b => b.Ball != null) > 1)
+                        if (ballsClones.First(b => b.BallColor == otherBallColor).Collisions.Count(b => b.Ball != null) > 1)
                             return null;
-                        if (ballsClones[2].Collisions.Count(b => b.Ball != null) > 1)
+                        if (ballsClones.First(b => b.BallColor == BallColor.Red).Collisions.Count(b => b.Ball != null) > 1)
                             return null;
                         SaveBallCollisions(ballsClones);
                         return cueBall;
@@ -327,7 +328,7 @@ namespace Billiards.Base.Physics
             for (float angle = fromAngle; angle < toAngle; angle += 0.04f)
             {
                 Vector2 n = MathV.GetVector(angle) * power;
-                PBall? cueClone = Calculate(n, false, true);
+                PBall? cueClone = Calculate(n, false, true, cue.BallColor, other.BallColor);
                 if (cueClone != null
                     && AllowedSolution(cueClone))
                 {

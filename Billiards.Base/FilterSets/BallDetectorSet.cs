@@ -27,7 +27,7 @@ public class BallDetectorSet : FilterSet
         var contours = Contours();
         contours.MinimumArea = 1000;
         contours.MaximumArea = 7000;
-        contours.MinimumRatio = 0.2d;
+        contours.MinimumRatio = 0.15d;
         contours.MaximumRatio = 1d;
         contours.Resize = 0.7;
 

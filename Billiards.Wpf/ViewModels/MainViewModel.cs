@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Billiards.Base.Filters;
 using Billiards.Base.FilterSets;
 using Billiards.Base.Physics;
 using Billiards.Base.Threading;
@@ -49,6 +50,7 @@ namespace Billiards.Wpf.ViewModels
 
             if (VideoDevice.Calculate)
             {
+                result.CueBallColor = e.Cueball;
                 PhysicsEngine.CalculateSolutions(result);
             }
 
