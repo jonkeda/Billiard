@@ -1,18 +1,17 @@
 ﻿@page "/Camera"
 @inherits BaseImagesPage
-@using Billiards.Web.Shared
 @using Billiards.Web.Client.Models
 @using Billiards.Web.Client.Extensions
+@using Billiards.Web.Client.Components
 @inject IJSRuntime JsRuntime
-@inject HttpClient Http
 
 <label style="background: blue; border: 1px white; color: white; margin: 5px;padding: 5px">
     <span class="oi oi-camera-slr" aria-hidden="true"></span> Take a picture of the table
     <InputFile accept="image/*" capture="environment" style="display: none" OnChange="@PictureTaken"></InputFile>
 </label>
 
-<br/>
-Resize: @resizeTime Recognize: @recognizeTime time: @time @Busy
+<br />
+Resize: @ResizeTime Recognize: @RecognizeTime time: @Time @Busy
 
 @if (Busy)
 {
@@ -21,70 +20,20 @@ Resize: @resizeTime Recognize: @recognizeTime time: @time @Busy
 
 <div style="width: 100%; height: 100%; position: relative">
 
-    <svg viewBox="@viewbox" preserveAspectRatio="xMidYMid meet"
-         style="width: 100%; height: 100%s">
-        <g transform="@transform">
-            <rect width="2000" height="1000" style="fill: green"/>
-            @for (int y = 250; y <= 750; y += 250)
-            {
-                <line x1="0" y1="@y" x2="2000" y2="@y" style="stroke: lightgreen"/>
-            }
-            @for (int x = 250; x <= 1750; x += 250)
-            {
-                <line x1="@x" y1="0" x2="@x" y2="1000" style="stroke: lightgreen"/>
-            }
-            <rect width="2000" height="1000" style="stroke: brown; stroke-width: 32; fill-opacity: 0;"/>
-            @{
-                if (problems != null)
-                {
-                    foreach (Problem problem in problems)
-                    {
-                        foreach (Solution solution in problem.Solutions)
-                        {
-                            <polyline points="@solution.PointsAsString()"
-                                      style="fill: none; stroke: @problem.Color; stroke-width: 3; stroke-opacity: 0.5"/>
-                        }
-                    }
-                }
-                if (balls != null)
-                {
-                    foreach (var ball in balls)
-                    {
-                        if (ball.TableAbsolutePoint != null)
-                        {
-                            <circle cx="@ball.TableAbsolutePoint.X" cy="@ball.TableAbsolutePoint.Y"
-                                    r="@ballRadius" fill="@ball.Color"/>
-                        }
-                    }
-                }
-            }
-        </g>
+    <TableSolutions Balls="@balls" BallRadius="@ballRadius" Problems="@problems"
+                    ScreenHeightPx="@screenHeightPx" ScreenWidthPx="screenWidthPx"
+                    Transform="@transform" Viewbox="@viewbox" />
 
-        Sorry, your browser does not support inline SVG.
-    </svg>
 </div>
-<br/>
+<br />
 <div style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
     <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @screenWidthPx; height: @screenHeightPx; z-index: 1" />
-    <svg 
-         style="position: absolute; top: 0px; left: 0px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2">
-        @{
-            if (balls != null)
-            {
-                foreach (var ball in balls)
-                {
-                    if (ball.ImageAbsolutePoint != null)
-                    {
-                        <circle cx="@ball.ImageAbsolutePoint.X" cy="@ball.ImageAbsolutePoint.Y" r="@finderRadius"
-                                stroke="@ball.Color" stroke-width="@finderStroke" fill-opacity="0" stroke-opacity="0.5" />
-                    }
-                }
-            }
-        }
-        <polygon points="@tableCorners" stroke="green"
-                 stroke-width="@finderStroke" stroke-opacity="0.8" fill-opacity="0" />
-        Sorry, your browser does not support inline SVG.
-    </svg>
+
+    <div style="width: 100%; height: 100%; position: relative">
+        <TableRecognized Balls="@balls" TableCorners="@tableCorners"
+                         ScreenWidthPx="@screenWidthPx" ScreenHeightPx="@screenHeightPx"
+                         FinderStroke="@finderStroke" FinderRadius="@finderRadius" />
+    </div>
 </div>
 
 @code {
@@ -95,14 +44,14 @@ Resize: @resizeTime Recognize: @recognizeTime time: @time @Busy
 
     }
 
-    private string frameUri;
+    private string frameUri { get; set; }
 
     bool Busy { get; set; } = false;
-    long imageSize1 { get; set; }
-    long imageSize2 { get; set; }
-    long time { get; set; }
-    long resizeTime { get; set; }
-    long recognizeTime { get; set; }
+    long ImageSize1 { get; set; }
+    long ImageSize2 { get; set; }
+    long Time { get; set; }
+    long ResizeTime { get; set; }
+    long RecognizeTime { get; set; }
 
     private async Task PictureTaken(InputFileChangeEventArgs e)
     {
@@ -116,7 +65,7 @@ Resize: @resizeTime Recognize: @recognizeTime time: @time @Busy
         {
             DateTime now = DateTime.Now;
             Busy = true;
-            imageSize1 = e.File.Size;
+            ImageSize1 = e.File.Size;
             IBrowserFile file;
             if (screenOrientation == ScreenOrientation.Landscape)
             {
@@ -126,8 +75,8 @@ Resize: @resizeTime Recognize: @recognizeTime time: @time @Busy
             {
                 file = await e.File.RequestImageFileAsync(e.File.ContentType, VideoHeight, VideoWidth);
             }
-            imageSize2 = file.Size;
-            resizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
+            ImageSize2 = file.Size;
+            ResizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
             using var memoryStream = new MemoryStream();
 
             await file.OpenReadStream().CopyToAsync(memoryStream);
@@ -139,13 +88,13 @@ Resize: @resizeTime Recognize: @recognizeTime time: @time @Busy
 
             bool recognized = await RecognizeTable(data);
 
-            recognizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
+            RecognizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
 
             if (recognized)
             {
                 bool predicted = await MakePrediction();
             }
-            time = (long)(DateTime.Now - now).TotalMilliseconds;
+            Time = (long)(DateTime.Now - now).TotalMilliseconds;
         }
         catch (Exception ex)
         {

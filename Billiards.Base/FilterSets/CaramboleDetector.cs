@@ -73,7 +73,14 @@ public class CaramboleDetector
             ToRelativePoint(result.Image, BallResultFilter.RedBallPoint),
             WarpPerspective(result.Image, warpingMat, BallResultFilter.RedBallPoint)));
 
+        result.Found = HasResult(result.Balls);
+
         return result;
+    }
+
+    private static bool HasResult(ResultBallCollection balls)
+    {
+        return balls.All(b => b.TableRelativePosition.HasValue);
     }
 
     private static void Resize(Mat image)

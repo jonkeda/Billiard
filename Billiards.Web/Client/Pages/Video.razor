@@ -1,4 +1,5 @@
 ﻿@page "/Video"
+@inherits BaseImagesPage
 @inject IJSRuntime JsRuntime
 @inject HttpClient Http
 @using Billiards.Web.Client.Components
@@ -16,14 +17,20 @@ else if (mode == VideoMode.Video)
 {
     <div id="canvas" style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
         <CameraStreamer id="videoContainer"
-                    Style=@cameraStyle
+                        Style=@cameraStyle
                     @ref="CameraStreamerReference"
-                    Width="@VideoWidth"
-                    Height="@VideoHeight"
-                    OnRendered="OnRenderedHandler"
-                    OnFrame="OnFrameHandler"
-                    CameraID="@cameraId"
-                    Autostart />
+                        Width="@VideoWidth"
+                        Height="@VideoHeight"
+                        OnRendered="OnRenderedHandler"
+                        OnFrame="OnFrameHandler"
+                        CameraID="@cameraId"
+                        Autostart />
+
+        <TableRecognized Balls="@balls" TableCorners="@tableCorners"
+                     ScreenWidthPx="@screenWidthPx" ScreenHeightPx="@screenHeightPx"
+                     FinderStroke="@finderStroke" FinderRadius="@finderRadius" />
+
+        @*        
         <svg id="svgContainer" viewBox="0 0 @screenWidth @screenHeight"
          style="position: absolute; top: 0px; left: 0px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2">
 
@@ -46,6 +53,7 @@ else if (mode == VideoMode.Video)
 
             Sorry, your browser does not support inline SVG.
         </svg>
+        *@
 
         <button style="position: absolute; bottom: 20px; width: @screenWidthPx; height: 30px; z-index: 3; border: none; background: none; border-radius: 50%;"
             @onclick="MakePrediction">
@@ -60,7 +68,7 @@ else if (mode == VideoMode.Video)
                 foreach (var mediaDevice in mediaDevices)
                 {
                     <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))"
-                style="margin-left: 40px">
+                        style="margin-left: 40px">
                         <span class="oi oi-camera-slr" aria-hidden="true"></span>
                     </button>
                 }
@@ -73,8 +81,13 @@ else if (mode == VideoMode.Video)
 else if (mode == VideoMode.Prediction)
 {
     <div id="canvas" style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
+
+        <TableSolutions Balls="@balls" BallRadius="@ballRadius" Problems="@problems"
+                        ScreenHeightPx="@screenHeightPx" ScreenWidthPx="screenWidthPx"
+                        Transform="@transform" Viewbox="@viewbox" />
+        @*
         <svg id="svgContainer" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid meet"
-         style="position: absolute; top: 1px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2; background-color:green">
+             style="position: absolute; top: 1px; width: @screenWidthPx; height: @screenHeightPx; z-index: 2; background-color: green">
             @{
                 if (problems != null)
                 {
@@ -83,7 +96,7 @@ else if (mode == VideoMode.Prediction)
                         foreach (Solution solution in problem.Solutions)
                         {
                             <polyline points="@solution.PointsAsString()"
-                                      style="fill:none;stroke:@problem.Color;stroke-width:3" />
+                                      style="fill: none; stroke: @problem.Color; stroke-width: 3"/>
                         }
                     }
                 }
@@ -94,7 +107,7 @@ else if (mode == VideoMode.Prediction)
                         if (ball.TableAbsolutePoint != null)
                         {
                             <circle cx="@ball.TableAbsolutePoint.X" cy="@ball.TableAbsolutePoint.Y"
-                                    r="@ballRadius" fill="@ball.Color" />
+                                    r="@ballRadius" fill="@ball.Color"/>
                         }
                     }
                 }
@@ -102,10 +115,11 @@ else if (mode == VideoMode.Prediction)
 
             Sorry, your browser does not support inline SVG.
         </svg>
+        *@
 
         <button style="position: absolute; bottom: 10px; width: @screenWidthPx; height: 30px; z-index: 3; border: none; background: none; border-radius: 50%;"
-            @onclick="OpenCamera">
-            <span class="oi oi-camera-slr" style="background: lightgray; color: green;font-size: 40px; text-align: center" aria-hidden="true"></span>
+                @onclick="OpenCamera">
+            <span class="oi oi-camera-slr" style="background: lightgray; color: green; font-size: 40px; text-align: center" aria-hidden="true"></span>
         </button>
     </div>
 }
@@ -117,7 +131,7 @@ else if (mode == VideoMode.Prediction)
     MediaDeviceInfoModel[]? mediaDevices;
 
     VideoMode mode = VideoMode.Video;
-
+    /*
     const int VideoWidth = 960;
     const int VideoHeight = 540;
 
@@ -143,17 +157,18 @@ else if (mode == VideoMode.Prediction)
     ProblemCollection? problems;
 
     string? tableCorners;
-
+    */
+    /*
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
         await JsRuntime.OpenFullscreen();
     }
+    */
 
     private async void OnRenderedHandler()
     {
-        await SetSize();
         // Check camera-access or ask user, if it's not allowed currently
         if (await CameraStreamerReference.GetCameraAccessAsync())
         {
@@ -166,7 +181,7 @@ else if (mode == VideoMode.Prediction)
             mediaDevices = await CameraStreamerReference.GetCameraDevicesAsync();
         }
     }
-
+    /*
     private async Task SetSize()
     {
         var dimension = await JsRuntime.GetWindowDimension();
@@ -216,6 +231,7 @@ else if (mode == VideoMode.Prediction)
         cameraStyle = $"position: absolute; top: 0px; left: 0px; width: {screenWidthPx}; height: {screenHeightPx}; z-index: 1";
 
     }
+    */
 
     string? selectedMediaDeviceId = null;
 
@@ -232,7 +248,7 @@ else if (mode == VideoMode.Prediction)
 
         await RecognizeTable(data);
     }
-
+    /*
     private async Task RecognizeTable(string data)
     {
         if (sending)
@@ -297,7 +313,7 @@ else if (mode == VideoMode.Prediction)
             sending = false;
         }
     }
-
+    
     public Point ToTableAbsolutePoint(Point p)
     {
         return new Point(p.X * TableWidth, p.Y * TableHeight);
@@ -307,7 +323,7 @@ else if (mode == VideoMode.Prediction)
     {
         return new Point(p.X * screenWidth, p.Y * screenHeight);
     }
-
+    
     public async Task MakePrediction()
     {
         if (balls == null
@@ -325,7 +341,7 @@ else if (mode == VideoMode.Prediction)
         PredictionResponse? result = await response.Content.ReadFromJsonAsync<PredictionResponse>();
         problems = result?.Problems;
     }
-
+    */
     public async Task OpenCamera()
     {
         mode = VideoMode.Video;

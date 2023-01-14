@@ -37,12 +37,12 @@ public class HistogramFilter : AbstractFilter
         for (int i = 0; i < ResultMat.Channels(); i++)
         {
             Mat hist = new Mat();
-            Cv2.CalcHist(mats, new[] { i }, mask, hist, 1, new[] { 256 }, new[] { new Rangef(0, 256) });
+            Cv2.CalcHist(mats, new[] { i }, mask, hist, 1, new[] { 256 }, new[] { new Rangef(Start, End) });
             hists.Add(hist);
         }
 
         // todo
-        // DrawingImage = DrawHist(hists);
+        DrawingImage = DrawHist(hists);
 
         //ResultMat = new Mat();
 

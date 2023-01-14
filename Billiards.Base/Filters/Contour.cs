@@ -16,10 +16,11 @@ public class Contour
     public Contour()
     { }
 
-    public Contour(IEnumerable<Point> points, int index)
+    public Contour(IEnumerable<Point> points, int index, RotatedRect? rotatedRectangle)
     {
         Points = points.ToList();
         Index = index;
+        RotatedRectangle = rotatedRectangle;
     }
 
     public int Index { get; set; }

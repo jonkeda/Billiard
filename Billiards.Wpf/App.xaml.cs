@@ -29,6 +29,7 @@ namespace Billiards.Wpf
             services.AddSingleton<VideoDeviceViewModel>();
             services.AddSingleton<CaptureViewModel>();
             services.AddSingleton<MainViewModel>();
+            services.AddSingleton<ValidationViewModel>();
             services.AddSingleton<PhysicsEngine>();
         }
 

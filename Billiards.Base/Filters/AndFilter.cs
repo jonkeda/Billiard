@@ -13,10 +13,7 @@ public class AndFilter : AbstractFilter, IMaskFilter
     public Mat? Mask
     {
         get { return mask; }
-        set
-        {
-            SetProperty(ref mask, value);
-        }
+        set { SetProperty(ref mask, value); }
     }
     
     private IMaskFilter? maskFilter;
@@ -46,6 +43,7 @@ public class AndFilter : AbstractFilter, IMaskFilter
         }
         else if (ContourFilter?.Contours != null)
         {
+            FilterValues.Add("Mask Contour", MaskContour);
             mask = new Mat(input.Rows, input.Cols, MatType.CV_8U, new Scalar(0));
             Contour contour = ContourFilter.Contours[MaskContour];
             if (contour.RotatedRectangle.HasValue)

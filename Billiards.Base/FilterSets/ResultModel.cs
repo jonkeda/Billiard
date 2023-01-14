@@ -23,5 +23,6 @@ namespace Billiards.Base.FilterSets
 
         public float Power { get; set; } = 1500;
         public PhysicsEngine.ProblemCollection? Problems { get; set; }
+        public bool Found { get; set; }
     }
 }

@@ -26,7 +26,7 @@ public class BallDetectorSet : FilterSet
         var canny = Canny();
         var contours = Contours();
         contours.MinimumArea = 1000;
-        contours.MaximumArea = 6000;
+        contours.MaximumArea = 7000;
         contours.MinimumRatio = 0.2d;
         contours.MaximumRatio = 1d;
         contours.Resize = 0.7;

@@ -23,6 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\ValidationView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\TableView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

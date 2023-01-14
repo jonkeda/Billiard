@@ -13,6 +13,9 @@
     <Page Update="UI\Controls\NumberBox.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\ValidationView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\TableView.xaml">
       <SubType>Designer</SubType>
     </Page>

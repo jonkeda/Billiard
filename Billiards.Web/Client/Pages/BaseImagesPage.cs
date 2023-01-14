@@ -51,9 +51,10 @@ namespace Billiards.Web.Client.Pages
         {
             await base.OnInitializedAsync();
             await SetSize();
+            await JsRuntime.OpenFullscreen();
         }
 
-        private async Task SetSize()
+        protected async Task SetSize()
         {
             var dimension = await JsRuntime.GetWindowDimension();
             screenWidth = dimension.Width;
@@ -95,6 +96,11 @@ namespace Billiards.Web.Client.Pages
             {
                 viewbox = "0 0 1000 2000";
                 transform = "rotate(90, 500, 1000) translate(-500, 500)";
+            }
+            else
+            {
+                viewbox = "0 0 2000 1000";
+                transform = "";
             }
 
             finderRadius = Math.Max(screenWidth, screenHeight) / 60;

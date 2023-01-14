@@ -1,7 +1,6 @@
 ﻿@using Billiards.Web.Shared
 
-<svg viewBox="@ViewBox"
-     style="position: absolute; top: 0px; left: 0px; width: @ScreenWidthPx; height: @ScreenHeightPx; z-index: 2">
+<svg style="position: absolute; top: 0px; left: 0px; width: @ScreenWidthPx; height: @ScreenHeightPx; z-index: 2">
     @{
         if (Balls != null)
         {
@@ -23,16 +22,19 @@
 
 @code {
 
+    [Parameter]
     public string ScreenWidthPx { get; set; } = "480px";
+    [Parameter]
     public string ScreenHeightPx { get; set; } = "270px";
 
-    public string ViewBox { get; set; } = "0 0 2000 1000";
-
+    [Parameter]
     public int FinderStroke { get; set; } = 8;
+    [Parameter]
     public int FinderRadius { get; set; } = 16;
 
+    [Parameter]
     public BallCollection? Balls { get; set; }
 
+    [Parameter]
     public string? TableCorners { get; set; }
-
 }

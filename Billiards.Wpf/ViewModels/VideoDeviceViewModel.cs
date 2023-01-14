@@ -279,8 +279,10 @@ namespace Billiards.Wpf.ViewModels
             {
                 return;
             }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(pathName));
             string newName = Path.Combine(Path.GetDirectoryName(pathName), "Ok", Path.GetFileName(pathName));
-            File.Move(pathName, newName);
+            File.Move(pathName, newName, true);
             Next();
         }
 
@@ -296,7 +298,7 @@ namespace Billiards.Wpf.ViewModels
                 return;
             }
             string newName = Path.Combine(Path.GetDirectoryName(pathName), "..", Path.GetFileName(pathName));
-            File.Move(pathName, newName);
+            File.Move(pathName, newName, true);
             Next();
         }
 

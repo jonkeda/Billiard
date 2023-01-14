@@ -25,5 +25,10 @@
             <views:CaptureView DataContext="{Binding CaptureViewModel}" />
         </TabItem>
 
+
+        <TabItem Header="Validation">
+            <views:ValidationView DataContext="{Binding ValidationViewModel}" />
+        </TabItem>
+
     </TabControl>
 </Window>

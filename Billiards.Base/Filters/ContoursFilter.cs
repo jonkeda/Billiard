@@ -40,13 +40,14 @@ public class ContoursFilter : AbstractFilter, IContourFilter
 
         // VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
         Point[][] contours;
-        Cv2.FindContours(GetInputMat(), out contours, out _, RetrType,  ChainApproxMethod);
+        Cv2.FindContours(GetInputMat(), out contours, out _, RetrType, ChainApproxMethod);
 
         FilterValues.Add("Contours", contours.Length);
 
-        double imageArea = ResultMat.Cols * ResultMat.Rows; 
+        double imageArea = ResultMat.Cols * ResultMat.Rows;
 
         ContourCollection contourList = new ContourCollection();
+        ContourCollection allContourList = new ContourCollection();
         for (int i = 0; i < contours.Length; i++)
         {
             Point[] contour = contours[i];
@@ -66,8 +67,9 @@ public class ContoursFilter : AbstractFilter, IContourFilter
                 && (MinimumRatio <= 0 || ratio >= MinimumRatio)
                 && (MaximumRatio <= 0 || ratio <= MaximumRatio))
             {
-                contourList.Add(new Contour(contour, i));
+                contourList.Add(new Contour(contour, i, rectangle));
             }
+            allContourList.Add(new Contour(contour, i, rectangle));
         }
         FilterValues.Add("Contours found", contourList.Count);
         if (ContourType == ContourType.ConvexHull)
@@ -80,7 +82,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             var points = Cv2.ConvexHull(allPoints);
 
             contourList.Clear();
-            contourList.Add(new Contour(points, 0));
+            contourList.Add(new Contour(points, 0, null));
         }
         else if (ContourType == ContourType.Ellipse)
         {
@@ -103,6 +105,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
         int radius = Math.Max(ResultMat.Cols, ResultMat.Rows) / 50;
         Draw(dc =>
         {
+            DrawNumbers(allContourList, dc);
             if (ContourType == ContourType.Points)
             {
                 DrawAsPoints(contourList, dc, radius);
@@ -129,6 +132,18 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             }
         });
         Contours = contourList;
+    }
+
+    private void DrawNumbers(ContourCollection allContourList, DrawingContext dc)
+    {
+        foreach (Contour contour in allContourList.Where(c => c.RotatedRectangle.HasValue))
+        {
+            FormattedText formattedText = new(
+                contour.Index.ToString(),
+                32,
+                Brushes.AntiqueWhite, 1.25);
+            dc.DrawText(formattedText, contour.RotatedRectangle!.Value.Center);
+        }
     }
 
     private float CalculateRatio(RotatedRect r)
@@ -242,25 +257,19 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             {
                 Cv2.MinEnclosingCircle(contour.Points, out Point2f center, out float radius);
                 dc.DrawEllipse(null, pen, center, radius, radius);
-
-                FormattedText formattedText = new(
-                    contour.Index.ToString(),
-                    32,
-                    Brushes.AntiqueWhite, 1.25);
-                dc.DrawText(formattedText, center);
             }
         }
     }
 
     private void DrawAsRectangles(ContourCollection contours, DrawingContext dc, int radius)
     {
-        Pen pen = new Pen(Brushes.GreenYellow, radius/2)
+        Pen pen = new Pen(Brushes.GreenYellow, radius / 2)
         {
             DashStyle = DashStyles.Solid
         };
         foreach (Contour contour in contours)
         {
-            
+
             if (contour.Points.Count > 5)
             {
                 RotatedRect rectangle = Cv2.MinAreaRect(contour.Points);
@@ -280,7 +289,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
                 Geometry geometry = new PathGeometry(new List<PathFigure> { figure });
                 dc.DrawGeometry(null, pen, geometry);
 
-                rectangle.Size = new Size2f((float)(rectangle.Size.Width * Resize), 
+                rectangle.Size = new Size2f((float)(rectangle.Size.Width * Resize),
                     (float)(rectangle.Size.Height * Resize));
                 contour.RotatedRectangle = rectangle;
             }
@@ -290,7 +299,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
 
     private void DrawAsEllipse(ContourCollection contours, DrawingContext dc, int radius)
     {
-        Pen pen = new Pen(Brushes.GreenYellow, radius/2)
+        Pen pen = new Pen(Brushes.GreenYellow, radius / 2)
         {
             DashStyle = DashStyles.Solid
         };
@@ -314,16 +323,6 @@ public class ContoursFilter : AbstractFilter, IContourFilter
 
                 Geometry geometry = new PathGeometry(new List<PathFigure> { figure });
                 dc.DrawGeometry(null, pen, geometry);
-
-                rectangle.Size = new Size2f((float)(rectangle.Size.Width * Resize),
-                    (float)(rectangle.Size.Height * Resize));
-                contour.RotatedRectangle = rectangle;
-
-                FormattedText formattedText = new(
-                    contour.Index.ToString(),
-                    32,
-                    Brushes.AntiqueWhite, 1.25);
-                dc.DrawText(formattedText, rectangle.Center);
             }
         }
     }

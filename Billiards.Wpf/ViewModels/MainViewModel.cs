@@ -1,4 +1,5 @@
-﻿using Billiards.Base.FilterSets;
+﻿using System.Runtime.InteropServices;
+using Billiards.Base.FilterSets;
 using Billiards.Base.Physics;
 using Billiards.Base.Threading;
 using Billiards.Wpf.UI;
@@ -13,18 +14,21 @@ namespace Billiards.Wpf.ViewModels
         public CaptureViewModel CaptureViewModel { get; }
         public FilterViewModel FilterViewModel { get; }
         public CaramboleDetector Detector { get; }
+        public ValidationViewModel ValidationViewModel { get; }
 
         public MainViewModel(TableViewModel tableViewModel, 
             CaptureViewModel captureViewModel, 
             FilterViewModel filterViewModel,
             PhysicsEngine physicsEngine, 
-            VideoDeviceViewModel videoDevice)
+            VideoDeviceViewModel videoDevice,
+            ValidationViewModel validationViewModel)
         {
             TableViewModel = tableViewModel;
             CaptureViewModel = captureViewModel;
             PhysicsEngine = physicsEngine;
             FilterViewModel = filterViewModel;
             VideoDevice = videoDevice;
+            ValidationViewModel = validationViewModel;
 
             Detector = new();
 
