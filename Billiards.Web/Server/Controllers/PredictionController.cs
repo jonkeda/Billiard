@@ -28,7 +28,8 @@ namespace Billiards.Web.Server.Controllers
 
             var result = new ResultModel
             {
-                Balls = resultBalls
+                Balls = resultBalls,
+                CueBallColor = (Base.Filters.BallColor)request.CueBall
             };
             if (!physicsEngine.CalculateSolutions(result))
             {

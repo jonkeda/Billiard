@@ -17,6 +17,7 @@ namespace Billiards.Web.Client.Pages
         [Inject]
         protected HttpClient Http { get; set; } = null!;
 
+        protected BallColor CueBall { get; set; } = BallColor.White;
 
         protected const int VideoWidth = 960;
         protected const int VideoHeight = 540;
@@ -235,7 +236,7 @@ namespace Billiards.Web.Client.Pages
             {
                 return false;
             }
-            var request = new PredictionRequest(balls);
+            var request = new PredictionRequest(balls, CueBall);
             HttpResponseMessage response = await Http.PostAsJsonAsync("Prediction", request);
             if (!response.IsSuccessStatusCode)
             {
