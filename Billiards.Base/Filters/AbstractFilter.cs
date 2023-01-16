@@ -11,6 +11,7 @@ public abstract class AbstractFilter : PropertyNotifier
     private bool enabled = true;
     private DrawingImage? drawingImage;
     private FilterValueCollection filterValues = new FilterValueCollection();
+    private double timeTaken;
 
     protected AbstractFilter? InputFilter { get; private set; }
 
@@ -68,8 +69,16 @@ public abstract class AbstractFilter : PropertyNotifier
         set { SetProperty(ref name, value); }
     }
 
+    public double TimeTaken
+    {
+        get { return timeTaken; }
+        private set { SetProperty(ref timeTaken, value); }
+    }
+
+
     public void DoApplyFilter(Mat? originalImage)
     {
+        DateTime now = DateTime.Now;
         FilterValues?.Clear();
         if (!Enabled)
         {
@@ -87,7 +96,7 @@ public abstract class AbstractFilter : PropertyNotifier
             FilterValues?.Add("Exception", ex.Message);
         }
         NotifyChanged();
-
+        TimeTaken = (DateTime.Now - now).TotalMilliseconds;
     }
 
     private void NotifyChanged()

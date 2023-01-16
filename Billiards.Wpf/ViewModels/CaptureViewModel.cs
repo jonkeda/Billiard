@@ -106,7 +106,7 @@ namespace Billiards.Wpf.ViewModels
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
                     new(0, 0, width, height));
 
-                DrawExample(widthSepTop, heightSep, width, widthSepBottom, height, drawingContext);
+               // DrawExample(widthSepTop, heightSep, width, widthSepBottom, height, drawingContext);
 
                 DrawFoundTable(tableCornerPoints, drawingContext);
                 if (tableCornerPoints.Count == 4)

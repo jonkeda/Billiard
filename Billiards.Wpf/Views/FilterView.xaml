@@ -51,7 +51,11 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <TextBlock Text="{Binding Name}" FontWeight="Bold" HorizontalAlignment="Center" />
+                            <Grid>
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" HorizontalAlignment="Center" />
+
+                                <TextBlock Text="{Binding TimeTaken, StringFormat=0.0}" HorizontalAlignment="Left"/>
+                            </Grid>
                             <Grid>
                                 <Image Source="{Binding ResultMat, Converter={x:Static converters:Cv.Mat2ImageSource}}" 
                                        Height="60" Width="200" Stretch="Uniform" />

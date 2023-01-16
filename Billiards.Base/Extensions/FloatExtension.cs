@@ -9,4 +9,13 @@ public static class FloatExtension
         return MathF.Abs(d) < Epsilon;
     }
 
+    public static float ToDegrees(this float value)
+    {
+        return (value * 180) / MathF.PI;
+    }
+
+    public static float ToRadians(this float degrees)
+    {
+        return (MathF.PI / 180) * degrees;
+    }
 }
