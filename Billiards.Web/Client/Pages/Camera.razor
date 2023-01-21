@@ -20,9 +20,9 @@ Resize: @ResizeTime Recognize: @RecognizeTime Prediction: @PredictionTime @Busy
 
 <div style="width: 100%; height: 100%; position: relative">
 
-    <TableSolutions Balls="@balls" BallRadius="@ballRadius" Problems="@problems"
-                    ScreenHeightPx="@screenHeightPx" ScreenWidthPx="screenWidthPx"
-                    Transform="@transform" Viewbox="@viewbox" />
+    <TableSolutions Balls="@Balls" BallRadius="@BallRadius" Problems="@Problems"
+                    ScreenHeightPx="@ScreenHeightPx" ScreenWidthPx="screenWidthPx"
+                    Transform="@Transform" Viewbox="@Viewbox" />
 
 </div>
 <label style="background: blue; border: 1px white; color: white; margin: 5px; padding: 10px; width:100%; text-align: center">
@@ -30,13 +30,13 @@ Resize: @ResizeTime Recognize: @RecognizeTime Prediction: @PredictionTime @Busy
     <InputFile accept="image/*" capture="environment" style="display: none" OnChange="@PictureTaken"></InputFile>
 </label>
 <br />
-<div style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
-    <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @screenWidthPx; height: @screenHeightPx; z-index: 1" />
+<div style="position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
+    <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @ScreenWidthPx; height: @ScreenHeightPx; z-index: 1" />
 
     <div style="width: 100%; height: 100%; position: relative">
-        <TableRecognized Balls="@balls" TableCorners="@tableCorners"
-                         ScreenWidthPx="@screenWidthPx" ScreenHeightPx="@screenHeightPx"
-                         FinderStroke="@finderStroke" FinderRadius="@finderRadius" />
+        <TableRecognized Balls="@Balls" TableCorners="@TableCorners"
+                         ScreenWidthPx="@ScreenWidthPx" ScreenHeightPx="@ScreenHeightPx"
+                         FinderStroke="@FinderStroke" FinderRadius="@FinderRadius" />
     </div>
 </div>
 <div>
@@ -75,7 +75,7 @@ Resize: @ResizeTime Recognize: @RecognizeTime Prediction: @PredictionTime @Busy
             Busy = true;
             ImageSize1 = e.File.Size;
             IBrowserFile file;
-            if (screenOrientation == ScreenOrientation.Landscape)
+            if (ScreenOrientation == ScreenOrientation.Landscape)
             {
                 file = await e.File.RequestImageFileAsync(e.File.ContentType, VideoWidth, VideoHeight);
             }

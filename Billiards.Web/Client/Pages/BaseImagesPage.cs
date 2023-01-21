@@ -25,28 +25,28 @@ namespace Billiards.Web.Client.Pages
         protected const int TableWidth = 2000;
         protected const int TableHeight = 1000;
 
-        protected int screenWidth { get; set; }= 480;
-        protected int screenHeight { get; set; } = 270;
+        protected int ScreenWidth { get; set; }= 480;
+        protected int ScreenHeight { get; set; } = 270;
 
-        protected string transform { get; set; }
-        protected string viewbox { get; set; } = "0 0 2000 1000";
+        protected string Transform { get; set; }
+        protected string Viewbox { get; set; } = "0 0 2000 1000";
 
-        protected string screenWidthPx { get; set; } = "480px";
-        protected string screenHeightPx { get; set; } = "270px";
+        protected string ScreenWidthPx { get; set; } = "480px";
+        protected string ScreenHeightPx { get; set; } = "270px";
 
-        protected int finderStroke { get; set; } = 8;
-        protected int finderRadius { get; set; } = 16;
+        protected int FinderStroke { get; set; } = 8;
+        protected int FinderRadius { get; set; } = 16;
 
-        protected int ballRadius { get; set; } = 31;
+        protected int BallRadius { get; set; } = 31;
 
-        protected string cameraStyle { get; set; }
+        protected string CameraStyle { get; set; }
 
-        protected ScreenOrientation screenOrientation { get; set; }
+        protected ScreenOrientation ScreenOrientation { get; set; }
 
-        protected BallCollection? balls { get; set; }
-        protected ProblemCollection? problems { get; set; }
+        protected BallCollection? Balls { get; set; }
+        protected ProblemCollection? Problems { get; set; }
 
-        protected string? tableCorners { get; set; }
+        protected string? TableCorners { get; set; }
 
 
         private bool busy = false;
@@ -70,8 +70,8 @@ namespace Billiards.Web.Client.Pages
         protected async Task SetSize()
         {
             var dimension = await JsRuntime.GetWindowDimension();
-            screenWidth = dimension.Width;
-            if (screenWidth > 3 * 480)
+            ScreenWidth = dimension.Width;
+/*            if (screenWidth > 3 * 480)
             {
                 screenWidth = Math.Min(screenWidth, 3 * 480);
             }
@@ -83,47 +83,48 @@ namespace Billiards.Web.Client.Pages
             {
                 screenWidth = screenWidth * 9 / 10;
             }
-            if (dimension.Orientation == ScreenOrientation.Portrait)
+*/            if (dimension.Orientation == ScreenOrientation.Portrait)
             {
-                screenHeight = screenWidth * 16 / 9;
+                ScreenHeight = ScreenWidth * 16 / 9;
             }
             else
             {
-                screenHeight = screenWidth * 9 / 16;
+                ScreenHeight = ScreenWidth * 9 / 16;
             }
 
-            if (screenHeight > (dimension.Height * 9 / 10))
+            if (ScreenHeight > (dimension.Height * 9 / 10))
             {
                 if (dimension.Orientation == ScreenOrientation.Portrait)
                 {
-                    screenWidth = screenHeight * 9 / 16;
+                    ScreenWidth = ScreenHeight * 9 / 16;
 
                 }
                 else
                 {
-                    screenWidth = screenHeight * 16 / 9;
+                    ScreenWidth = ScreenHeight * 16 / 9;
                 }
             }
 
             if (dimension.Orientation == ScreenOrientation.Portrait)
             {
-                viewbox = "0 0 1000 2000";
-                transform = "rotate(90, 500, 1000) translate(-500, 500)";
+                Viewbox = "0 0 1000 2000";
+                Transform = "rotate(90, 500, 1000) translate(-500, 500)";
             }
             else
             {
-                viewbox = "0 0 2000 1000";
-                transform = "";
+                Viewbox = "0 0 2000 1000";
+                Transform = "";
             }
 
-            finderRadius = Math.Max(screenWidth, screenHeight) / 60;
-            finderStroke = Math.Max(screenWidth, screenHeight) / 120;
+            FinderRadius = Math.Max(ScreenWidth, ScreenHeight) / 60;
+            FinderStroke = Math.Max(ScreenWidth, ScreenHeight) / 120;
 
-            screenHeightPx = $"{screenHeight}px";
-            screenWidthPx = $"{screenWidth}px";
-            screenOrientation = dimension.Orientation;
+            ScreenHeightPx = $"{ScreenHeight}px";
+            ScreenWidthPx = $"{ScreenWidth}px";
+            ScreenOrientation = dimension.Orientation;
 
-            cameraStyle = $"position: absolute; top: 0px; left: 0px; width: {screenWidthPx}; height: {screenHeightPx}; z-index: 1";
+            //CameraStyle = $"width: {ScreenWidthPx}; height: {ScreenHeightPx}";
+            CameraStyle = $"position: absolute; top: 0px; left: 0px; width: {ScreenWidthPx}; height: {ScreenHeightPx}; z-index: 1";
         }
 
         private volatile bool sending;
@@ -208,7 +209,7 @@ namespace Billiards.Web.Client.Pages
                         corners += " ";
                     }
 
-                    tableCorners = corners;
+                    TableCorners = corners;
                 }
 
                 if (result.Balls != null)
@@ -226,7 +227,7 @@ namespace Billiards.Web.Client.Pages
                         }
                     }
 
-                    balls = result.Balls;
+                    Balls = result.Balls;
                 }
             }
         }
@@ -238,24 +239,24 @@ namespace Billiards.Web.Client.Pages
 
         private Point ToImageAbsolutePoint(Point p)
         {
-            return new Point(p.X * screenWidth, p.Y * screenHeight);
+            return new Point(p.X * ScreenWidth, p.Y * ScreenHeight);
         }
 
         protected async Task<bool> MakePrediction()
         {
-            if (balls == null
-                || balls.Count < 3)
+            if (Balls == null
+                || Balls.Count < 3)
             {
                 return false;
             }
-            var request = new PredictionRequest(balls, CueBall);
+            var request = new PredictionRequest(Balls, CueBall);
             HttpResponseMessage response = await Http.PostAsJsonAsync("Prediction", request);
             if (!response.IsSuccessStatusCode)
             {
                 return false;
             }
             PredictionResponse? result = await response.Content.ReadFromJsonAsync<PredictionResponse>();
-            problems = result?.Problems;
+            Problems = result?.Problems;
             return true;
         }
     }

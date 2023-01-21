@@ -5,54 +5,72 @@
 @using Billiards.Web.Client.Components
 @using Billiards.Web.Client.Extensions
 @using Billiards.Web.Client.Models
+@using Billiards.Web.Shared
 
 @if (Busy)
 {
     <div class="spinner"></div>
 }
 
-<div>
-    @if (mediaDevices != null)
-    {
-        foreach (var mediaDevice in mediaDevices)
-        {
-            <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))"
-            style="margin-left: 40px">
-                <span class="oi oi-camera-slr" aria-hidden="true"></span>
-            </button>
-        }
-    }
-</div>
 
-<div style="width: 100%">
+<div style="position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
+    
+    <div style="position: absolute; top: 1px;left:20px; z-index: 3">
+        @if (mediaDevices != null)
+        {
+            foreach (var mediaDevice in mediaDevices)
+            {
+                <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))"
+                style="width: 60px; height: 60px; margin-bottom: 40px; border-radius: 50%;background-color: green">
+                    <span class="oi oi-camera-slr" aria-hidden="true"></span>
+                </button>
+                <br/>
+            }
+        }
+    </div>
+
+    <div style="position: absolute; bottom: 1px;leftt: 20px; z-index: 2">
+        <InputRadioGroup @bind-Value="@CueBall" >
+            <label style="position: relative; width: 60px; height: 60px;  margin-bottom: 40px;background-color: white;border-radius: 50%">
+                <InputRadio Value="@BallColor.White" style="position: absolute; left: 25px; top:25px" />&nbsp;
+            </label>
+            <br/>
+            <label style="position: relative; width: 60px; height: 60px;  margin-bottom: 40px;background-color: yellow;border-radius: 50%">
+                <InputRadio Value="@BallColor.Yellow" style="position: absolute; left: 25px; top:25px" />&nbsp;
+            </label>
+        </InputRadioGroup>
+    </div>
+
     <CameraStreamer id="videoContainer"
+                    Style=@CameraStyle
                     @ref="CameraStreamerReference"
                     Width="@VideoWidth"
                     Height="@VideoHeight"
                     OnRendered="OnRenderedHandler"
                     CameraID="@cameraId"
-                    Autostart />
-</div>
+                    Autostart/>
+    
+    <button style="position: absolute; bottom: 20px;left:45%; z-index: 4;background: white;border-radius: 50%; border: 1px solid black; color: black; width: 80px; height: 80px "
+            @onclick="PictureTaken">
+        <span class="oi oi-target" aria-hidden="true"></span> 
+    </button>
 
-<button style="background: blue; border: 1px white; color: white; margin: 5px; padding: 10px; width: 100%; "
-        @onclick="PictureTaken">
-    <span class="oi oi-camera-slr" aria-hidden="true"></span> Take a picture of the table
-</button>
+</div>
 
 <div style="width: 100%; height: 100%; position: relative">
 
-    <TableSolutions Balls="@balls" BallRadius="@ballRadius" Problems="@problems"
-                    ScreenHeightPx="@screenHeightPx" ScreenWidthPx="screenWidthPx"
-                    Transform="@transform" Viewbox="@viewbox" />
+    <TableSolutions Balls="@Balls" BallRadius="@BallRadius" Problems="@Problems"
+                    ScreenHeightPx="@ScreenHeightPx" ScreenWidthPx="screenWidthPx"
+                    Transform="@Transform" Viewbox="@Viewbox" />
 </div>
 
-<div style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
-    <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @screenWidthPx; height: @screenHeightPx; z-index: 1" />
+<div style="position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
+    <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @ScreenWidthPx; height: @ScreenHeightPx; z-index: 1" />
 
     <div style="width: 100%; height: 100%; position: relative">
-        <TableRecognized Balls="@balls" TableCorners="@tableCorners"
-                         ScreenWidthPx="@screenWidthPx" ScreenHeightPx="@screenHeightPx"
-                         FinderStroke="@finderStroke" FinderRadius="@finderRadius" />
+        <TableRecognized Balls="@Balls" TableCorners="@TableCorners"
+                         ScreenWidthPx="@ScreenWidthPx" ScreenHeightPx="@ScreenHeightPx"
+                         FinderStroke="@FinderStroke" FinderRadius="@FinderRadius" />
     </div>
 </div>
 <div>
