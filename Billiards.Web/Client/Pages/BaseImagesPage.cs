@@ -48,6 +48,18 @@ namespace Billiards.Web.Client.Pages
 
         protected string? tableCorners { get; set; }
 
+
+        private bool busy = false;
+        protected bool Busy
+        {
+            get { return busy; }
+            set
+            {
+                busy = value;
+                StateHasChanged();
+            }
+        }
+
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();

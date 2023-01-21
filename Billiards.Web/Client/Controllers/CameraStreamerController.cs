@@ -15,7 +15,7 @@ namespace Billiards.Web.Client.Controllers
         private const string StaticInteropPath = "BlazorCameraStreamer.Scripts.CameraStreamerInterop";
 
         /// <summary>
-        /// Runtime used to use javascript interopability
+        /// Runtime used to use javascript interoperability
         /// </summary>
         private readonly IJSRuntime JSRuntime;
         
@@ -37,7 +37,7 @@ namespace Billiards.Web.Client.Controllers
         /// <summary>
         /// Creates a new instance of the CameraStreamerController class
         /// </summary>
-        /// <param name="runtime">Runtime used for javascript interopability</param>
+        /// <param name="runtime">Runtime used for javascript interoperability</param>
         public CameraStreamerController(IJSRuntime runtime)
         {
             JSRuntime = runtime;
@@ -62,7 +62,6 @@ namespace Billiards.Web.Client.Controllers
 
             JSObject = await JSRuntime.InvokeAsync<IJSObjectReference>(StaticInteropPath + ".createInstance");
 
-
             await JSObject.InvokeVoidAsync("init", videoReference, OnFrameCallback.HasDelegate, DotNetObjectReference.Create(this), nameof(OnFrame), width, height);
 
             IsInitialized = true;
@@ -70,7 +69,7 @@ namespace Billiards.Web.Client.Controllers
 
         public async Task StartAsync(string camera = null)
         {
-            // Use the first found camera if no camrea is given
+            // Use the first found camera if no camera is given
             await JSObject.InvokeVoidAsync("start", camera ?? (await GetCameraDevicesAsync()).FirstOrDefault()?.DeviceId);
         }
 
@@ -82,6 +81,11 @@ namespace Billiards.Web.Client.Controllers
         public async Task ChangeCameraAsync(string newId)
         {
             await JSObject.InvokeVoidAsync("changeCamera", newId);
+        }
+
+        public async Task<string> GetImage()
+        {
+            return await JSObject.InvokeAsync<string>("getImage");
         }
 
         public async Task<bool> GetCameraAccessAsync()

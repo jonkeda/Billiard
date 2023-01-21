@@ -1,15 +1,20 @@
 ﻿window.getWindowDimensions = function () {
     var orientation = 0;
-    switch (screen.orientation.type) {
-        /*    case "landscape-primary":
-            case "landscape-secondary":
-                    orientation = "Landscape";
+    try {
+        switch (screen.orientation.type) {
+            /*    case "landscape-primary":
+                case "landscape-secondary":
+                        orientation = "Landscape";
+                    break;
+            */
+            case "portrait-secondary":
+            case "portrait-primary":
+                orientation = 1;
                 break;
-        */
-        case "portrait-secondary":
-        case "portrait-primary":
-            orientation = 1;
-            break;
+        }
+    }
+    catch (ex) {
+        orientation = 1;
     }
     return {
         width: window.innerWidth,
@@ -20,19 +25,24 @@
 
 
 window.openFullscreen = function () {
-    var elem = document.documentElement;
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.mozRequestFullScreen) { /* Firefox */
-        elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-        elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE/Edge */
-        elem.msRequestFullscreen();
-    } else {
-        return false;
+    try {
+        var elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { /* Firefox */
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE/Edge */
+            elem.msRequestFullscreen();
+        } else {
+            return false;
+        }
+        return true;
     }
-    return true;
+    catch (ex) {
+        return true;
+    }
 }
 
 

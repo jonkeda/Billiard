@@ -21,7 +21,7 @@
     },
     "resourceName": {
       "type": "string",
-      "defaultValue": "BlazingBilliards20230103092911",
+      "defaultValue": "Milliards",
       "metadata": {
         "description": "Name of the main resource to be created by this template."
       }

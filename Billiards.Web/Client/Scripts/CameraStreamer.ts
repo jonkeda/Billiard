@@ -63,7 +63,7 @@ namespace BlazorCameraStreamer.Scripts {
          * @param api Reference to the dotnet object that should receive callbacks
          * @param camera Device-string (id) of the camera that should be used for the stream
          */
-        public init(video: HTMLVideoElement, callOnFrameInvoke: boolean, api: DotNetObjectReference = null, onFrameInvokeName: string = null, width: number = 640, height: number = 360): void {
+        public init(video: HTMLVideoElement, callOnFrameInvoke: boolean, api: DotNetObjectReference = null, onFrameInvokeName: string = null, width: number = 640, height: number = 360, cameraId: string = undefined): void {
             this._video = video;
             this._dotnetObject = api;
             this._invokeIdentifier = onFrameInvokeName;
@@ -187,6 +187,24 @@ namespace BlazorCameraStreamer.Scripts {
             let img: string = canvas.toDataURL("image/jpeg", 1);
 
             this.invokeDotnetObject(img);
+        }
+
+        
+        public getImage(): string { // Only working solution to get the images as other ways are not supported yet
+            if (!this._streamActive) return null;
+
+            let canvas: HTMLCanvasElement = document.createElement("canvas");
+
+            canvas.width = this._constraints.video["width"];
+            canvas.height = this._constraints.video["height"];
+
+            // Draw the current image of the stream on the canvas
+            canvas.getContext("2d").drawImage(this._video, 0, 0);
+
+            // Get the image as 64 base string
+            let img: string = canvas.toDataURL("image/jpeg", 1);
+
+            return img;
         }
 
         /**

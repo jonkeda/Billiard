@@ -33,7 +33,7 @@ var BlazorCameraStreamer;
              * @param api Reference to the dotnet object that should receive callbacks
              * @param camera Device-string (id) of the camera that should be used for the stream
              */
-            init(video, callOnFrameInvoke, api = null, onFrameInvokeName = null, width = 640, height = 360) {
+            init(video, callOnFrameInvoke, api = null, onFrameInvokeName = null, width = 640, height = 360, cameraId = undefined) {
                 this._video = video;
                 this._dotnetObject = api;
                 this._invokeIdentifier = onFrameInvokeName;
@@ -137,6 +137,18 @@ var BlazorCameraStreamer;
                 // Get the image as 64 base string
                 let img = canvas.toDataURL("image/jpeg", 1);
                 this.invokeDotnetObject(img);
+            }
+            getImage() {
+                if (!this._streamActive)
+                    return null;
+                let canvas = document.createElement("canvas");
+                canvas.width = this._constraints.video["width"];
+                canvas.height = this._constraints.video["height"];
+                // Draw the current image of the stream on the canvas
+                canvas.getContext("2d").drawImage(this._video, 0, 0);
+                // Get the image as 64 base string
+                let img = canvas.toDataURL("image/jpeg", 1);
+                return img;
             }
             /**
              * Checks if the site has access to the camera(s) and asks for it if the access is currently denied

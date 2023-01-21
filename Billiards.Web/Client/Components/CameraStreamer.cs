@@ -8,7 +8,7 @@ namespace Billiards.Web.Client.Components
     /// <summary>
     /// Logic for streaming a webcam in the browser using typescript/javascript
     /// </summary>
-    public partial class CameraStreamer : ICameraStreamerModel // ICameraStreamerModel interface is used to simulate mutliple inheritance (with CameraStreamerController), as CameraStreamer already extends ComponentBase by default
+    public partial class CameraStreamer : ICameraStreamerModel // ICameraStreamerModel interface is used to simulate multiple inheritance (with CameraStreamerController), as CameraStreamer already extends ComponentBase by default
     {
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
@@ -112,6 +112,9 @@ namespace Billiards.Web.Client.Components
 
         public async Task<MediaDeviceInfoModel[]> GetCameraDevicesAsync() =>
             await streamerApi.GetCameraDevicesAsync();
+
+        public async Task<string> GetImage() =>
+            await streamerApi.GetImage();
 
         public async ValueTask DisposeAsync() => 
             // Check null for streamerApi as otherwise a exception is thrown on page-refresh

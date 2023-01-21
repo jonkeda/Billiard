@@ -1,0 +1,133 @@
+﻿@page "/Video2"
+@inherits BaseImagesPage
+@inject IJSRuntime JsRuntime
+@inject HttpClient Http
+@using Billiards.Web.Client.Components
+@using Billiards.Web.Client.Extensions
+@using Billiards.Web.Client.Models
+
+@if (Busy)
+{
+    <div class="spinner"></div>
+}
+
+<div>
+    @if (mediaDevices != null)
+    {
+        foreach (var mediaDevice in mediaDevices)
+        {
+            <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))"
+            style="margin-left: 40px">
+                <span class="oi oi-camera-slr" aria-hidden="true"></span>
+            </button>
+        }
+    }
+</div>
+
+<div style="width: 100%">
+    <CameraStreamer id="videoContainer"
+                    @ref="CameraStreamerReference"
+                    Width="@VideoWidth"
+                    Height="@VideoHeight"
+                    OnRendered="OnRenderedHandler"
+                    CameraID="@cameraId"
+                    Autostart />
+</div>
+
+<button style="background: blue; border: 1px white; color: white; margin: 5px; padding: 10px; width: 100%; "
+        @onclick="PictureTaken">
+    <span class="oi oi-camera-slr" aria-hidden="true"></span> Take a picture of the table
+</button>
+
+<div style="width: 100%; height: 100%; position: relative">
+
+    <TableSolutions Balls="@balls" BallRadius="@ballRadius" Problems="@problems"
+                    ScreenHeightPx="@screenHeightPx" ScreenWidthPx="screenWidthPx"
+                    Transform="@transform" Viewbox="@viewbox" />
+</div>
+
+<div style="position: relative; width: @screenWidthPx; height: @screenHeightPx">
+    <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @screenWidthPx; height: @screenHeightPx; z-index: 1" />
+
+    <div style="width: 100%; height: 100%; position: relative">
+        <TableRecognized Balls="@balls" TableCorners="@tableCorners"
+                         ScreenWidthPx="@screenWidthPx" ScreenHeightPx="@screenHeightPx"
+                         FinderStroke="@finderStroke" FinderRadius="@finderRadius" />
+    </div>
+</div>
+<div>
+    @Message
+</div>
+
+
+@code {
+    CameraStreamer CameraStreamerReference;
+    string cameraId = null;
+    MediaDeviceInfoModel[]? mediaDevices;
+    private string Message { get; set; }
+    private string frameUri { get; set; }
+    long PredictionTime { get; set; }
+    long ResizeTime { get; set; }
+    long RecognizeTime { get; set; }
+
+    private async void OnRenderedHandler()
+    {
+        if (await CameraStreamerReference.GetCameraAccessAsync())
+        {
+            mediaDevices = await CameraStreamerReference.GetCameraDevicesAsync();
+            StateHasChanged();
+
+            await CameraStreamerReference.ReloadAsync();
+            var mediaDevice = mediaDevices.LastOrDefault();
+            if (mediaDevice != null)
+            {
+                await OnSelectMedia(mediaDevice.DeviceId);
+            }
+        }
+    }
+
+    private async Task OnSelectMedia(string mediaDeviceId)
+    {
+        await CameraStreamerReference.ChangeCameraAsync(mediaDeviceId);
+    }
+
+    private async Task PictureTaken()
+    {
+        await JsRuntime.OpenFullscreen();
+
+        if (Busy)
+        {
+            return;
+        }
+        try
+        {
+            DateTime now = DateTime.Now;
+            Busy = true;
+
+            frameUri = await CameraStreamerReference.GetImage(); ;
+
+            int commaIndex = frameUri.IndexOf(",");
+            string data = frameUri.Substring(commaIndex + 1);
+
+            bool recognized = await RecognizeTable(data);
+
+            RecognizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
+            now = DateTime.Now;
+
+            if (recognized)
+            {
+                bool predicted = await MakePrediction();
+            }
+            PredictionTime = (long)(DateTime.Now - now).TotalMilliseconds;
+        }
+        catch (Exception ex)
+        {
+            Message = ex.Message;
+        }
+        finally
+        {
+            Busy = false;
+        }
+    }
+
+}
