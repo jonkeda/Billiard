@@ -7,17 +7,14 @@ public class CornerDetectorSet : FilterSet
 {
     public IPointsFilter PointsFilter { get; private set; }
 
-    public CornerDetectorSet(OriginalFilter original, FloodFillFilter flood ) : base("Find corner")
+    public CornerDetectorSet(OriginalFilter original, AbstractFilter flood ) : base("Find corner")
     {
-        var asMask = Mask(flood);
-        // DrawBoundingRect().BoundingRect = flood;
-        //var corners = FindCorners();
-        //corners.BoundingRect = flood;
-        //Filters.AddFilter(new FindCornerHarrisFilter(asMask));
-        //FloodFillCorners(255);
+        Mask(flood);
 
-        //var canny = Canny(asMask);
-        // Filters.AddFilter(new FindCornerGoodFeaturesFilter(canny));
+/*        Resize(0.5f);
+        Resize(2f);
+*/
+
 
         var contour = Contours();
         contour.ContourType = ContourType.ConvexHull;

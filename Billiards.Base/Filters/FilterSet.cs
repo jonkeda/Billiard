@@ -214,4 +214,14 @@ public class FilterSet : PropertyNotifier
         return Filters.AddFilter(new ContoursFilter(result));
     }
 
+    protected ResizeFilter Resize(float sizing)
+    {
+        return Resize(Filters.LastOrDefault(), sizing);
+    }
+
+    protected ResizeFilter Resize(AbstractFilter result, float sizing)
+    {
+        return Filters.AddFilter(new ResizeFilter(result, sizing));
+    }
+
 }

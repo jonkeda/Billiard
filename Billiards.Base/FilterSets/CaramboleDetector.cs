@@ -10,7 +10,7 @@ public class CaramboleDetector
         FilterSets.Clear();
 
         var table = FilterSets.AddSet(new TableDetectorSet());
-        CornerDetectorSet corner = FilterSets.AddSet(new CornerDetectorSet(table.OriginalFilter, table.FloodFilter));
+        CornerDetectorSet corner = FilterSets.AddSet(new CornerDetectorSet(table.OriginalFilter, table.FoundFilter));
         var ball = FilterSets.AddSet(new BallDetectorSet(corner.ResultFilter()));
         BallResultFilter = ball.BallResultFilter;
         PointsFilter = corner.PointsFilter;

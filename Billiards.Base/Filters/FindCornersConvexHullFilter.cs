@@ -68,13 +68,18 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         var lines = CreateLines(newPoints);
 
         int i = 0;
+        FilterValues.Add("Width", ResultMat.Width);
+        FilterValues.Add("Height", ResultMat.Height);
         foreach (Line line in lines)
         {
-            FilterValues.Add(i.ToString(), Math.Round(line.Angle));
+            FilterValues.Add(i.ToString(), $"{line.V1.Item0:F0} {line.V1.Item1:F0} {line.V2.Item0:F0} {line.V2.Item1:F0} ");
+            //FilterValues.Add(i.ToString(), Math.Round(line.Angle));
             i++;
         }
 
         var allLines = lines.ToList();
+
+        lines = FilterSideLines(lines, ResultMat.Width, ResultMat.Height);
 
         lines = lines.OrderByDescending(l => l.Length).Take(4).ToList();
         lines = lines.OrderBy(l => l.Angle).ToList();
@@ -117,6 +122,29 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         });
     
         Points = foundPoints;
+    }
+
+    private List<Line> FilterSideLines(List<Line> lines, int width, int height)
+    {
+        width--;
+        height--;
+        List<Line> filteredLines = new();
+        foreach (var line in lines)
+        {
+            if ((line.V1.Item0 <= 1 && line.V2.Item0 <= 1)
+                || (line.V1.Item1 <= 1 && line.V2.Item1 <= 1)
+                || (line.V1.Item0 >= width && line.V2.Item0 >= width)
+                || (line.V1.Item1 >= height && line.V2.Item1 >= height))
+            {
+
+            }
+            else
+            {
+                filteredLines.Add(line);
+            }
+
+        }
+        return filteredLines;
     }
 
 

@@ -53,7 +53,7 @@ public class HistogramFilter : AbstractFilter
             {
                 string a = "?";
             }
-            FilterValues.Add($"{i} Mean", System.Math.Round(CalculateMean(hists[i]), 0));
+            FilterValues.Add($"{i} Mean", System.Math.Round(mean, 0));
             FilterValues.Add($"{i} Max", CalculateMax(hists[i]));
         }
 
@@ -152,9 +152,10 @@ public class HistogramFilter : AbstractFilter
                 }
                 var hist = hists[h];
                 //float[,] data = (float[,])hist.GetData();
-                for (int i = Start; i < hist.Size().Height && i < End; i++)
+                //for (int i = Start; i < hist.Size().Height && i < End; i++)
+                for (int i = 0; i < hist.Size().Height; i++)
                 {
-                    drawingContext.DrawLine(color, 
+                        drawingContext.DrawLine(color, 
                         new Point2f(i * width + h * 256, maximum), 
                         new Point2f(i * width + h * 256, maximum - hist.Get<float>(i, 0)));
                 }

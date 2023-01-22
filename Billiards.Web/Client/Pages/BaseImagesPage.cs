@@ -48,8 +48,7 @@ namespace Billiards.Web.Client.Pages
 
         protected string? TableCorners { get; set; }
 
-
-        private bool busy = false;
+        private bool busy;
         protected bool Busy
         {
             get { return busy; }
@@ -71,19 +70,7 @@ namespace Billiards.Web.Client.Pages
         {
             var dimension = await JsRuntime.GetWindowDimension();
             ScreenWidth = dimension.Width;
-/*            if (screenWidth > 3 * 480)
-            {
-                screenWidth = Math.Min(screenWidth, 3 * 480);
-            }
-            else if (screenWidth > 2 * 480)
-            {
-                screenWidth = Math.Min(screenWidth, 2 * 480);
-            }
-            else
-            {
-                screenWidth = screenWidth * 9 / 10;
-            }
-*/            if (dimension.Orientation == ScreenOrientation.Portrait)
+            if (dimension.Orientation == ScreenOrientation.Portrait)
             {
                 ScreenHeight = ScreenWidth * 16 / 9;
             }
@@ -92,12 +79,12 @@ namespace Billiards.Web.Client.Pages
                 ScreenHeight = ScreenWidth * 9 / 16;
             }
 
-            if (ScreenHeight > (dimension.Height * 9 / 10))
+            if (ScreenHeight > dimension.Height)
             {
+                ScreenHeight = dimension.Height;
                 if (dimension.Orientation == ScreenOrientation.Portrait)
                 {
                     ScreenWidth = ScreenHeight * 9 / 16;
-
                 }
                 else
                 {
@@ -258,6 +245,18 @@ namespace Billiards.Web.Client.Pages
             PredictionResponse? result = await response.Content.ReadFromJsonAsync<PredictionResponse>();
             Problems = result?.Problems;
             return true;
+        }
+
+        protected async Task ClickWhite()
+        {
+            CueBall = BallColor.White;
+            await MakePrediction();
+        }
+
+        protected async Task ClickYellow()
+        {
+            CueBall = BallColor.Yellow;
+            await MakePrediction();
         }
     }
 }

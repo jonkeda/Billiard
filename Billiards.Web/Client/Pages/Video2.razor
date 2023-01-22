@@ -12,7 +12,6 @@
     <div class="spinner"></div>
 }
 
-
 <div style="position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
     
     <div style="position: absolute; top: 1px;left:20px; z-index: 3">
@@ -21,7 +20,7 @@
             foreach (var mediaDevice in mediaDevices)
             {
                 <button @onclick="@(e => OnSelectMedia(mediaDevice.DeviceId))"
-                style="width: 60px; height: 60px; margin-bottom: 40px; border-radius: 50%;background-color: green">
+                style="width: 60px; height: 60px; margin-bottom: 20px; border-radius: 50%;background-color: green">
                     <span class="oi oi-camera-slr" aria-hidden="true"></span>
                 </button>
                 <br/>
@@ -29,16 +28,24 @@
         }
     </div>
 
-    <div style="position: absolute; bottom: 1px;leftt: 20px; z-index: 2">
-        <InputRadioGroup @bind-Value="@CueBall" >
-            <label style="position: relative; width: 60px; height: 60px;  margin-bottom: 40px;background-color: white;border-radius: 50%">
-                <InputRadio Value="@BallColor.White" style="position: absolute; left: 25px; top:25px" />&nbsp;
-            </label>
-            <br/>
-            <label style="position: relative; width: 60px; height: 60px;  margin-bottom: 40px;background-color: yellow;border-radius: 50%">
-                <InputRadio Value="@BallColor.Yellow" style="position: absolute; left: 25px; top:25px" />&nbsp;
-            </label>
-        </InputRadioGroup>
+    <div style="position: absolute; bottom: 1px; left: 20px; z-index: 2">
+        <button @onclick="ClickWhite"
+                style="width: 60px; height: 60px; margin-bottom: 20px; border-radius: 50%; background-color: white">
+            @if (CueBall == BallColor.White)
+            {
+                <span class="oi oi-media-record" aria-hidden="true"></span>
+            }
+        </button>
+        <br/>
+        <button @onclick="ClickYellow"
+                style="width: 60px; height: 60px; margin-bottom: 20px; border-radius: 50%;background-color: yellow">
+            @if (CueBall == BallColor.Yellow)
+            {
+                <span class="oi oi-media-record" aria-hidden="true"></span>
+            }
+        </button>
+        <br />
+
     </div>
 
     <CameraStreamer id="videoContainer"
@@ -50,7 +57,7 @@
                     CameraID="@cameraId"
                     Autostart/>
     
-    <button style="position: absolute; bottom: 20px;left:45%; z-index: 4;background: white;border-radius: 50%; border: 1px solid black; color: black; width: 80px; height: 80px "
+    <button style="position: absolute; bottom: 20px;left:45%; z-index: 4;background: white;border-radius: 50%; border: 1px double black; color: black; width: 80px; height: 80px "
             @onclick="PictureTaken">
         <span class="oi oi-target" aria-hidden="true"></span> 
     </button>
@@ -67,12 +74,16 @@
 <div style="position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
     <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @ScreenWidthPx; height: @ScreenHeightPx; z-index: 1" />
 
-    <div style="width: 100%; height: 100%; position: relative">
-        <TableRecognized Balls="@Balls" TableCorners="@TableCorners"
-                         ScreenWidthPx="@ScreenWidthPx" ScreenHeightPx="@ScreenHeightPx"
-                         FinderStroke="@FinderStroke" FinderRadius="@FinderRadius" />
-    </div>
+    <TableRecognized Balls="@Balls" TableCorners="@TableCorners"
+                     ScreenWidthPx="@ScreenWidthPx" ScreenHeightPx="@ScreenHeightPx"
+                     FinderStroke="@FinderStroke" FinderRadius="@FinderRadius" />
 </div>
+<div>
+    Resize: @ResizeTime 
+    Recognize: @RecognizeTime 
+    Prediction: @PredictionTime @Busy
+</div>
+
 <div>
     @Message
 </div>
@@ -147,5 +158,4 @@
             Busy = false;
         }
     }
-
 }
