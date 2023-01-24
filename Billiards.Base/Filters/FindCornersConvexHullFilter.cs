@@ -46,6 +46,8 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         public float Length { get; }
         public float Angle { get; }
 
+        public int Index { get; set; }
+
     }
 
     protected override void ApplyFilter(Mat originalImage)
@@ -72,8 +74,9 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         FilterValues.Add("Height", ResultMat.Height);
         foreach (Line line in lines)
         {
-            FilterValues.Add(i.ToString(), $"{line.V1.Item0:F0} {line.V1.Item1:F0} {line.V2.Item0:F0} {line.V2.Item1:F0} ");
-            //FilterValues.Add(i.ToString(), Math.Round(line.Angle));
+            line.Index = i;
+            //FilterValues.Add(i.ToString(), $"{line.V1.Item0:F0} {line.V1.Item1:F0} {line.V2.Item0:F0} {line.V2.Item1:F0} ");
+            FilterValues.Add(i.ToString(), Math.Round(line.Angle), line.Length.ToString("F0"));
             i++;
         }
 
@@ -81,8 +84,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
 
         lines = FilterSideLines(lines, ResultMat.Width, ResultMat.Height);
 
-        lines = lines.OrderByDescending(l => l.Length).Take(4).ToList();
-        lines = lines.OrderBy(l => l.Angle).ToList();
+        lines = FindFourLines(lines);
 
         List<Point2f> foundPoints = FindCornerPoints(lines);
 
@@ -101,11 +103,18 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
             }
 
             Pen pen = new Pen(Brushes.Red, (int)(radius / 2));
+
             foreach (Line line in lines)
             {
                 dc.DrawLine(pen, line.V1, line.V2);
                 dc.DrawEllipse(Brushes.Red, null, line.V1.AsPoint2f(), radius, radius);
                 dc.DrawEllipse(Brushes.Red, null, line.V2.AsPoint2f(), radius, radius);
+
+                FormattedText formattedText = new(
+                    line.Index.ToString(),
+                    32,
+                    Brushes.Red, 1.25);
+                dc.DrawText(formattedText, line.V1.Center(line.V2));
             }
 
             int i = 0;
@@ -122,6 +131,28 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         });
     
         Points = foundPoints;
+    }
+
+    private List<Line> FindFourLines(List<Line> lines)
+    {
+        List<Line> foundLines = new List<Line>();
+        foreach (var line in lines.OrderByDescending(l => l.Length))
+        {
+            if (foundLines.All(l => MathF.Abs(l.Angle - line.Angle) > 2f))
+            {
+                foundLines.Add(line);
+            }
+            if (foundLines.Count == 4)
+            {
+                break;
+            }
+        }
+        return foundLines.OrderBy(l => l.Angle).ToList();
+/*
+        lines = lines.OrderByDescending(l => l.Length).Take(4).ToList();
+        lines = lines.OrderBy(l => l.Angle).ToList();
+        return lines;
+*/
     }
 
     private List<Line> FilterSideLines(List<Line> lines, int width, int height)

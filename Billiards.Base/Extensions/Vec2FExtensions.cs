@@ -77,6 +77,11 @@ namespace Billiards.Base.Extensions
             return u.X() * v.Y() - u.Y() * v.X();
         }
 
+        public static Vec2f Center(this Vec2f u, Vec2f v)
+        {
+            return u + (v - u) / 2;
+        }
+
         #endregion
 
 

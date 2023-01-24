@@ -9,6 +9,11 @@ public class FilterValueCollection : ObservableCollection<FilterValue>
         Add(new FilterValue(name, value));
     }
 
+    public void Add(string name, double value, string? text)
+    {
+        Add(new FilterValue(name, value, text));
+    }
+
     public void Add(string name, string? text)
     {
         Add(new FilterValue(name, text));

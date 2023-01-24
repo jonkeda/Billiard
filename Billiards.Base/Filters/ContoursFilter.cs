@@ -29,6 +29,8 @@ public class ContoursFilter : AbstractFilter, IContourFilter
 
     public double Resize { get; set; } = 1;
 
+    public double ApproximateEps { get; set; } = 1;
+
     public ContourCollection? Contours { get; set; }
 
     public RetrievalModes RetrType { get; set; } = RetrievalModes.External;
@@ -84,6 +86,19 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             contourList.Clear();
             contourList.Add(new Contour(points, 0, null));
         }
+        else if (ContourType == ContourType.Approximated)
+        {
+            List<Point> allPoints = new List<Point>();
+            foreach (var contour in contourList)
+            {
+                allPoints.AddRange(contour.Points);
+            }
+            var points = Cv2.ApproxPolyDP(allPoints, ApproximateEps, true);
+
+            contourList.Clear();
+            contourList.Add(new Contour(points, 0, null));
+
+        }
         else if (ContourType == ContourType.Ellipse)
         {
             foreach (Contour contour in contourList)
@@ -107,6 +122,10 @@ public class ContoursFilter : AbstractFilter, IContourFilter
         {
             DrawNumbers(allContourList, dc);
             if (ContourType == ContourType.Points)
+            {
+                DrawAsPoints(contourList, dc, radius);
+            }
+            else if (ContourType == ContourType.Approximated)
             {
                 DrawAsPoints(contourList, dc, radius);
             }

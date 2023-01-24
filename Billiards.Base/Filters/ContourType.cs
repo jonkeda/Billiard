@@ -7,5 +7,6 @@ public enum ContourType
     Circle,
     Ellipse,
     ConvexHulls,
-    ConvexHull
+    ConvexHull,
+    Approximated
 }

@@ -11,16 +11,26 @@ public class CornerDetectorSet : FilterSet
     {
         Mask(flood);
 
-/*        Resize(0.5f);
-        Resize(2f);
-*/
+        /*        Resize(0.5f);
+                Resize(2f);
+        */
+
+        float size = 10;
+        var mc = MorphClose();
+        mc.MorphShapes = MorphShapes.Rect;
+        mc.Size = new Size(size, size);
+        var mo = MorphOpen();
+        mo.MorphShapes = MorphShapes.Rect;
+        mo.Size = new Size(size, size);
 
 
         var contour = Contours();
-        contour.ContourType = ContourType.ConvexHull;
-        contour.ChainApproxMethod = ContourApproximationModes.ApproxSimple;
+        contour.ContourType = ContourType.Approximated;
+        contour.ChainApproxMethod = ContourApproximationModes.ApproxNone;
         contour.MinimumArea = 0;
-             
+        contour.ApproximateEps = 10;
+
+
         var convexConvers = Filters.AddFilter(new FindCornersConvexHullFilter(contour));
         convexConvers.ContourFilter = contour;
         convexConvers.StraigthenAngle = 5;

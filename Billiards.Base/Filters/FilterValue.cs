@@ -14,6 +14,13 @@ public class FilterValue
         Text = text;
     }
 
+    public FilterValue(string name, double value, string? text)
+    {
+        Name = name;
+        Value = value;
+        Text = text;
+    }
+
     public string Name { get; set; }
     public double Value { get; set; }
 
