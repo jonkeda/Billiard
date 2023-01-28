@@ -16,11 +16,11 @@ public class TableDetectorSet : FilterSet
         GaussianBlur();
 
         MorphClose();
-        MorphOpen();
+        // MorphOpen();
         var flood = FloodFill(255);
         flood.MinimumArea = 14;
         flood.MaximumArea = 80;
-        flood.FloodFillDiff = 5;
+        flood.FloodFillDiff = 10;
         flood.FloodFillFlags = FloodFillFlags.FixedRange;
 
         Mask();

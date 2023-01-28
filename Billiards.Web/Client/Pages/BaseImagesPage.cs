@@ -19,13 +19,13 @@ namespace Billiards.Web.Client.Pages
 
         protected BallColor CueBall { get; set; } = BallColor.White;
 
-        protected const int VideoWidth = 960;
-        protected const int VideoHeight = 540;
+        protected int VideoWidth { get; set; } = 960;
+        protected int VideoHeight { get; set; } = 540;
 
         protected const int TableWidth = 2000;
         protected const int TableHeight = 1000;
 
-        protected int ScreenWidth { get; set; }= 480;
+        protected int ScreenWidth { get; set; } = 480;
         protected int ScreenHeight { get; set; } = 270;
 
         protected string Transform { get; set; }

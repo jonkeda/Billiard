@@ -322,7 +322,7 @@ namespace Billiards.Wpf.ViewModels
                 return;
             }
 
-            Directory.CreateDirectory(Path.GetDirectoryName(pathName));
+            Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(pathName), "Ok"));
             string newName = Path.Combine(Path.GetDirectoryName(pathName), "Ok", Path.GetFileName(pathName));
             File.Move(pathName, newName, true);
             Next();

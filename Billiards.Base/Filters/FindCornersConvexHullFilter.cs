@@ -138,7 +138,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         List<Line> foundLines = new List<Line>();
         foreach (var line in lines.OrderByDescending(l => l.Length))
         {
-            if (foundLines.All(l => MathF.Abs(l.Angle - line.Angle) > 2f))
+            if (foundLines.All(l => MathF.Abs(l.Angle - line.Angle) > 10f))
             {
                 foundLines.Add(line);
             }

@@ -56,7 +56,7 @@
                                        Source="{Binding BackGroundImage}"
                                        Stretch="None" />
 
-                                    <Image x:Name="Solutions" 
+                                    <Image x:Name="Solutions" Visibility="Hidden"
                                        Width="{Binding LengthD}" Height="{Binding WidthD}" 
                                        Source="{Binding SolutionsImage}"
                                        Stretch="None" />
@@ -84,7 +84,7 @@
                 <views:VideoDeviceView DataContext="{Binding VideoDevice}" />
             </Grid>
         </TabItem>
-        <!--
+        
         <TabItem Header="Table Detector">
             <views:TableView DataContext="{Binding TableViewModel}" />
         </TabItem>
@@ -96,7 +96,7 @@
         <TabItem Header="Ball Detector">
             <views:BallView DataContext="{Binding BallViewModel}" />
         </TabItem>
--->
+
         <TabItem Header="Filter view">
             <views:FilterView DataContext="{Binding FilterViewModel}" />
         </TabItem>

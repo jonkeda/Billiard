@@ -19,10 +19,10 @@ public class CornerDetectorSet : FilterSet
         var mc = MorphClose();
         mc.MorphShapes = MorphShapes.Rect;
         mc.Size = new Size(size, size);
-        var mo = MorphOpen();
+/*        var mo = MorphOpen();
         mo.MorphShapes = MorphShapes.Rect;
         mo.Size = new Size(size, size);
-
+*/
 
         var contour = Contours();
         contour.ContourType = ContourType.Approximated;

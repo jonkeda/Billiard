@@ -69,9 +69,9 @@ public class ContoursFilter : AbstractFilter, IContourFilter
                 && (MinimumRatio <= 0 || ratio >= MinimumRatio)
                 && (MaximumRatio <= 0 || ratio <= MaximumRatio))
             {
-                contourList.Add(new Contour(contour, i, rectangle));
+                contourList.Add(new Contour(contour, i, rectangle, rectArea));
             }
-            allContourList.Add(new Contour(contour, i, rectangle));
+            allContourList.Add(new Contour(contour, i, rectangle, rectArea));
         }
         FilterValues.Add("Contours found", contourList.Count);
         if (ContourType == ContourType.ConvexHull)
@@ -84,7 +84,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             var points = Cv2.ConvexHull(allPoints);
 
             contourList.Clear();
-            contourList.Add(new Contour(points, 0, null));
+            contourList.Add(new Contour(points, 0, null, 0));
         }
         else if (ContourType == ContourType.Approximated)
         {
@@ -96,7 +96,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             var points = Cv2.ApproxPolyDP(allPoints, ApproximateEps, true);
 
             contourList.Clear();
-            contourList.Add(new Contour(points, 0, null));
+            contourList.Add(new Contour(points, 0, null, 0));
 
         }
         else if (ContourType == ContourType.Ellipse)
@@ -150,7 +150,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
                 DrawAsConvexHulls(contourList, dc, radius);
             }
         });
-        Contours = contourList;
+        Contours = new ContourCollection(contourList.OrderByDescending(i => i.RectArea).ToList());
     }
 
     private void DrawNumbers(ContourCollection allContourList, DrawingContext dc)

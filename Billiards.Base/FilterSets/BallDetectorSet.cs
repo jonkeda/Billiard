@@ -15,18 +15,28 @@ public class BallDetectorSet : FilterSet
         var gaus = GaussianBlur();
         // Filters.AddFilter(new FindPointByColorFilter(gaus));
         var flood = FloodFill(255);
+
+        flood.FloodFillFlags = FloodFillFlags.Link8;
+        flood.FloodFillDiff = 1.5f;
+
+        //flood.FloodFillFlags = FloodFillFlags.FixedRange;
+        //flood.FloodFillDiff = 10;
         flood.MinimumArea = 20;
+
         Mask();
-        MorphClose();
-        var morph = MorphOpen();
+        var close = MorphClose();
+        //close.Size = new Size(10, 10);
+        
+
+//         var morph = MorphOpen();
         FloodFillCorners(255);
 
         Not();
         var masked = ToMask();
         var canny = Canny();
         var contours = Contours();
-        contours.MinimumArea = 1000;
-        contours.MaximumArea = 7000;
+        contours.MinimumArea = 500;
+        contours.MaximumArea = 8000;
         contours.MinimumRatio = 0.15d;
         contours.MaximumRatio = 1d;
         contours.Resize = 0.7;

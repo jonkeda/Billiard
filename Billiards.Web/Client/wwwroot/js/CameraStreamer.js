@@ -130,20 +130,36 @@ var BlazorCameraStreamer;
                 if (!this._callInvoke || !this._streamActive)
                     return;
                 let canvas = document.createElement("canvas");
-                canvas.width = this._constraints.video["width"];
-                canvas.height = this._constraints.video["height"];
                 // Draw the current image of the stream on the canvas
                 canvas.getContext("2d").drawImage(this._video, 0, 0);
                 // Get the image as 64 base string
-                let img = canvas.toDataURL("image/jpeg", 1);
+                let img = canvas.toDataURL("image/jpeg", 0.5);
                 this.invokeDotnetObject(img);
             }
             getImage() {
                 if (!this._streamActive)
                     return null;
                 let canvas = document.createElement("canvas");
-                canvas.width = this._constraints.video["width"];
-                canvas.height = this._constraints.video["height"];
+                let orientation = 0;
+                try {
+                    switch (screen.orientation.type) {
+                        case "portrait-secondary":
+                        case "portrait-primary":
+                            orientation = 1;
+                            break;
+                    }
+                }
+                catch (ex) {
+                    orientation = 1;
+                }
+                if (orientation === 1) {
+                    canvas.width = this._constraints.video["height"];
+                    canvas.height = this._constraints.video["width"];
+                }
+                else {
+                    canvas.width = this._constraints.video["width"];
+                    canvas.height = this._constraints.video["height"];
+                }
                 // Draw the current image of the stream on the canvas
                 canvas.getContext("2d").drawImage(this._video, 0, 0);
                 // Get the image as 64 base string
