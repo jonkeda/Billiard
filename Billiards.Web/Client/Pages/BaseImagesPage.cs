@@ -11,7 +11,7 @@ namespace Billiards.Web.Client.Pages
 {
     public class BaseImagesPage : ComponentBase
     {
-        [Inject] 
+        [Inject]
         protected IJSRuntime JsRuntime { get; set; } = null!;
 
         [Inject]
@@ -152,10 +152,10 @@ namespace Billiards.Web.Client.Pages
 
             try
             {
-                using MultipartFormDataContent content = new ();
+                using MultipartFormDataContent content = new();
                 StreamContent fileContent = new StreamContent(file.OpenReadStream(file.Size));
                 fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-                content.Add( fileContent, "img.jpg", "img.jpg");
+                content.Add(fileContent, "img.jpg", "img.jpg");
 
                 HttpResponseMessage response = await Http.PostAsync("Recognition/Stream", content);
                 if (!response.IsSuccessStatusCode)
@@ -231,25 +231,38 @@ namespace Billiards.Web.Client.Pages
 
         protected async Task<bool> MakePrediction()
         {
-            if (Balls == null
-                || Balls.Count < 3)
+            if (sending)
             {
                 return false;
             }
-            var request = new PredictionRequest(Balls, CueBall);
-            HttpResponseMessage response = await Http.PostAsJsonAsync("Prediction", request);
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                return false;
+                if (Balls == null
+                    || Balls.Count < 3)
+                {
+                    return false;
+                }
+                sending = true;
+                var request = new PredictionRequest(Balls, CueBall);
+                HttpResponseMessage response = await Http.PostAsJsonAsync("Prediction", request);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return false;
+                }
+                PredictionResponse? result = await response.Content.ReadFromJsonAsync<PredictionResponse>();
+                Problems = result?.Problems;
             }
-            PredictionResponse? result = await response.Content.ReadFromJsonAsync<PredictionResponse>();
-            Problems = result?.Problems;
+            catch
+            {
+                sending = false;
+            }
             return true;
         }
 
         protected async Task ClickWhite()
         {
             CueBall = BallColor.White;
+
             await MakePrediction();
         }
 

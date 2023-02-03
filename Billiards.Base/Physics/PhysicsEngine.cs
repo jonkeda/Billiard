@@ -103,22 +103,22 @@ namespace Billiards.Base.Physics
                 };
             }
 
-            foreach (Problem problem in problems)
-            {
-                problem.Run();
-            }
-
-/*                            Parallel.ForEach(problems, problem =>
-                          {
-                              try
-                              {
-                                  problem.Run();
-                              }
-                              catch (Exception e)
-                              {
-                                  string a = e.Message;
-                              }
-                          });*/
+            /*            foreach (Problem problem in problems)
+                        {
+                            problem.Run();
+                        }
+            */
+            Parallel.ForEach(problems, problem =>
+          {
+              try
+              {
+                  problem.Run();
+              }
+              catch (Exception e)
+              {
+                  string a = e.Message;
+              }
+          });
             return problems;
 
         }
@@ -135,7 +135,7 @@ namespace Billiards.Base.Physics
             return Calculate(force, animate, filter, ballsClones, table, cueBallColor, otherBallColor);
         }
 
-        private static PBall? Calculate(Vector2 force, bool animate, bool filter, PBall[] ballsClones, PTable table, 
+        private static PBall? Calculate(Vector2 force, bool animate, bool filter, PBall[] ballsClones, PTable table,
             BallColor cueBallColor, BallColor otherBallColor)
         {
             PBall cueBall = ballsClones.First(b => b.BallColor == cueBallColor);
@@ -308,7 +308,7 @@ namespace Billiards.Base.Physics
         {
             return balls?.Find(b => b.BallColor == BallColor.Red);
         }
-        
+
         private SolutionCollection CalculateSolutionsDirectOnBall(PBall cue, PBall other, float power)
         {
             Vector2 line = Vector2.Normalize(cue.position - other.position);

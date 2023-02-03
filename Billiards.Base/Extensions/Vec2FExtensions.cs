@@ -55,6 +55,10 @@ namespace Billiards.Base.Extensions
         private static Vec2f vec1 = new Vec2f(1f, 0f);
         public static float GetAngle(this Vec2f a)
         {
+/*            float angleInRadians = MathF.Atan2(a.Item1, a.Item0);
+            float angleInDegrees = (angleInRadians / MathF.PI) * 180.0f;
+            return angleInDegrees;
+*/
             if (a.Y() > 0)
             {
                 return MathF.Acos(Dot(a, vec1)) * 180f / MathF.PI;

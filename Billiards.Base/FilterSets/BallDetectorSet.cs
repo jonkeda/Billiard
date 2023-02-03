@@ -16,8 +16,8 @@ public class BallDetectorSet : FilterSet
         // Filters.AddFilter(new FindPointByColorFilter(gaus));
         var flood = FloodFill(255);
 
-        flood.FloodFillFlags = FloodFillFlags.Link8;
-        flood.FloodFillDiff = 1.5f;
+        flood.FloodFillFlags = FloodFillFlags.Link4;
+        flood.FloodFillDiff = 1f;
 
         //flood.FloodFillFlags = FloodFillFlags.FixedRange;
         //flood.FloodFillDiff = 10;
@@ -25,10 +25,10 @@ public class BallDetectorSet : FilterSet
 
         Mask();
         var close = MorphClose();
-        //close.Size = new Size(10, 10);
+        close.Size = new Size(3, 3);
+        var open = MorphOpen();
+        open.Size = new Size(3, 3);
         
-
-//         var morph = MorphOpen();
         FloodFillCorners(255);
 
         Not();

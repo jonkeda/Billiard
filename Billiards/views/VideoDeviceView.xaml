@@ -26,7 +26,8 @@
             <Button Command="{Binding DeleteCommand}">Delete</Button>
             <Button Command="{Binding OkCommand}">Ok</Button>
             <Button Command="{Binding NotOkCommand}">Not</Button>
-            <CheckBox IsChecked="{Binding Calculate}">Calculate</CheckBox>
+            <CheckBox IsChecked="{Binding Calculate}" BorderBrush="White" Foreground="White">Calculate</CheckBox>
+            <CheckBox IsChecked="{Binding ShowSolutions}" BorderBrush="White" Foreground="White">Show solutions</CheckBox>
 
         </StackPanel>
 

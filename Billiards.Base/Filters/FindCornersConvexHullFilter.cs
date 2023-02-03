@@ -30,11 +30,13 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
 
     public class Line
     {
-        public Line(Vec2f v1, Vec2f v2)
+        public Line(Vec2f v1, Vec2f v2, int index)
         {
             V1 = v1;
             V2 = v2;
             V = v1 - v2;
+
+            Index = index;
 
             Length = V.Length();
             Angle = V.Normalize().GetAngle();
@@ -45,9 +47,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
 
         public float Length { get; }
         public float Angle { get; }
-
-        public int Index { get; set; }
-
+        public int Index { get; }
     }
 
     protected override void ApplyFilter(Mat originalImage)
@@ -69,15 +69,12 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         List<Point> newPoints = StraightenLines(contour.Points);
         var lines = CreateLines(newPoints);
 
-        int i = 0;
         FilterValues.Add("Width", ResultMat.Width);
         FilterValues.Add("Height", ResultMat.Height);
         foreach (Line line in lines)
         {
-            line.Index = i;
             //FilterValues.Add(i.ToString(), $"{line.V1.Item0:F0} {line.V1.Item1:F0} {line.V2.Item0:F0} {line.V2.Item1:F0} ");
-            FilterValues.Add(i.ToString(), Math.Round(line.Angle), line.Length.ToString("F0"));
-            i++;
+            FilterValues.Add(line.Index.ToString(), Math.Round(line.Angle), line.Length.ToString("F0"));
         }
 
         var allLines = lines.ToList();
@@ -99,7 +96,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
             {
                 dc.DrawLine(penAll, line.V1, line.V2);
                 dc.DrawEllipse(Brushes.GreenYellow, null, line.V1.AsPoint2f(), radius, radius);
-                dc.DrawEllipse(Brushes.GreenYellow, null, line.V2.AsPoint2f(), radius, radius);
+                dc.DrawEllipse(Brushes.Green, null, line.V2.AsPoint2f(), radius, radius);
             }
 
             Pen pen = new Pen(Brushes.Red, (int)(radius / 2));
@@ -108,7 +105,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
             {
                 dc.DrawLine(pen, line.V1, line.V2);
                 dc.DrawEllipse(Brushes.Red, null, line.V1.AsPoint2f(), radius, radius);
-                dc.DrawEllipse(Brushes.Red, null, line.V2.AsPoint2f(), radius, radius);
+                dc.DrawEllipse(Brushes.DarkRed, null, line.V2.AsPoint2f(), radius, radius);
 
                 FormattedText formattedText = new(
                     line.Index.ToString(),
@@ -138,7 +135,7 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
         List<Line> foundLines = new List<Line>();
         foreach (var line in lines.OrderByDescending(l => l.Length))
         {
-            if (foundLines.All(l => MathF.Abs(l.Angle - line.Angle) > 10f))
+            if (foundLines.All(l => MathF2.DegreeDifference(l.Angle, line.Angle) > 10f))
             {
                 foundLines.Add(line);
             }
@@ -225,15 +222,18 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
     {
         List<Point> newPoints = new();
         Point previousPoint = points[0];
-        float angle = float.MaxValue;
-        newPoints.Add(previousPoint);
+        float angle = 0;
+
+        bool first = true;
         foreach (var point in points.Skip(1))
         {
-            var line = new Line(previousPoint.AsVec2f(), point.AsVec2f());
-            if (Math.Abs(angle - line.Angle) > StraigthenAngle)
+            var line = new Line(previousPoint.AsVec2f(), point.AsVec2f(), 0);
+            if (first
+                || MathF2.DegreeDifference(angle, line.Angle) > StraigthenAngle)
             {
                 newPoints.Add(previousPoint);
                 angle = line.Angle;
+                first = false;
             }
             previousPoint = point;
         }
@@ -246,13 +246,16 @@ public class FindCornersConvexHullFilter : AbstractFilter, IPointsFilter
     {
         List<Line> lines = new();
         Point previousPoint = points[0];
+        int i = 0;
         foreach (var point in points.Skip(1))
         {
-            lines.Add(new Line(previousPoint.AsVec2f(), point.AsVec2f()));
+            var line = new Line(previousPoint.AsVec2f(), point.AsVec2f(), i);
+            lines.Add(line);
             previousPoint = point;
+            i++;
         }
         lines.Add(new Line(points.Last().AsVec2f(),
-            points.First().AsVec2f()));
+            points.First().AsVec2f(), i));
         return lines;
     }
 }

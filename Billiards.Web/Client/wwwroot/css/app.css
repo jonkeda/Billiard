@@ -12,6 +12,13 @@ a, .btn-link {
     color: #0071c1;
 }
 
+.indexLink {
+    display: block;
+    font-size: 50px;
+    margin: auto;
+    padding-top: 40px;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

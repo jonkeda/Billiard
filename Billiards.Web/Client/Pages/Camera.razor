@@ -6,13 +6,6 @@
 @using Billiards.Web.Shared
 @inject IJSRuntime JsRuntime
 
-<InputRadioGroup @bind-Value="@CueBall" >
-    <label><InputRadio Value="@BallColor.White" style="margin: 0 10px 0 40px" />White</label>
-    <label><InputRadio Value="@BallColor.Yellow"  style="margin: 0 10px 0 40px" />Yellow</label>
-</InputRadioGroup>
-
-Resize: @ResizeTime Recognize: @RecognizeTime Prediction: @PredictionTime @Busy
-
 @if (Busy)
 {
     <div class="spinner"></div>
@@ -25,12 +18,43 @@ Resize: @ResizeTime Recognize: @RecognizeTime Prediction: @PredictionTime @Busy
                     Transform="@Transform" Viewbox="@Viewbox" />
 
 </div>
-<label style="background: blue; border: 1px white; color: white; margin: 5px; padding: 10px; width:100%; text-align: center">
-    <span class="oi oi-camera-slr" aria-hidden="true"></span> Take a picture of the table
-    <InputFile accept="image/*" capture="environment" style="display: none" OnChange="@PictureTaken"></InputFile>
-</label>
-<br />
-<div style="position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
+
+<div style="width: 100%; height: 130px">
+    <div style="float: left">
+        <button @onclick="ClickWhite"
+                style="width: 60px; height: 60px; margin: 5px; border-radius: 50%; background-color: white">
+            @if (CueBall == BallColor.White)
+            {
+                <span class="oi oi-media-record" aria-hidden="true"></span>
+            }
+            else
+            {
+                <span class="oi" aria-hidden="true"></span>
+            }
+        </button>
+        <button @onclick="ClickYellow"
+                style="width: 60px; height: 60px; margin: 5px; border-radius: 50%;background-color: yellow">
+            @if (CueBall == BallColor.Yellow)
+            {
+                <span class="oi oi-media-record" aria-hidden="true"></span>
+            }
+            else
+            {
+                <span class="oi" aria-hidden="true"></span>
+            }
+        </button>
+    </div>
+
+
+    <label style="float: right">
+        <div style="background: white; border-radius: 50%; border: 1px double black; color: black; width: 80px; height: 80px; margin: 30px">
+            <span class="oi oi-camera-slr" aria-hidden="true" style="margin: 30px"></span>
+            <InputFile accept="image/*" capture="environment" style="display: none" OnChange="@PictureTaken"></InputFile>
+        </div>
+    </label>
+</div>
+
+<div style="margin: auto; position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
     <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @ScreenWidthPx; height: @ScreenHeightPx; z-index: 1" />
 
     <div style="width: 100%; height: 100%; position: relative">
@@ -40,8 +64,17 @@ Resize: @ResizeTime Recognize: @RecognizeTime Prediction: @PredictionTime @Busy
     </div>
 </div>
 <div>
+    <p>Recognize: @RecognizeTime</p>
+    <p>Prediction: @PredictionTime</p>
+</div>
+
+<div style="height: 50px">
+    <a href="@frameUri" download="@imageName" style="color: white"><span class="oi oi-data-transfer-download"> Download image</span></a>
+</div>
+<div>
     @Message
 </div>
+
 
 @code {
     protected override async Task OnInitializedAsync()
@@ -54,6 +87,7 @@ Resize: @ResizeTime Recognize: @RecognizeTime Prediction: @PredictionTime @Busy
     private string Message { get; set; }
 
     private string frameUri { get; set; }
+    private string imageName { get; set; }
 
     long ImageSize1 { get; set; }
     long ImageSize2 { get; set; }
@@ -94,6 +128,7 @@ Resize: @ResizeTime Recognize: @RecognizeTime Prediction: @PredictionTime @Busy
 
             string data = Convert.ToBase64String(bytes);
 
+            imageName = DateTime.Now.ToString("yyyyMMddhhmmsstt") + ".jpg";
             frameUri = "data:image/jpeg;base64," + data;
 
             bool recognized = await RecognizeTable(data);

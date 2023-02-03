@@ -74,7 +74,35 @@
                     Transform="@Transform" Viewbox="@Viewbox" />
 </div>
 
-<div style="position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
+<div style="width: 100%; height: 130px">
+    <div style="float: left">
+        <button @onclick="ClickWhite"
+                style="width: 60px; height: 60px; margin: 5px; border-radius: 50%; background-color: white">
+            @if (CueBall == BallColor.White)
+            {
+                <span class="oi oi-media-record" aria-hidden="true"></span>
+            }
+            else
+            {
+                <span class="oi" aria-hidden="true"></span>
+            }
+        </button>
+        <button @onclick="ClickYellow"
+                style="width: 60px; height: 60px; margin: 5px; border-radius: 50%;background-color: yellow">
+            @if (CueBall == BallColor.Yellow)
+            {
+                <span class="oi oi-media-record" aria-hidden="true"></span>
+            }
+            else
+            {
+                <span class="oi" aria-hidden="true"></span>
+            }
+        </button>
+    </div>
+</div>
+
+
+<div style="margin: auto; position: relative; width: @ScreenWidthPx; height: @ScreenHeightPx">
     <img src="@frameUri" style="position: absolute; top: 0px; left: 0px; width: @ScreenWidthPx; height: @ScreenHeightPx; z-index: 1" />
 
     <TableRecognized Balls="@Balls" TableCorners="@TableCorners"
@@ -82,12 +110,13 @@
                      FinderStroke="@FinderStroke" FinderRadius="@FinderRadius" />
 </div>
 <div>
-    Resize: @ResizeTime
-    Recognize: @RecognizeTime
-    Prediction: @PredictionTime @Busy
+    <p>Get image: @GetImage</p>
+    <p>Recognize: @RecognizeTime</p>
+    <p>Prediction: @PredictionTime</p>
 </div>
+
 <div style="height: 50px">
-    <a href="@frameUri" download="@imageName">Download image</a>
+    <a href="@frameUri" download="@imageName" style="color: white"><span class="oi oi-data-transfer-download"> Download image</span></a>
 </div>
 <div>
     @Message
@@ -102,7 +131,7 @@
     private string frameUri { get; set; }
     private string imageName { get; set; }
     long PredictionTime { get; set; }
-    long ResizeTime { get; set; }
+    long GetImage { get; set; }
     long RecognizeTime { get; set; }
 
     private async void OnRenderedHandler()
@@ -139,10 +168,12 @@
             DateTime now = DateTime.Now;
             Busy = true;
 
-            frameUri = await CameraStreamerReference.GetImage(); ;
+            frameUri = await CameraStreamerReference.GetImage();
             imageName = DateTime.Now.ToString("yyyyMMddhhmmsstt") + ".jpg";
             int commaIndex = frameUri.IndexOf(",");
             string data = frameUri.Substring(commaIndex + 1);
+
+            GetImage = (long)(DateTime.Now - now).TotalMilliseconds;
 
             bool recognized = await RecognizeTable(data);
 

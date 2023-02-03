@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using Emgu.CV.CvEnum;
 using MessageBox = System.Windows.MessageBox;
@@ -15,6 +16,31 @@ namespace Billiard.viewModels
 {
     public class VideoDeviceViewModel : ViewModel
     {
+        public bool ShowSolutions
+        {
+            get { return showSolutions; }
+            set
+            {
+                if (SetProperty(ref showSolutions, value))
+                {
+                    if (value)
+                    {
+                        SolutionVisibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        SolutionVisibility = Visibility.Hidden;
+                    }
+                }
+            }
+        }
+
+        public Visibility SolutionVisibility
+        {
+            get { return solutionVisibility; }
+            set { SetProperty(ref solutionVisibility, value); }
+        }
+
         private VideoDevice selectedVideoDevice;
         private VideoCapture camera;
 
@@ -154,6 +180,8 @@ namespace Billiard.viewModels
         private string selectedFolder;
         private bool loadFromFolder;
         private bool calculate;
+        private bool showSolutions;
+        private Visibility solutionVisibility = Visibility.Hidden;
 
         private void Load()
         {
