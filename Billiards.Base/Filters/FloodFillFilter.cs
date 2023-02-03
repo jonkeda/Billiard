@@ -24,6 +24,8 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         }
     }
 
+    public bool AllowZero { get; set; } = true;
+
     public IPointFilter? Point2filter { get; set; }
     public int MinimumArea { get; set; }
     public int MaximumArea { get; set; } = 100;
@@ -127,7 +129,6 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         Cv2.FloodFill(ResultMat, newMask, mid, new Scalar(FloodFillColor), 
             out boundingRect, FloodFillDiff, FloodFillDiff, 
             (FloodFillFlags)((int)floodFillFlags | (255 << 8)) );
-        Mask = newMask.SubMat(1, newMask.Rows - 2, 1, newMask.Cols - 2);
 
         double area = boundingRect.Width * boundingRect.Height;
         double fullArea = input.Cols * input.Rows;
@@ -138,6 +139,13 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         FilterValues.Add("Mid", mid.ToString());
         FilterValues.Add("Bounds", boundingRect.ToString());
 
-        return  areaPerc >= MinimumArea && areaPerc <= MaximumArea;
+        bool ok = areaPerc >= MinimumArea && areaPerc <= MaximumArea && (AllowZero || boundingRect.Y > 0);
+
+        if (ok)
+        {
+            Mask = newMask.SubMat(1, newMask.Rows - 2, 1, newMask.Cols - 2);
+        }
+
+        return ok;
     }
 }

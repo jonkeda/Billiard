@@ -93,7 +93,7 @@ public class CaramboleDetector
         }
         else
         {
-            int height = (image.Width * 540) / image.Height;
+            int height = (image.Height * 960) / image.Width;
             Cv2.Resize(image, image, new Size(960, height));
         }
     }

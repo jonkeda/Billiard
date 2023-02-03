@@ -18,6 +18,7 @@ public class TableDetectorSet : FilterSet
         MorphClose();
         // MorphOpen();
         var flood = FloodFill(255);
+        flood.AllowZero = false;
         flood.MinimumArea = 14;
         flood.MaximumArea = 80;
         flood.FloodFillDiff = 10;
