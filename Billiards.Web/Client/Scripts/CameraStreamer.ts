@@ -180,7 +180,7 @@ namespace BlazorCameraStreamer.Scripts {
             canvas.getContext("2d").drawImage(this._video, 0, 0);
 
             // Get the image as 64 base string
-            let img: string = canvas.toDataURL("image/jpeg", 0.5);
+            let img: string = canvas.toDataURL("image/jpeg", 0.1);
 
             this.invokeDotnetObject(img);
         }
@@ -218,7 +218,7 @@ namespace BlazorCameraStreamer.Scripts {
             canvas.getContext("2d").drawImage(this._video, 0, 0);
 
             // Get the image as 64 base string
-            let img: string = canvas.toDataURL("image/jpeg", 1);
+            let img: string = canvas.toDataURL("image/jpeg", 0.5);
 
             return img;
         }

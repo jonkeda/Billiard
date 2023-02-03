@@ -64,15 +64,14 @@
     </div>
 </div>
 <div>
-    <p>Recognize: @RecognizeTime</p>
-    <p>Prediction: @PredictionTime</p>
+    @foreach (LogItem log in Log)
+    {
+        <p>@log.Name: @log.Message</p>
+    }
 </div>
 
 <div style="height: 50px">
     <a href="@frameUri" download="@imageName" style="color: white"><span class="oi oi-data-transfer-download"> Download image</span></a>
-</div>
-<div>
-    @Message
 </div>
 
 
@@ -83,17 +82,8 @@
         await base.OnInitializedAsync();
 
     }
-
-    private string Message { get; set; }
-
     private string frameUri { get; set; }
     private string imageName { get; set; }
-
-    long ImageSize1 { get; set; }
-    long ImageSize2 { get; set; }
-    long PredictionTime { get; set; }
-    long ResizeTime { get; set; }
-    long RecognizeTime { get; set; }
 
     private async Task PictureTaken(InputFileChangeEventArgs e)
     {
@@ -105,9 +95,10 @@
         }
         try
         {
-            DateTime now = DateTime.Now;
             Busy = true;
-            ImageSize1 = e.File.Size;
+            Log.Start();
+
+            Log.Add("Image size 1", e.File.Size);
             IBrowserFile file;
             if (ScreenOrientation == ScreenOrientation.Landscape)
             {
@@ -117,34 +108,33 @@
             {
                 file = await e.File.RequestImageFileAsync(e.File.ContentType, VideoHeight, VideoWidth);
             }
-            ImageSize2 = file.Size;
-            ResizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
-            now = DateTime.Now;
+
+            Log.Add("Resize image");
+
+            Log.Add("Image size 2", file.Size);
 
             using var memoryStream = new MemoryStream();
 
             await file.OpenReadStream().CopyToAsync(memoryStream);
             byte[] bytes = memoryStream.ToArray();
 
+            Log.Add("Copy bytes");
+
             string data = Convert.ToBase64String(bytes);
 
             imageName = DateTime.Now.ToString("yyyyMMddhhmmsstt") + ".jpg";
             frameUri = "data:image/jpeg;base64," + data;
 
-            bool recognized = await RecognizeTable(data);
 
-            RecognizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
-            now = DateTime.Now;
+            Log.Add("Convert to base64");
 
-            if (recognized)
-            {
-                bool predicted = await MakePrediction();
-            }
-            PredictionTime = (long)(DateTime.Now - now).TotalMilliseconds;
+            await RecognizeAndPredict(data);
+
+            Log.End();
         }
         catch (Exception ex)
         {
-            Message = ex.Message;
+            Log.Add("Error", ex.Message);
         }
         finally
         {

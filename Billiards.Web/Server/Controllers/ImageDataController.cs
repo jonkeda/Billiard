@@ -13,36 +13,47 @@ namespace Billiards.Web.Server.Controllers
         [HttpPost("Image")]
         public TableRecognitionResponse DetectTableImage(TableRecognitionRequest image)
         {
+            LogCollection log = new LogCollection("Recognize");
+            log.Start();
             byte[] bytes = Convert.FromBase64String(image.Data);
             MemoryStream stream = new MemoryStream(bytes);
-            return DetectTable(stream);
+            log.Add("From base 64");
+            return DetectTable(stream, log);
         }
 
         [HttpPost("Stream")]
         public TableRecognitionResponse DetectTableStream([FromForm] IEnumerable<IFormFile> files)
         {
+            LogCollection log = new LogCollection("Recognize");
+            log.Start();
             if (files != null)
             {
                 IFormFile? file = files.FirstOrDefault();
                 if (file == null)
                 {
-                    return new TableRecognitionResponse(null, null);
+                    return new TableRecognitionResponse(null, null, log);
                 }
-                return DetectTable(file.OpenReadStream());
+                return DetectTable(file.OpenReadStream(), log);
             }
 
-            return new TableRecognitionResponse(null, null);
+            return new TableRecognitionResponse(null, null, log);
         }
 
-        private TableRecognitionResponse DetectTable(Stream stream)
+        private TableRecognitionResponse DetectTable(Stream stream, LogCollection log)
         {
             CaramboleDetector detector = new();
+
+            log.Add("Create detector");
 
             Mat mat = Mat.FromStream(stream, ImreadModes.AnyColor);
             //Mat mat = Mat.ImDecode(bytes);
             //Mat mat = Cv2.ImRead(@"C:\Temp\Billiards\Ok\Ok\Ok\20221222_215004_HDR.jpg");
 
+            log.Add("Load image");
+
             ResultModel result = detector.ApplyFilters(mat);
+
+            log.Add("Apply filters");
 
             BallCollection balls = new ();
             foreach (ResultBall resultBall in result.Balls)
@@ -67,7 +78,9 @@ namespace Billiards.Web.Server.Controllers
             }
             Table table = new (corners);
 
-            return new TableRecognitionResponse(table, balls);
+            log.End();
+
+            return new TableRecognitionResponse(table, balls, log);
         }
 
         private static Point? ConvertPoint(Point2f? point)

@@ -110,29 +110,22 @@
                      FinderStroke="@FinderStroke" FinderRadius="@FinderRadius" />
 </div>
 <div>
-    <p>Get image: @GetImage</p>
-    <p>Recognize: @RecognizeTime</p>
-    <p>Prediction: @PredictionTime</p>
+    @foreach (LogItem log in Log)
+    {
+        <p>@log.Name: @log.Message</p>
+    }
 </div>
 
 <div style="height: 50px">
     <a href="@frameUri" download="@imageName" style="color: white"><span class="oi oi-data-transfer-download"> Download image</span></a>
 </div>
-<div>
-    @Message
-</div>
-
 
 @code {
     CameraStreamer CameraStreamerReference;
     string cameraId = null;
     MediaDeviceInfoModel[]? mediaDevices;
-    private string Message { get; set; }
     private string frameUri { get; set; }
     private string imageName { get; set; }
-    long PredictionTime { get; set; }
-    long GetImage { get; set; }
-    long RecognizeTime { get; set; }
 
     private async void OnRenderedHandler()
     {
@@ -165,30 +158,29 @@
         }
         try
         {
-            DateTime now = DateTime.Now;
             Busy = true;
+            Log.Start();
 
             frameUri = await CameraStreamerReference.GetImage();
+            
+            Log.Add("Get image");
+
             imageName = DateTime.Now.ToString("yyyyMMddhhmmsstt") + ".jpg";
             int commaIndex = frameUri.IndexOf(",");
             string data = frameUri.Substring(commaIndex + 1);
 
-            GetImage = (long)(DateTime.Now - now).TotalMilliseconds;
+            Log.Add("Copy image");
 
-            bool recognized = await RecognizeTable(data);
+            Log.Add("Image size", data.Length);
 
-            RecognizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
-            now = DateTime.Now;
+            await RecognizeAndPredict(data);
 
-            if (recognized)
-            {
-                bool predicted = await MakePrediction();
-            }
-            PredictionTime = (long)(DateTime.Now - now).TotalMilliseconds;
+            Log.End();
+
         }
         catch (Exception ex)
         {
-            Message = ex.Message;
+            Log.Add("Error", ex.Message);
         }
         finally
         {

@@ -133,7 +133,7 @@ var BlazorCameraStreamer;
                 // Draw the current image of the stream on the canvas
                 canvas.getContext("2d").drawImage(this._video, 0, 0);
                 // Get the image as 64 base string
-                let img = canvas.toDataURL("image/jpeg", 0.5);
+                let img = canvas.toDataURL("image/jpeg", 0.1);
                 this.invokeDotnetObject(img);
             }
             getImage() {
@@ -163,7 +163,7 @@ var BlazorCameraStreamer;
                 // Draw the current image of the stream on the canvas
                 canvas.getContext("2d").drawImage(this._video, 0, 0);
                 // Get the image as 64 base string
-                let img = canvas.toDataURL("image/jpeg", 1);
+                let img = canvas.toDataURL("image/jpeg", 0.5);
                 return img;
             }
             /**

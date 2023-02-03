@@ -48,6 +48,8 @@ namespace Billiards.Web.Client.Pages
 
         protected string? TableCorners { get; set; }
 
+        protected LogCollection Log { get; } = new ();
+
         private bool busy;
         protected bool Busy
         {
@@ -114,6 +116,18 @@ namespace Billiards.Web.Client.Pages
             CameraStyle = $"position: absolute; top: 0px; left: 0px; width: {ScreenWidthPx}; height: {ScreenHeightPx}; z-index: 1";
         }
 
+
+        protected async Task RecognizeAndPredict(string data)
+        {
+            bool recognized = await RecognizeTable(data);
+            Log.Add("Recognize");
+            if (recognized)
+            {
+                bool predicted = await MakePrediction();
+            }
+            Log.Add("Predict");
+        }
+
         private volatile bool sending;
         protected async Task<bool> RecognizeTable(string data)
         {
@@ -124,6 +138,7 @@ namespace Billiards.Web.Client.Pages
 
             try
             {
+                sending = true;
                 var addItem = new TableRecognitionRequest(data);
                 HttpResponseMessage response = await Http.PostAsJsonAsync("Recognition/Image", addItem);
                 if (!response.IsSuccessStatusCode)
@@ -152,6 +167,7 @@ namespace Billiards.Web.Client.Pages
 
             try
             {
+                sending = true;
                 using MultipartFormDataContent content = new();
                 StreamContent fileContent = new StreamContent(file.OpenReadStream(file.Size));
                 fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
@@ -177,6 +193,8 @@ namespace Billiards.Web.Client.Pages
 
         private void HandleRecognition(TableRecognitionResponse? result)
         {
+            Log.Add(result?.Log);
+
             if (result?.Table == null)
             {
                 // hide svg
@@ -250,9 +268,12 @@ namespace Billiards.Web.Client.Pages
                     return false;
                 }
                 PredictionResponse? result = await response.Content.ReadFromJsonAsync<PredictionResponse>();
+
+                Log.Add(result?.Log);
+
                 Problems = result?.Problems;
             }
-            catch
+            finally
             {
                 sending = false;
             }

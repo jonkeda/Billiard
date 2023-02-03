@@ -64,8 +64,10 @@
     </div>
 </div>
 <div>
-    <p>Recognize: @RecognizeTime</p>
-    <p>Prediction: @PredictionTime</p>
+    @foreach (LogItem log in Log)
+    {
+        <p>@log.Name: @log.Message</p>
+    }
 </div>
 
 <div style="height: 50px">
@@ -83,12 +85,6 @@
     private string frameUri { get; set; }
     private string imageName { get; set; }
 
-    long ImageSize1 { get; set; }
-    long ImageSize2 { get; set; }
-    long PredictionTime { get; set; }
-    long ResizeTime { get; set; }
-    long RecognizeTime { get; set; }
-
     private async Task PictureTaken(InputFileChangeEventArgs e)
     {
         await JsRuntime.OpenFullscreen();
@@ -99,10 +95,10 @@
         }
         try
         {
-            DateTime now = DateTime.Now;
             Busy = true;
-            ImageSize1 = e.File.Size;
-            IBrowserFile file;
+            Log.Add("Image size 1", e.File.Size);
+            IBrowserFile file = e.File;
+            /*
             if (ScreenOrientation == ScreenOrientation.Landscape)
             {
                 file = await e.File.RequestImageFileAsync(e.File.ContentType, VideoWidth, VideoHeight);
@@ -112,33 +108,31 @@
                 file = await e.File.RequestImageFileAsync(e.File.ContentType, VideoHeight, VideoWidth);
             }
             ImageSize2 = file.Size;
-            ResizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
-            now = DateTime.Now;
+            */
+
+            Log.Start();
 
             using var memoryStream = new MemoryStream();
 
             await file.OpenReadStream().CopyToAsync(memoryStream);
             byte[] bytes = memoryStream.ToArray();
 
+            Log.Add("Load");
+
             string data = Convert.ToBase64String(bytes);
+
+            Log.Add("Convert to base64");
 
             imageName = DateTime.Now.ToString("yyyyMMddhhmmsstt") + ".jpg";
             frameUri = "data:image/jpeg;base64," + data;
 
-            bool recognized = await RecognizeTable(data);
+            await RecognizeAndPredict(data);
 
-            RecognizeTime = (long)(DateTime.Now - now).TotalMilliseconds;
-            now = DateTime.Now;
-
-            if (recognized)
-            {
-                bool predicted = await MakePrediction();
-            }
-            PredictionTime = (long)(DateTime.Now - now).TotalMilliseconds;
+            Log.End();
         }
         catch (Exception ex)
         {
-            string message = ex.Message;
+            Log.Add("Error", ex.Message);
         }
         finally
         {

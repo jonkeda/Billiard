@@ -17,7 +17,12 @@ namespace Billiards.Web.Server.Controllers
         [HttpPost]
         public PredictionResponse Predict(PredictionRequest request)
         {
+            LogCollection log = new LogCollection("Predict");
+            log.Start();
+
             PhysicsEngine physicsEngine = new PhysicsEngine();
+
+            log.Add("Create engine");
 
             ResultBallCollection resultBalls = new ResultBallCollection();
             foreach (Ball ball in request.Balls)
@@ -33,8 +38,11 @@ namespace Billiards.Web.Server.Controllers
             };
             if (!physicsEngine.CalculateSolutions(result))
             {
-                return new PredictionResponse(new ProblemCollection());
+                log.Add("Failed solutions");
+                log.End();
+                return new PredictionResponse(new ProblemCollection(), log);
             }
+            log.Add("Calculated solutions");
 
             ProblemCollection problems = new();
             if (result.Problems != null)
@@ -61,8 +69,10 @@ namespace Billiards.Web.Server.Controllers
                     problems.Add(new Problem((BallColor)problem.Color, solutions));
                 }
             }
+            log.Add("Copied solutions");
+            log.End();
 
-            return new PredictionResponse(problems);
+            return new PredictionResponse(problems, log);
         }
 
         private static Point2f? ConvertPoint(Point? point)
