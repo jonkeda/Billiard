@@ -143,8 +143,11 @@ public class BallResultFilter : AbstractFilter
             b.Contour = contour;
         }
 
-        b.Mean = histogramFilter.FilterValues[0].Value;
-        b.Max = histogramFilter.FilterValues[1].Value;
+        if (histogramFilter.FilterValues.Count >= 2)
+        {
+            b.Mean = histogramFilter.FilterValues[0].Value;
+            b.Max = histogramFilter.FilterValues[1].Value;
+        }
 
         return b;
     }

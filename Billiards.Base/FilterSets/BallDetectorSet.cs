@@ -28,7 +28,7 @@ public class BallDetectorSet : FilterSet
         close.Size = new Size(3, 3);
         var open = MorphOpen();
         open.Size = new Size(3, 3);
-        
+
         FloodFillCorners(255);
 
         Not();
@@ -40,6 +40,14 @@ public class BallDetectorSet : FilterSet
         contours.MinimumRatio = 0.15d;
         contours.MaximumRatio = 1d;
         contours.Resize = 0.7;
+
+
+/*        var blob = BlobDetection();
+        blob.MinimumArea = 500f;
+        blob.MaximumArea = 8000f;
+        blob.MinimumRatio = 0.15f;
+        blob.MaximumRatio = 1f;
+        //contours.Resize = 0.7;*/
 
         // And(hsv).MaskFilter = masked;
         // Histogram().MaskFilter = masked;

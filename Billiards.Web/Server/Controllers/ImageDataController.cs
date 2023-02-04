@@ -41,7 +41,7 @@ namespace Billiards.Web.Server.Controllers
 
         private TableRecognitionResponse DetectTable(Stream stream, LogCollection log)
         {
-            CaramboleDetector detector = new();
+            CaramboleDetector detector = new(false);
 
             log.Add("Create detector");
 

@@ -5,8 +5,12 @@ namespace Billiards.Base.FilterSets;
 
 public class CaramboleDetector
 {
-    public CaramboleDetector()
+    public bool DrawImage { get; }
+
+    public CaramboleDetector(bool drawImage)
     {
+        FilterSets = new FilterSetCollection(drawImage);
+        DrawImage = drawImage;
         FilterSets.Clear();
 
         var table = FilterSets.AddSet(new TableDetectorSet());
@@ -18,7 +22,7 @@ public class CaramboleDetector
 
     public BallResultFilter BallResultFilter { get; }
     public IPointsFilter PointsFilter { get; set; }
-    public FilterSetCollection FilterSets { get; } = new();
+    public FilterSetCollection FilterSets { get; }
 
     public ResultModel ApplyFilters(Mat image)
     {

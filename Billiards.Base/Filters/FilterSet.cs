@@ -18,11 +18,13 @@ public class FilterSet : PropertyNotifier
     }
 
     public FilterCollection Filters { get; } = new();
+    public bool DrawImage { get; set; }
 
     public void ApplyFilters(Mat? originalImage)
     {
         foreach (AbstractFilter filter in Filters)
         {
+            filter.DrawImage = DrawImage;
             filter.DoApplyFilter(originalImage);
         }
     }
@@ -213,6 +215,17 @@ public class FilterSet : PropertyNotifier
     {
         return Filters.AddFilter(new ContoursFilter(result));
     }
+
+    protected BlobDetectionFilter BlobDetection()
+    {
+        return BlobDetection(Filters.LastOrDefault());
+    }
+
+    protected BlobDetectionFilter BlobDetection(AbstractFilter result)
+    {
+        return Filters.AddFilter(new BlobDetectionFilter(result));
+    }
+
 
     protected ResizeFilter Resize(float sizing)
     {

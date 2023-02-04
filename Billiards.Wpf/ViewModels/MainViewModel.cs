@@ -31,7 +31,7 @@ namespace Billiards.Wpf.ViewModels
             VideoDevice = videoDevice;
             ValidationViewModel = validationViewModel;
 
-            Detector = new();
+            Detector = new(true);
 
             videoDevice.CaptureImage += VideoDeviceCaptureImage;
             videoDevice.StreamImage += VideoDeviceStreamImage;

@@ -41,10 +41,11 @@ public class HistogramFilter : AbstractFilter
             hists.Add(hist);
         }
 
-        // todo
-        DrawingImage = DrawHist(hists);
-
+        if (DrawImage)
+        {
+            DrawingImage = DrawHist(hists);
         //ResultMat = new Mat();
+
 
         for (int i = 0; i < hists.Count; i++)
         {
@@ -56,13 +57,7 @@ public class HistogramFilter : AbstractFilter
             FilterValues.Add($"{i} Mean", System.Math.Round(mean, 0));
             FilterValues.Add($"{i} Max", CalculateMax(hists[i]));
         }
-
-        /*        var hist2 = hists[0];
-                for (int i = Start; i < hist2.Size().Height && i < End; i++)
-                {
-                    FilterValues.Add(i.ToString(), hist2.Get<float>(i, 0));
-                }*/
-
+        }
     }
 
     private float CalculateMean(Mat hist)

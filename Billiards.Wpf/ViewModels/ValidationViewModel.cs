@@ -94,14 +94,14 @@ public class ValidationViewModel : ViewModel
 
     private void Validate()
     {
-        if (Path == null 
+        if (Path == null
             || Folder == null)
         {
             return;
         }
         ValidatedFolder? folder = Folder;
         Folder = null;
-        CaramboleDetector detector = new();
+        CaramboleDetector detector = new(false);
         foreach (var file in Directory.EnumerateFiles(Path, "*.jpg"))
         {
             Mat image = Cv2.ImRead(file, ImreadModes.Color);
@@ -121,5 +121,26 @@ public class ValidationViewModel : ViewModel
         }
         Folder = folder;
         NotifyPropertyChanged(nameof(Folder));
+    }
+
+    public ICommand SaveImagesCommand
+    {
+        get { return new TargetCommand(SaveImages); }
+    }
+
+    private void SaveImages()
+    {
+        if (Path == null
+            || Folder == null)
+        {
+            return;
+        }
+        CaramboleDetector detector = new(false);
+        foreach (var file in Directory.EnumerateFiles(Path, "*.jpg"))
+        {
+            Mat image = Cv2.ImRead(file, ImreadModes.Color);
+            var result = detector.ApplyFilters(image);
+
+        }
     }
 }

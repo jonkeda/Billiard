@@ -118,8 +118,15 @@ public abstract class AbstractFilter : PropertyNotifier
         protected set { SetProperty(ref drawingImage, value); }
     }
 
+    public bool DrawImage  { get; set; }
+
     protected void Draw(Action<DrawingContext> action)
     {
+        if (!DrawImage)
+        {
+            return;
+        }
+
         Mat? mat = GetInputMat();
         if (mat == null
             || mat.Data == 0)
