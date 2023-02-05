@@ -59,7 +59,8 @@
                             <Grid>
                                 <Image Source="{Binding ResultMat, Converter={x:Static converters:Cv.Mat2ImageSource}}" 
                                        Height="60" Width="200" Stretch="Uniform" />
-                                <Image  Opacity="0.5" Height="60" Width="200" Stretch="Uniform"
+                                <Image  Opacity="0.5" Height="60" Width="200" 
+                                        Stretch="{Binding ImageStretch, Converter={x:Static drawings:ImageStretchConverter.Instance}}"
                                         Source="{Binding DrawingImage, Converter={x:Static drawings:DrawingImageConverter.Instance}}" />
                             </Grid>
                         </StackPanel>
@@ -88,13 +89,19 @@
                         <TextBlock HorizontalAlignment="Center" 
                                 Text="{Binding SelectedFilter.Name}" />
                         <Image Source="{Binding SelectedFilter.ResultMat, Converter={x:Static converters:Cv.Mat2ImageSource}}"/>
-                        <Image Opacity="0.5" Source="{Binding SelectedFilter.DrawingImage, Converter={x:Static drawings:DrawingImageConverter.Instance}}" />
+                        <Image Opacity="0.5" Stretch="{Binding SelectedFilter.ImageStretch, Converter={x:Static drawings:ImageStretchConverter.Instance}}"
+                               Source="{Binding SelectedFilter.DrawingImage, Converter={x:Static drawings:DrawingImageConverter.Instance}}" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Mask">
                     <Image Source="{Binding SelectedFilter.Mask, Converter={x:Static converters:Cv.Mat2ImageSource}}"/>
 
                 </TabItem>
+                <TabItem Header="Drawing">
+                    <Image Stretch="{Binding SelectedFilter.ImageStretch, Converter={x:Static drawings:ImageStretchConverter.Instance}}"
+                           Source="{Binding SelectedFilter.DrawingImage, Converter={x:Static drawings:DrawingImageConverter.Instance}}" />
+                </TabItem>
+
             </TabControl>
 
         </Grid>

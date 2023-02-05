@@ -4,6 +4,14 @@ using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
 
+public enum ImageStretch
+{
+    None,
+    Fill,
+    Uniform,
+    UniformToFill
+}
+
 public abstract class AbstractFilter : PropertyNotifier
 {
     private Mat? resultMat = new Mat();
@@ -119,6 +127,7 @@ public abstract class AbstractFilter : PropertyNotifier
     }
 
     public bool DrawImage  { get; set; }
+    public ImageStretch ImageStretch { get; protected set; } = ImageStretch.Uniform;
 
     protected void Draw(Action<DrawingContext> action)
     {
@@ -140,7 +149,7 @@ public abstract class AbstractFilter : PropertyNotifier
             drawingContext.PushClip(new RectangleGeometry(
                 new Rect2f(new Point2f(0, 0),
                     new Size2f(mat.Width, mat.Height))));
-            drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
+            drawingContext.DrawRectangle(Brushes.Transparent, null,
                 new Rect2f(0, 0, mat.Width, mat.Height));
 
             action.Invoke(drawingContext);

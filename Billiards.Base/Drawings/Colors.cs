@@ -17,4 +17,7 @@ public static class Colors
     
     public static Color DarkRed { get; } = new(0xFF, 0x8B, 0, 0);
     public static Color Green { get; } = new(0xFF, 0, 0x80, 0xFF);
+
+    public static Color Transparent { get; } = new(0, 0, 0, 0);
+    
 }

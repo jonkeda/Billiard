@@ -8,6 +8,7 @@ public class HistogramFilter : AbstractFilter, ISingleContourFilter
     public HistogramFilter(AbstractFilter filter) : base(filter)
     {
         Name = "Histogram";
+        ImageStretch = ImageStretch.Fill;
     }
 
     private IMaskFilter? maskFilter;
@@ -31,6 +32,9 @@ public class HistogramFilter : AbstractFilter, ISingleContourFilter
     public bool Channel0 { get; set; } = true;
     public bool Channel1 { get; set; } = false;
     public bool Channel2 { get; set; } = false;
+
+    public bool HsvShift { get; set; } = false;
+    public int HsvShiftBy { get; set; }
 
     private Rect MatchRect(Mat mat, Rect bounds)
     {
@@ -93,6 +97,9 @@ public class HistogramFilter : AbstractFilter, ISingleContourFilter
             {
                 string a = "?";
             }
+
+            FilterValues.Add($"{i} Avg Max", CalculateAverageMax(hists[i]));
+
             FilterValues.Add($"{i} Mean", System.Math.Round(mean, 0));
             FilterValues.Add($"{i} Max", CalculateMax(hists[i]));
         }
@@ -114,6 +121,50 @@ public class HistogramFilter : AbstractFilter, ISingleContourFilter
         return totalSummed / total;
     }
 
+    private int CalculateAverageMax(Mat hist)
+    {
+        int index = 0;
+        float max = 0;
+        // float[,] data = (float[,])hist.GetData();
+
+        float c1 = 0;
+        float c2 = 0;
+        float c3 = 0;
+
+        for (int i = Start; i < hist.Size().Height && i < End; i++)
+        {
+            c3 = hist.Get<float>(i, 0);
+            float total = c1 + c2 + c3;
+            // float value = data[i, 0];
+            if (total > max)
+            {
+                max = total;
+                index = IndexShift(i);
+            }
+
+            c1 = c2;
+            c2 = c3;
+        }
+
+        return index;
+    }
+
+    private int IndexShift(int index)
+    {
+        if (HsvShift)
+        {
+            if (index > (180 - HsvShiftBy))
+            {
+                return index - 180;
+            }
+
+            return index + HsvShiftBy;
+        }
+
+        return index;
+    }
+
+
     private int CalculateMax(Mat hist)
     {
         int index = 0;
@@ -127,7 +178,7 @@ public class HistogramFilter : AbstractFilter, ISingleContourFilter
             if (value > max)
             {
                 max = value;
-                index = i;
+                index = IndexShift(i);
             }
         }
 
@@ -160,7 +211,7 @@ public class HistogramFilter : AbstractFilter, ISingleContourFilter
             drawingContext.PushClip(new RectangleGeometry(
                 new Rect2f(new Point2f(0, 0),
                     new Size2f(histWidth, maximum))));
-            drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
+            drawingContext.DrawRectangle(Brushes.Transparent, null,
                 new Rect2f(0, 0, histWidth, maximum));
 
             int width = 1;

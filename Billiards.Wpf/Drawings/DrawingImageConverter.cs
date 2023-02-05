@@ -1,11 +1,33 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Media;
 using Billiards.Base.Drawings;
 using Billiards.Wpf.UI.Converters;
+using DrawingImage = Billiards.Base.Drawings.DrawingImage;
 
 namespace Billiards.Wpf.Drawings
 {
+    public class ImageStretchConverter : BaseConverter, IValueConverter
+    {
+        public static readonly IValueConverter Instance = new ImageStretchConverter();
+        public object? Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            return (Stretch) value;
+        }
+
+        public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+
     public class WpfDrawingImage : IPlatformDrawingImage
     {
         public WpfDrawingImage(System.Windows.Media.DrawingImage image)
