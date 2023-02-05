@@ -8,6 +8,13 @@
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=false, Type={x:Type viewModel:VideoDeviceViewModel}}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding CaptureCommand}"  Gesture="CTRL+Enter" />
+        <KeyBinding Command="{Binding NextCommand}"     Gesture="CTRL+Right" />
+        <KeyBinding Command="{Binding PreviousCommand}" Gesture="CTRL+Left" />
+    </UserControl.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -19,13 +26,15 @@
             <Button Command="{Binding SelectFolderCommand}" Content="..."/>
             <TextBox Text="{Binding SelectedFolder}" Width="200"/>
             <CheckBox IsChecked="{Binding LoadFromFolder}"></CheckBox>
-            <Button Command="{Binding CaptureCommand}">Capture</Button>
+            <Button Command="{Binding CaptureCommand}" IsDefault="True">Capture</Button>
             <Button Command="{Binding LoadCommand}">Load</Button>
             <Button Command="{Binding PreviousCommand}">Previous</Button>
             <Button Command="{Binding NextCommand}">Next</Button>
             <Button Command="{Binding DeleteCommand}">Delete</Button>
             <Button Command="{Binding OkCommand}">Ok</Button>
             <Button Command="{Binding NotOkCommand}">Not</Button>
+            <Button Command="{Binding DoubleCommand}">Double</Button>
+
             <CheckBox IsChecked="{Binding Calculate}">Calculate</CheckBox>
 
             <Button Command="{Binding CalculateCommand}">Calculate</Button>

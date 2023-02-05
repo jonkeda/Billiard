@@ -24,11 +24,26 @@ public class CaramboleDetector
     public IPointsFilter PointsFilter { get; set; }
     public FilterSetCollection FilterSets { get; }
 
+    public ResultModel ApplyFilters(Mat image, string? filePath)
+    {
+        if (filePath == null)
+        {
+            BallResultFilter.SaveResult = false;
+        }
+        else
+        {
+            BallResultFilter.SaveResult = true;
+            BallResultFilter.Folder = Path.GetDirectoryName(filePath);
+            BallResultFilter.Filename = Path.GetFileName(filePath);
+        }
+        return ApplyFilters(image);
+    }
+
     public ResultModel ApplyFilters(Mat image)
     {
         Resize(image);
 
-        ResultModel result = new ResultModel
+        ResultModel result = new()
         {
             Image = image,
             Detector = this

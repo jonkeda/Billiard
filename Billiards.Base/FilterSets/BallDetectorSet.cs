@@ -55,26 +55,32 @@ public class BallDetectorSet : FilterSet
         // And(original).MaskFilter = masked;
         // Histogram().MaskFilter = masked;
 
-        var and1 = And(hsv);
-        and1.ContourFilter = contours;
-        and1.MaskContour = 0;
+        var and0 = And(hsv);
+        and0.ContourFilter = contours;
+        and0.MaskContour = 0;
         var hist0 = Histogram();
         hist0.Start = 1;
         hist0.End = 100;
+        hist0.ContourFilter = contours;
+        hist0.MaskContour = 0;
 
-        var and2 = And(hsv);
-        and2.ContourFilter = contours;
-        and2.MaskContour = 1;
+        var and1 = And(hsv);
+        and1.ContourFilter = contours;
+        and1.MaskContour = 1;
         var hist1 = Histogram();
         hist1.Start = 1;
         hist1.End = 100;
+        hist1.ContourFilter = contours;
+        hist1.MaskContour = 1;
 
-        var and3 = And(hsv);
-        and3.ContourFilter = contours;
-        and3.MaskContour = 2;
+        var and2 = And(hsv);
+        and2.ContourFilter = contours;
+        and2.MaskContour = 2;
         var hist2 = Histogram();
         hist2.Start = 1;
         hist2.End = 100;
+        hist2.ContourFilter = contours;
+        hist2.MaskContour = 2;
 
         var result = Filters.AddFilter(new BallResultFilter(original));
         result.ContourFilter = contours;

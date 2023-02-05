@@ -104,7 +104,7 @@ namespace Billiards.Wpf.ViewModels
             Mat image = Camera.RetrieveMat();
             if (image != null)
             {
-                OnCaptureImage(image);
+                OnCaptureImage(image, null);
             }
         }
 
@@ -141,7 +141,7 @@ namespace Billiards.Wpf.ViewModels
             try
             {
                 Mat image = Cv2.ImRead(e.FullPath, ImreadModes.Color);
-                OnCaptureImage(image);
+                OnCaptureImage(image, null);
                 pathName = e.FullPath;
             }
             catch
@@ -196,7 +196,7 @@ namespace Billiards.Wpf.ViewModels
                 try
                 {
                     Mat image = Cv2.ImRead(ofd.FileName, ImreadModes.Color);
-                    OnCaptureImage(image);
+                    OnCaptureImage(image, ofd.FileName);
                     pathName = ofd.FileName;
                 }
                 catch (Exception ex)
@@ -218,7 +218,7 @@ namespace Billiards.Wpf.ViewModels
                 return;
             }
             Mat image = Cv2.ImRead(pathName, ImreadModes.Color);
-            OnCaptureImage(image);
+            OnCaptureImage(image, null);
         }
 
         public ICommand NextCommand
@@ -250,7 +250,7 @@ namespace Billiards.Wpf.ViewModels
                 pathName = name;
 
                 Mat image = Cv2.ImRead(name, ImreadModes.Color);
-                OnCaptureImage(image);
+                OnCaptureImage(image, name);
             }
             catch (Exception ex)
             {
@@ -287,7 +287,7 @@ namespace Billiards.Wpf.ViewModels
                 pathName = name;
 
                 Mat image = Cv2.ImRead(name, ImreadModes.Color);
-                OnCaptureImage(image);
+                OnCaptureImage(image, name);
             }
             catch (Exception ex)
             {
@@ -328,6 +328,24 @@ namespace Billiards.Wpf.ViewModels
             Next();
         }
 
+        public ICommand DoubleCommand
+        {
+            get { return new TargetCommand(Double); }
+        }
+
+        private void Double()
+        {
+            if (pathName == null)
+            {
+                return;
+            }
+
+            Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(pathName), "Double"));
+            string newName = Path.Combine(Path.GetDirectoryName(pathName), "Double", Path.GetFileName(pathName));
+            File.Move(pathName, newName, true);
+            Next();
+        }
+
         public ICommand NotOkCommand
         {
             get { return new TargetCommand(NotOk); }
@@ -356,11 +374,11 @@ namespace Billiards.Wpf.ViewModels
             return BallColor.Yellow;
         }
 
-        protected void OnCaptureImage(Mat image)
+        protected void OnCaptureImage(Mat image, string? fileName)
         {
             ThreadDispatcher.Invoke(() =>
             {
-                CaptureImage?.Invoke(this, new(image, CueBall()));
+                CaptureImage?.Invoke(this, new(image, CueBall(), fileName));
             });
         }
 
@@ -368,7 +386,7 @@ namespace Billiards.Wpf.ViewModels
         public event EventHandler<CaptureEvent> StreamImage;
         protected void OnStreamImage(Mat image)
         {
-            StreamImage?.Invoke(this, new(image, CueBall()));
+            StreamImage?.Invoke(this, new(image, CueBall(), null));
         }
 
 

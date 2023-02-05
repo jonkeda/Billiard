@@ -2,7 +2,7 @@
 
 namespace Billiards.Base.Filters;
 
-public class AndFilter : AbstractFilter, IMaskFilter
+public class AndFilter : AbstractFilter, IMaskFilter, ISingleContourFilter
 {
     public AndFilter(AbstractFilter filter) : base(filter)
     {
@@ -15,7 +15,7 @@ public class AndFilter : AbstractFilter, IMaskFilter
         get { return mask; }
         set { SetProperty(ref mask, value); }
     }
-    
+
     private IMaskFilter? maskFilter;
     public IMaskFilter? MaskFilter
     {
@@ -41,23 +41,23 @@ public class AndFilter : AbstractFilter, IMaskFilter
         {
             Cv2.BitwiseAnd(input, input, ResultMat, MaskFilter.Mask);
         }
-        else if (ContourFilter?.Contours != null)
+        else if (ContourFilter?.Contours != null
+                 && ContourFilter.Contours.Count > MaskContour)
         {
             FilterValues.Add("Mask Contour", MaskContour);
             mask = new Mat(input.Rows, input.Cols, MatType.CV_8U, new Scalar(0));
             Contour contour = ContourFilter.Contours[MaskContour];
             if (contour.RotatedRectangle.HasValue)
             {
-                var rect =  contour.RotatedRectangle.Value;
+                var rect = contour.RotatedRectangle.Value;
                 Cv2.Ellipse(mask, rect, new Scalar(255), -1);
             }
-            else
+            else if (ContourFilter.Contours.Count > MaskContour)
             {
                 List<List<Point>> lists = new List<List<Point>>
-                {
-                    ContourFilter.Contours[MaskContour].Points
-                };
-
+                    {
+                        ContourFilter.Contours[MaskContour].Points
+                    };
                 Cv2.FillPoly(mask, lists, new Scalar(255), LineTypes.Link4);
             }
             // input.BitwiseAnd()

@@ -46,7 +46,7 @@ namespace Billiards.Wpf.ViewModels
                 return;
             }
 
-            ResultModel result = Detector.ApplyFilters(e.Image);
+            ResultModel result = Detector.ApplyFilters(e.Image, null);
 
             if (VideoDevice.Calculate)
             {

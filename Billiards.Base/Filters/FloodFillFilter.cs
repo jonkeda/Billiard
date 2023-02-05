@@ -29,6 +29,10 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
     public IPointFilter? Point2filter { get; set; }
     public int MinimumArea { get; set; }
     public int MaximumArea { get; set; } = 100;
+
+    public int MinimumAreaCount { get; set; }
+    public int MaximumAreaCount { get; set; } = 100;
+
     public float FloodFillDiff { get; set; } = 1.5f;
 
     public FloodFillFlags FloodFillFlags { get; set; } = FloodFillFlags.Link4;
@@ -42,8 +46,11 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
 
     protected override void ApplyFilter(Mat originalImage)
     {
-        FilterValues.Add("Minimumarea", MinimumArea);
-        FilterValues.Add("MaximumArea", MaximumArea);
+        FilterValues.Add("Minimum area", MinimumArea);
+        FilterValues.Add("Maximum area", MaximumArea);
+        FilterValues.Add("Minimum area count", MinimumAreaCount);
+        FilterValues.Add("Maximum area count", MaximumAreaCount);
+
         FilterValues.Add("FloodFillFlags", FloodFillFlags.ToString());
         FilterValues.Add("SecondaryFloodFillFlags", FloodFillFlagsSecondary?.ToString());
         FilterValues.Add("FloodFillDiff", FloodFillDiff);
@@ -133,18 +140,23 @@ public class FloodFillFilter : AbstractFilter, IBoundingRectFilter, IMaskFilter
         double area = boundingRect.Width * boundingRect.Height;
         double fullArea = input.Cols * input.Rows;
         double areaPerc = System.Math.Round((area / fullArea) * 100d);
+        double areaCount = Cv2.CountNonZero(newMask);
+        double areaCountPerc = System.Math.Round((areaCount / fullArea) * 100d);
+
+        FilterValues.Add("Area count", areaCount);
+        FilterValues.Add("Area count %", areaCountPerc);
         FilterValues.Add("Area", area);
         FilterValues.Add("Full Area", fullArea);
         FilterValues.Add("Area %",  areaPerc);
         FilterValues.Add("Mid", mid.ToString());
         FilterValues.Add("Bounds", boundingRect.ToString());
 
-        bool ok = areaPerc >= MinimumArea && areaPerc <= MaximumArea && (AllowZero || boundingRect.Y > 0);
+        bool ok = areaPerc >= MinimumArea && areaPerc <= MaximumArea
+                  && areaCountPerc >= MinimumAreaCount && areaCountPerc <= MaximumAreaCount
+                  && (AllowZero || boundingRect.Y > 0);
 
-        if (ok)
-        {
-            Mask = newMask.SubMat(1, newMask.Rows - 2, 1, newMask.Cols - 2);
-        }
+
+        Mask = newMask.SubMat(1, newMask.Rows - 2, 1, newMask.Cols - 2);
 
         return ok;
     }

@@ -1,4 +1,16 @@
 ﻿{
+  "TrainingTime": 0,
+  "Scenario": "ObjectDetection",
+  "DataSource": {
+    "Type": "Vott",
+    "Version": 1
+  },
+  "Environment": {
+    "Type": "Azure",
+    "Version": 1,
+    "SubscriptionID": "00000000-0000-0000-0000-000000000000",
+    "ExperimentName": "Objectdetection"
+  },
   "Type": "TrainingConfig",
   "Version": 2
 }

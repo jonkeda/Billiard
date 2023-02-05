@@ -74,6 +74,7 @@ public class ContoursFilter : AbstractFilter, IContourFilter
             allContourList.Add(new Contour(contour, i, rectangle, rectArea));
         }
         FilterValues.Add("Contours found", contourList.Count);
+        FilterValues.Add($"Approximate Eps", ApproximateEps);
         if (ContourType == ContourType.ConvexHull)
         {
             List<Point> allPoints = new List<Point>();

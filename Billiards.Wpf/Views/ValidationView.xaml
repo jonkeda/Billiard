@@ -20,6 +20,7 @@
             <Button Command="{Binding LoadValidationsCommand}">Load validations</Button>
             <Button Command="{Binding SaveValidationsCommand}">Save validations</Button>
             <Button Command="{Binding ValidateCommand}">Validate</Button>
+            <Button Command="{Binding SaveImagesCommand}">Save images</Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <TextBlock Text="Folder:" />

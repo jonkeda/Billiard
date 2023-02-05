@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Billiards.Base.Drawings;
+﻿using Billiards.Base.Drawings;
 using OpenCvSharp;
 
 namespace Billiards.Base.Filters;
@@ -42,6 +41,7 @@ public class BallResultFilter : AbstractFilter
     public Point2f? WhiteBallPoint { get; private set; }
     public Point2f? YellowBallPoint { get; private set; }
     public Point2f? RedBallPoint { get; private set; }
+
     public Rect2f TableSize { get; private set; }
 
     protected override void ApplyFilter(Mat? originalImage)
@@ -63,7 +63,6 @@ public class BallResultFilter : AbstractFilter
         CopyHistogramValues(Histogram1!, 1);
         CopyHistogramValues(Histogram2!, 2);
 
-        
         Draw(dc =>
         {
             Pen pen = new Pen(Brushes.Black, 2);
@@ -79,7 +78,7 @@ public class BallResultFilter : AbstractFilter
                     var mid = ball.Contour.RotatedRectangle.Value.Center;
                     dc.DrawText(formattedText, mid);
 
-                    Brush color = null;
+                    Brush? color = null;
                     if (ball.Color == BallColor.Red)
                     {
                         color = Brushes.Red;
@@ -93,12 +92,40 @@ public class BallResultFilter : AbstractFilter
                         color = Brushes.Yellow;
                     }
 
-                    dc.DrawEllipse(color, pen, mid, 5, 5);
+                    dc.DrawEllipse(color, pen, mid, 10, 10);
                 }
             }
         });
-        
+
+        if (SaveResult)
+        {
+            foreach (BallResult ball in balls)
+            {
+                SaveImage(ball.Color.ToString(), ball.Contour);
+            }
+        }
     }
+
+    private void SaveImage(string name, Contour? contour)
+    {
+        if (ResultMat == null
+            || contour?.RotatedRectangle == null
+            || Folder == null
+            || Filename == null)
+        {
+            return;
+        }
+        Mat mat = ResultMat.Clone(contour.RotatedRectangle.Value.BoundingRect());
+
+        Directory.CreateDirectory(Path.Combine(Folder, name));
+
+        mat.SaveImage(Path.Combine(Folder, name, Filename));
+    }
+
+
+    public bool SaveResult { get; set; }
+    public string? Folder { get; set; }
+    public string? Filename { get; set; }
 
     private void PredictBalls(List<BallResult> balls)
     {

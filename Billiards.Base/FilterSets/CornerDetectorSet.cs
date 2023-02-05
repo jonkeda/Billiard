@@ -28,7 +28,7 @@ public class CornerDetectorSet : FilterSet
         contour.ContourType = ContourType.Approximated;
         contour.ChainApproxMethod = ContourApproximationModes.ApproxNone;
         contour.MinimumArea = 0;
-        contour.ApproximateEps = 10;
+        contour.ApproximateEps = 5;
 
 
         var convexConvers = Filters.AddFilter(new FindCornersConvexHullFilter(contour));

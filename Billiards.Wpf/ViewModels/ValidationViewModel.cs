@@ -139,7 +139,7 @@ public class ValidationViewModel : ViewModel
         foreach (var file in Directory.EnumerateFiles(Path, "*.jpg"))
         {
             Mat image = Cv2.ImRead(file, ImreadModes.Color);
-            var result = detector.ApplyFilters(image);
+            var result = detector.ApplyFilters(image, file);
 
         }
     }
