@@ -27,6 +27,7 @@
             <TextBox Text="{Binding SelectedFolder}" Width="200"/>
             <CheckBox IsChecked="{Binding LoadFromFolder}"></CheckBox>
             <Button Command="{Binding CaptureCommand}" IsDefault="True">Capture</Button>
+            <CheckBox IsChecked="{Binding Rotate}">Rotate</CheckBox>
             <Button Command="{Binding LoadCommand}">Load</Button>
             <Button Command="{Binding PreviousCommand}">Previous</Button>
             <Button Command="{Binding NextCommand}">Next</Button>

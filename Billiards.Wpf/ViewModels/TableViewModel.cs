@@ -23,7 +23,13 @@ namespace Billiards.Wpf.ViewModels
 
         public float Length { get; } = 2000; // * 0.9f; // 1800; // 1200;
         public float Width { get; } = 1000; // * 0.9f; // 900;
-        public float Radius { get; } 
+        public float Radius { get; }
+
+        public Mat? OriginalImage
+        {
+            get { return originalImage; }
+            set { SetProperty(ref originalImage, value); }
+        }
 
         private ImageSource? output;
         public ImageSource? Output
@@ -40,6 +46,8 @@ namespace Billiards.Wpf.ViewModels
         }
 
         private ImageSource? backGroundImage;
+        private Mat? originalImage;
+
         public ImageSource? BackGroundImage
         {
             get { return backGroundImage; }
@@ -57,8 +65,9 @@ namespace Billiards.Wpf.ViewModels
 
         public void CaptureImage(ResultModel result)
         {
+            OriginalImage = result.Image;
             Output = DrawBalls(result.Balls);
-             SolutionsImage = DrawSolutions(result.Problems);
+            SolutionsImage = DrawSolutions(result.Problems);
         }
 
         private DrawingImage? DrawSolutions(PhysicsEngine.ProblemCollection? problems)
@@ -139,7 +148,7 @@ namespace Billiards.Wpf.ViewModels
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null,
                     new(0, 0, width, height));
 
-                DrawBalls(balls, 
+                DrawBalls(balls,
                     drawingContext);
 
                 drawingContext.Close();
@@ -186,7 +195,7 @@ namespace Billiards.Wpf.ViewModels
             return new(p.Value.X * Length, p.Value.Y * Width);
         }
 
-        private void DrawBalls(ResultBallCollection balls, 
+        private void DrawBalls(ResultBallCollection balls,
             DrawingContext drawingContext)
         {
             Pen pen = new(Brushes.Black, 3)
@@ -197,7 +206,7 @@ namespace Billiards.Wpf.ViewModels
             {
                 if (ball.TableRelativePosition.HasValue)
                 {
-                    drawingContext.DrawEllipse(BrushByBallColor(ball.Color), pen, 
+                    drawingContext.DrawEllipse(BrushByBallColor(ball.Color), pen,
                         ToAbsolutePoint(ball.TableRelativePosition.Value), Radius, Radius);
                 }
             }

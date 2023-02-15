@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModel="clr-namespace:Billiards.Wpf.ViewModels"
              xmlns:views="clr-namespace:Billiards.Wpf.Views"
+             xmlns:converters="clr-namespace:Billiards.Wpf.UI.Converters"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=false, Type={x:Type viewModel:TableViewModel}}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -22,6 +23,14 @@
             <Image Width="{Binding ImageLength}" Height="{Binding ImageWidth}" 
                    Source="{Binding Output}"
                    Stretch="Uniform" />
+
+            <Image Width="{Binding ImageLength}" Height="{Binding ImageWidth}" 
+                   Source="{Binding Output}"
+                   Stretch="Uniform" />
+<!--
+            <Image Opacity="0.5" Width="1050" Height="840" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                   Source="{Binding OriginalImage, Converter={x:Static converters:Cv.Mat2ImageSource}}" />
+-->
         </Canvas>
 
         <views:VideoDeviceView DataContext="{Binding VideoDevice}" />

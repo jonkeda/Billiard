@@ -351,6 +351,12 @@ namespace Billiards.Wpf.ViewModels
             get { return new TargetCommand(NotOk); }
         }
 
+        public bool Rotate
+        {
+            get { return rotate; }
+            set { SetProperty(ref rotate, value); }
+        }
+
         private void NotOk()
         {
             if (pathName == null)
@@ -378,6 +384,12 @@ namespace Billiards.Wpf.ViewModels
         {
             ThreadDispatcher.Invoke(() =>
             {
+                if (Rotate)
+                {
+                    //Mat rotated = new Mat();
+                    Cv2.Rotate(image, image, RotateFlags.Rotate90Clockwise);
+                }
+
                 CaptureImage?.Invoke(this, new(image, CueBall(), fileName));
             });
         }
@@ -392,6 +404,7 @@ namespace Billiards.Wpf.ViewModels
 
         private readonly Timer timer;
         private bool isWhiteCueBall;
+        private bool rotate;
 
         public void Stop()
         {

@@ -12,4 +12,10 @@ public static class MathF2
 
         return 360 - dif;
     }
+
+    public static double toDegrees(double angrad)
+    {
+        return angrad * 57.29577951308232D;
+    }
+
 }
